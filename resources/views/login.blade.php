@@ -20,14 +20,14 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-800 to-purple-700 bg-clip-text text-transparent">Lycée de Balbala</h1>
-            <p class="text-gray-600 font-medium text-lg">Espace Proviseur</p>
+            <p class="text-gray-600 font-medium text-lg">Espace administrative</p>
             <div class="w-20 h-1 bg-gradient-to-r from-blue-800 to-purple-600 mx-auto mt-4 rounded-full"></div>
         </div>
 
         <!-- Message de bienvenue -->
         <div class="bg-blue-50 border-l-4 border-blue-800 p-4 rounded-r-lg mb-6 transform hover:scale-105 transition-transform duration-200">
             <p class="text-sm text-blue-800">
-                <span class="font-bold">Bienvenue M./Mme le Proviseur</span><br>
+                <span class="font-bold">Bienvenue M./Mme l'administrateur</span><br>
                 <span class="text-blue-700">Accédez à votre espace de gestion administrative</span>
             </p>
         </div>
