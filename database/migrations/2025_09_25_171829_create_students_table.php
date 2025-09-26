@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->string( 'id_number' )->unique( );
             $table->string('name');
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female']);

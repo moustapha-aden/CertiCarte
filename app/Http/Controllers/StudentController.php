@@ -15,7 +15,7 @@ class StudentController extends Controller
     public function index()
     {
         // Récupère tous les élèves avec leur classe associée (relation 'class')
-        $students = Student::with('class')->paginate(10);
+        $students = Student::with('classe')->paginate(10);
 
         // Retourne la vue 'students.index' en lui passant la liste des élèves
         return view('students.index', compact('students'));
@@ -26,10 +26,10 @@ class StudentController extends Controller
      */
     public function create()
     {
-        // Récupère la liste de toutes les classes pour le menu déroulant
-        $classes = Classe::pluck('name', 'id');
+            // 1. Récupérer toutes les classes
+        $classes = Classe::all();
 
-        // Retourne la vue 'students.create'
+        // 2. Passer les classes à la vue
         return view('students.create', compact('classes'));
     }
 
@@ -41,8 +41,9 @@ class StudentController extends Controller
         // 1. Validation des données
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
+            'id_number' => 'required|string|max:10|unique:students',
             'date_of_birth' => 'required|date',
-            'gender' => 'required|in:M,F',
+            'gender' => 'required|in:male,female',
             'class_id' => 'required|exists:classes,id',
             // La photo est optionnelle, mais doit être une image si présente
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -58,10 +59,10 @@ class StudentController extends Controller
         }
 
         // 3. Création de l'enregistrement
-        Student::create($validatedData);
+        $student = Student::create($validatedData);
 
         // 4. Redirection avec message de succès
-        return redirect()->route('students.index')
+        return redirect()->route('classes.students', $student->class_id)
                          ->with('success', 'L\'élève a été ajouté avec succès.');
     }
 
@@ -72,7 +73,7 @@ class StudentController extends Controller
     {
         // La variable $student est injectée par l'ID de la route
         // On s'assure que la relation 'class' est chargée
-        $student->load('class');
+        $student->load('classe');
 
         return view('students.show', compact('student'));
     }
@@ -83,7 +84,7 @@ class StudentController extends Controller
     public function edit(Student $student)
     {
         // Récupère la liste de toutes les classes pour le menu déroulant
-        $classes = Classe::pluck('name', 'id');
+        $classes = Classe::pluck('label', 'id');
 
         // Retourne la vue 'students.edit'
         return view('students.edit', compact('student', 'classes'));
@@ -97,6 +98,7 @@ class StudentController extends Controller
         // 1. Validation des données
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
+            'id_number' => 'required|string|max:10|unique:students,id_number,' . $student->id,
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:M,F',
             'class_id' => 'required|exists:classes,id',

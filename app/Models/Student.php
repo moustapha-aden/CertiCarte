@@ -18,6 +18,7 @@ class Student extends Model
      */
     protected $fillable = [
         'name',
+        'id_number',
         'date_of_birth',
         'gender',
         'photo',
@@ -36,7 +37,7 @@ class Student extends Model
     /**
      * Get the class that the student belongs to.
      */
-    public function class()
+    public function classe()
     {
         return $this->belongsTo(Classe::class, 'class_id');
     }

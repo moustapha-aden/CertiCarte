@@ -7,14 +7,30 @@ use Illuminate\Http\Request;
 
 class ClasseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+     public function index()
     {
-        //
+        // Récupère toutes les classes
+        $classes = Classe::all();
+
+        // Retourne la vue 'classes.index'
+        return view('classes.index', compact('classes'));
     }
 
+    /**
+     * Affiche la liste des élèves pour la classe spécifiée.
+     */
+    public function show(Classe $classe)
+    {
+        // Charge les élèves associés à cette classe avec pagination
+        // La relation 'students' est déjà définie dans votre modèle Classe.
+        $students = $classe->students()->with('classe')->paginate(10);
+
+        // Retourne la vue 'students.index' en lui passant la classe et la liste filtrée
+        return view('students.index', [
+            'students' => $students,
+            'currentClasse' => $classe // On passe l'objet classe pour l'affichage dans le header
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -34,10 +50,6 @@ class ClasseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Classe $classe)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
