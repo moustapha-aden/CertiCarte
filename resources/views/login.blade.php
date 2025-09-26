@@ -53,7 +53,6 @@
                     autocomplete="email"
                     placeholder="proviseur@lycee-balbala.dj"
                     class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-800 focus:ring-2 focus:ring-blue-200 transition-all duration-300 hover:border-blue-400 transform hover:-translate-y-1 focus:-translate-y-1 hover:shadow-lg focus:shadow-lg">
-
                 @error('email')
                     <div class="flex items-center text-red-500 text-sm mt-2">
                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
@@ -64,21 +63,34 @@
                 @enderror
             </div>
 
-            <!-- Champ Mot de Passe -->
-            <div class="space-y-2">
+                        <!-- Champ Mot de Passe -->
+            <div class="space-y-2 relative">
                 <label for="password" class="block font-semibold text-gray-700 flex items-center text-sm">
                     <svg class="w-4 h-4 mr-2 text-blue-800" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M18,8h-1V6c0-2.76-2.24-5-5-5S7,3.24,7,6v2H6c-1.1,0-2,0.9-2,2v10c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V10C20,8.9,19.1,8,18,8z M12,17c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S13.1,17,12,17z M15.1,8H8.9V6c0-1.71,1.39-3.1,3.1-3.1s3.1,1.39,3.1,3.1V8z"/>
                     </svg>
                     Mot de Passe Sécurisé
                 </label>
-                <input id="password"
-                       type="password"
-                       name="password"
-                       required
-                       autocomplete="current-password"
-                       placeholder="••••••••"
-                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-800 focus:ring-2 focus:ring-blue-200 transition-all duration-300 hover:border-blue-400 transform hover:-translate-y-1 focus:-translate-y-1 hover:shadow-lg focus:shadow-lg">
+
+                <div class="relative">
+                    <input id="password"
+                        type="password"
+                        name="password"
+                        required
+                        autocomplete="current-password"
+                        placeholder="••••••••"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-800 focus:ring-2 focus:ring-blue-200 transition-all duration-300 hover:border-blue-400 transform hover:-translate-y-1 focus:-translate-y-1 hover:shadow-lg focus:shadow-lg pr-10">
+
+                    <!-- Bouton œil -->
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-2 flex items-center px-2 text-gray-500 hover:text-gray-700">
+                        <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
+                </div>
 
                 @error('password')
                     <div class="flex items-center text-red-500 text-sm mt-2">
@@ -89,6 +101,24 @@
                     </div>
                 @enderror
             </div>
+
+            <!-- JS pour afficher/masquer le mot de passe -->
+            <script>
+                const togglePassword = document.querySelector('#togglePassword');
+                const password = document.querySelector('#password');
+                const eyeIcon = document.querySelector('#eyeIcon');
+
+                togglePassword.addEventListener('click', () => {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+
+                    // Optionnel : changer l'icône
+                    eyeIcon.innerHTML = type === 'password'
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.255-3.452m3.518-2.518A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.955 9.955 0 01-1.186 2.044M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
+                });
+            </script>
+
 
             <!-- Options -->
             <div class="flex items-center justify-between pt-2">

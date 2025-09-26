@@ -1,36 +1,37 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-// Route pour afficher la page de connexion (utilisable également via son nom 'login')
+// Page de connexion (nommée 'login')
 Route::get('/', function () {
     return view('login');
 })->name('login');
 
-
-// Route pour gérer la soumission du formulaire de connexion
+// Soumission du formulaire de connexion
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
 
-// Route pour la déconnexion de l'utilisateur
-Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+// Déconnexion
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Route pour la page d'accueil (protégée par le middleware 'auth')
-// L'utilisateur sera redirigé ici s'il est connecté.
+// Routes protégées par l'authentification
 Route::middleware('auth')->group(function () {
+
+    // Accueil simple
     Route::get('/home', function () {
         return 'Bienvenue !';
     });
 
-    Route::get('/dashboard', function () {
-        return view('Administrateur.Dashboard');
-    });
+    // Tableau de bord dynamique
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Route::get('/dashboard', function () {
-    //     return 'Tableau de bord';
-    // });
+    // Gestion des étudiants
+    Route::resource('students', StudentController::class);
 });
 
+// Réinitialisation de mot de passe
 Route::get('/password/request', function () {
     return 'Page de demande de réinitialisation du mot de passe.';
 })->name('password.request');
