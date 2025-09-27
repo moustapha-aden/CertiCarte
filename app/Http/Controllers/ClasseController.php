@@ -3,17 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classe;
+use App\Models\SchoolYear;
 use Illuminate\Http\Request;
 
 class ClasseController extends Controller
 {
-     public function index()
+    public function index(Request $request)
     {
-        // Récupère toutes les classes
-        $classes = Classe::all();
+        // Récupère toutes les années scolaires pour le filtre
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
 
-        // Retourne la vue 'classes.index'
-        return view('classes.index', compact('classes'));
+        // Récupère l'année scolaire sélectionnée (par défaut la plus récente)
+        $selectedYearId = $request->get('year_id', $schoolYears->first()?->id);
+
+        // Construit la requête pour les classes
+        $query = Classe::with(['schoolYear', 'students']);
+
+        // Applique le filtre par année scolaire si spécifié
+        if ($selectedYearId) {
+            $query->where('year_id', $selectedYearId);
+        }
+
+        // Récupère les classes avec pagination
+        $classes = $query->paginate(12);
+
+        // Retourne la vue 'classes.index' avec les données
+        return view('classes.index', compact('classes', 'schoolYears', 'selectedYearId'));
     }
 
     /**
@@ -31,6 +46,7 @@ class ClasseController extends Controller
             'currentClasse' => $classe // On passe l'objet classe pour l'affichage dans le header
         ]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
