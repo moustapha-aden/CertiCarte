@@ -92,21 +92,21 @@
                     </div>
                 </div>
 
-                {{-- Classe (classe_id) --}}
+                {{-- Classe (class_id) --}}
                 <div>
-                    <label for="classe_id" class="block text-sm font-semibold text-gray-700">Classe</label>
-                    <select name="classe_id" id="classe_id" required
+                    <label for="class_id" class="block text-sm font-semibold text-gray-700">Classe</label>
+                    <select name="class_id" id="class_id" required
                             class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
                         <option value="">Sélectionnez une classe</option>
 
                         {{-- LA CORRECTION CLÉ : Utilisation de la clé ($id) et de la valeur ($label) --}}
                         @foreach ($classes as $id => $label)
-                            <option value="{{ $id }}" {{ old('classe_id', $student->classe_id) == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ old('class_id', $student->class_id) == $id ? 'selected' : '' }}>
                                 {{ $label }}
                             </option>
                         @endforeach
                     </select>
-                    @error('classe_id')
+                    @error('class_id')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -132,7 +132,7 @@
             </form>
 
             <div class="mt-6 text-center text-sm text-gray-500 border-t pt-4">
-                <a href="{{ route('classes.students', $student->classe_id) }}" class="text-indigo-600 hover:text-indigo-800 transition duration-150">← Annuler et Retourner à la classe de l'élève</a>
+                <a href="{{ route('classes.students', $student->class_id) }}" class="text-indigo-600 hover:text-indigo-800 transition duration-150">← Annuler et Retourner à la classe de l'élève</a>
             </div>
         </div>
     </main>

@@ -33,43 +33,31 @@
                     </div>
                 </div>
 
-                {{-- Profil et Déconnexion Intégrés --}}
+                {{-- Profil et Déconnexion --}}
                 <div class="flex items-center space-x-6">
-                    <div class="relative group">
-                        <div class="flex items-center space-x-3 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors">
-                            <div class="text-right hidden sm:block">
-                                <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name ?? 'M./Mme Proviseur' }}</p>
-                                <p class="text-xs text-gray-500">
-                                    {{ Auth::user()->email ?? 'Administrateur' }}
-                                </p>
-                            </div>
-                            <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full flex items-center justify-center ring-2 ring-gray-200 group-hover:ring-indigo-300 transition-all">
-                                <span class="text-white text-md font-bold">{{ strtoupper(substr(Auth::user()->name ?? 'P', 0, 1)) }}</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
+                    <div class="flex items-center space-x-3 group cursor-pointer p-1 rounded-full hover:bg-gray-100 transition-colors">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name ?? 'M./Mme Proviseur' }}</p>
+                            <p class="text-xs text-gray-500">
+                                {{ Auth::user()->email ?? 'Administrateur' }}
+                            </p>
                         </div>
-                        
-                        {{-- Menu déroulant avec le bouton de déconnexion --}}
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <div class="py-1">
-                                <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                                    <p class="font-semibold">{{ Auth::user()->name ?? 'M./Mme Proviseur' }}</p>
-                                    <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'Administrateur' }}</p>
-                                </div>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 hover:text-red-800 transition-colors flex items-center space-x-2">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
-                                        </svg>
-                                        <span>Déconnexion</span>
-                                    </button>
-                                </form>
-                            </div>
+                        <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full flex items-center justify-center ring-2 ring-gray-200 group-hover:ring-indigo-300 transition-all">
+                            <span class="text-white text-md font-bold">{{ strtoupper(substr(Auth::user()->name ?? 'P', 0, 1)) }}</span>
                         </div>
                     </div>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="hidden sm:flex bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 items-center space-x-2 border border-red-200">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
+                            </svg>
+                            <span class="hidden md:inline">Déconnexion</span>
+                        </button>
+                    </form>
+
                 </div>
             </div>
         </div>

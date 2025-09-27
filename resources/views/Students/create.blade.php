@@ -149,16 +149,16 @@
                 </div>
 
                 <div>
-                    {{-- Champ Classe (classe_id) avec boucle sur les données --}}
-                    <label for="classe_id" class="block text-sm font-medium text-gray-700">Classe</label>
-                    <select name="classe_id" id="classe_id" required
+                    {{-- Champ Classe (class_id) avec boucle sur les données --}}
+                    <label for="class_id" class="block text-sm font-medium text-gray-700">Classe</label>
+                    <select name="class_id" id="class_id" required
                             class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
                         <option value="">Sélectionnez une classe</option>
 
                         {{-- Suppression du bloc @php inutile --}}
                         @if(isset($classes) && is_iterable($classes))
                             @foreach ($classes as $classe)
-                                <option value="{{ $classe->id }}" {{ old('classe_id') == ($classe->id ?? null) ? 'selected' : '' }}>
+                                <option value="{{ $classe->id }}" {{ old('class_id') == ($classe->id ?? null) ? 'selected' : '' }}>
                                     {{ $classe->label }}
                                 </option>
                             @endforeach
@@ -167,7 +167,7 @@
                             <option value="" disabled>Erreur : Aucune classe disponible</option>
                         @endif
                     </select>
-                    @error('classe_id')
+                    @error('class_id')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>

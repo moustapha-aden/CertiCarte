@@ -23,7 +23,7 @@ class StudentFactory extends Factory
             'date_of_birth' => fake()->date(),
             'gender' => fake()->randomElement(['male', 'female']),
             'photo' => fake()->imageUrl(),
-            'classe_id' => fake()->numberBetween(1, 9),
+            'class_id' => fake()->numberBetween(1, 9),
         ];
     }
 }

@@ -3,154 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classe;
-use App\Models\SchoolYear;
-use App\Http\Requests\StoreClasseRequest;
-use App\Http\Requests\UpdateClasseRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Log;
-use Exception;
 
-/**
- * Controller for managing classes (Classe CRUD operations)
- *
- * @package App\Http\Controllers
- */
 class ClasseController extends Controller
 {
-    /**
-     * Display a listing of classes with optional year filter.
-     *
-     * @param Request $request
-     * @return View
-     */
-    public function index(Request $request): View
+     public function index()
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        $selectedYearId = $request->get('year_id', $schoolYears->first()?->id);
+        // Récupère toutes les classes
+        $classes = Classe::all();
 
-        $query = Classe::with(['schoolYear', 'students']);
-
-        if ($selectedYearId) {
-            $query->where('year_id', $selectedYearId);
-        }
-
-        $classes = $query->paginate(12);
-
-        return view('classes.index', compact('classes', 'schoolYears', 'selectedYearId'));
+        // Retourne la vue 'classes.index'
+        return view('classes.index', compact('classes'));
     }
 
     /**
-     * Display students for the specified class.
-     *
-     * @param Classe $classe
-     * @return View
+     * Affiche la liste des élèves pour la classe spécifiée.
      */
-    public function show(Classe $classe): View
+    public function show(Classe $classe)
     {
+        // Charge les élèves associés à cette classe avec pagination
+        // La relation 'students' est déjà définie dans votre modèle Classe.
         $students = $classe->students()->with('classe')->paginate(10);
 
+        // Retourne la vue 'students.index' en lui passant la classe et la liste filtrée
         return view('students.index', [
             'students' => $students,
-            'currentClasse' => $classe
+            'currentClasse' => $classe // On passe l'objet classe pour l'affichage dans le header
         ]);
     }
-
     /**
-     * Show the form for creating a new class.
-     *
-     * @return View
+     * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create()
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        return view('classes.create', compact('schoolYears'));
+        //
     }
 
     /**
-     * Store a newly created class in storage.
-     *
-     * @param StoreClasseRequest $request
-     * @return RedirectResponse
+     * Store a newly created resource in storage.
      */
-    public function store(StoreClasseRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        try {
-            $classe = Classe::create($request->validated());
-            Log::info('Nouvelle classe créée: ' . $classe->label . ' (ID: ' . $classe->id . ')');
-
-            return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $classe->label . '" a été créée avec succès.');
-        } catch (Exception $e) {
-            Log::error('Erreur lors de la création de la classe: ' . $e->getMessage());
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Une erreur est survenue lors de la création de la classe. Veuillez réessayer.');
-        }
+        //
     }
 
     /**
-     * Show the form for editing the specified class.
-     *
-     * @param Classe $classe
-     * @return View
+     * Display the specified resource.
      */
-    public function edit(Classe $classe): View
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Classe $classe)
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        return view('classes.edit', compact('classe', 'schoolYears'));
+        //
     }
 
     /**
-     * Update the specified class in storage.
-     *
-     * @param UpdateClasseRequest $request
-     * @param Classe $classe
-     * @return RedirectResponse
+     * Update the specified resource in storage.
      */
-    public function update(UpdateClasseRequest $request, Classe $classe): RedirectResponse
+    public function update(Request $request, Classe $classe)
     {
-        try {
-            $classe->update($request->validated());
-            Log::info('Classe modifiée: ' . $classe->label . ' (ID: ' . $classe->id . ')');
-
-            return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $classe->label . '" a été mise à jour avec succès.');
-        } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de la classe: ' . $e->getMessage());
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Une erreur est survenue lors de la mise à jour de la classe. Veuillez réessayer.');
-        }
+        //
     }
 
     /**
-     * Remove the specified class from storage.
-     *
-     * @param Classe $classe
-     * @return RedirectResponse
+     * Remove the specified resource from storage.
      */
-    public function destroy(Classe $classe): RedirectResponse
+    public function destroy(Classe $classe)
     {
-        try {
-            if ($classe->students()->count() > 0) {
-                return redirect()->route('classes.index')
-                    ->with('error', 'Impossible de supprimer la classe "' . $classe->label . '" car elle contient des étudiants. Veuillez d\'abord réassigner ou supprimer les étudiants.');
-            }
-
-            $classLabel = $classe->label;
-            $classId = $classe->id;
-
-            $classe->delete();
-            Log::info('Classe supprimée: ' . $classLabel . ' (ID: ' . $classId . ')');
-
-            return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $classLabel . '" a été supprimée avec succès.');
-        } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de la classe: ' . $e->getMessage());
-            return redirect()->route('classes.index')
-                ->with('error', 'Une erreur est survenue lors de la suppression de la classe. Veuillez réessayer.');
-        }
+        //
     }
 }

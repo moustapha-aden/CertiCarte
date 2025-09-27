@@ -26,7 +26,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        // 1. Récupérer toutes les classes
+            // 1. Récupérer toutes les classes
         $classes = Classe::all();
 
         // 2. Passer les classes à la vue
@@ -44,7 +44,7 @@ class StudentController extends Controller
             'matricule' => 'required|string|max:10|unique:students',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female',
-            'classe_id' => 'required|exists:classes,id',
+            'class_id' => 'required|exists:classes,id',
             // La photo est optionnelle, mais doit être une image si présente
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -62,8 +62,8 @@ class StudentController extends Controller
         $student = Student::create($validatedData);
 
         // 4. Redirection avec message de succès
-        return redirect()->route('classes.students', $student->classe_id)
-            ->with('success', 'L\'élève a été ajouté avec succès.');
+        return redirect()->route('classes.students', $student->class_id)
+                         ->with('success', 'L\'élève a été ajouté avec succès.');
     }
 
     /**
@@ -101,7 +101,7 @@ class StudentController extends Controller
             'matricule' => 'required|string|max:10|unique:students,matricule,' . $student->id,
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female',
-            'classe_id' => 'required|exists:classes,id',
+            'class_id' => 'required|exists:classes,id',
             // La photo peut être mise à jour ou non (règle 'sometimes')
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -122,7 +122,7 @@ class StudentController extends Controller
 
         // 4. Redirection avec message de succès
         return redirect()->route('students.index')
-            ->with('success', 'La fiche élève a été mise à jour.');
+                         ->with('success', 'La fiche élève a été mise à jour.');
     }
 
     /**
@@ -140,6 +140,6 @@ class StudentController extends Controller
 
         // 3. Redirection avec message de succès
         return redirect()->route('students.index')
-            ->with('success', 'L\'élève a été supprimé avec succès.');
+                         ->with('success', 'L\'élève a été supprimé avec succès.');
     }
 }
