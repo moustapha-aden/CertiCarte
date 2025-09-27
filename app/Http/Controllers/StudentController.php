@@ -41,7 +41,7 @@ class StudentController extends Controller
         // 1. Validation des données
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'id_number' => 'required|string|max:10|unique:students',
+            'matricule' => 'required|string|max:10|unique:students',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female',
             'class_id' => 'required|exists:classes,id',
@@ -98,7 +98,7 @@ class StudentController extends Controller
         // 1. Validation des données
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'id_number' => 'required|string|max:10|unique:students,id_number,' . $student->id,
+            'matricule' => 'required|string|max:10|unique:students,matricule,' . $student->id,
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female',
             'class_id' => 'required|exists:classes,id',
