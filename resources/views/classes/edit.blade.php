@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier la Classe {{ $class->label }} - Lycée de Balbala</title>
+    <title>Modifier la Classe {{ $classe->label }} - Lycée de Balbala</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -110,7 +110,7 @@
                             <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            <span class="ml-1 text-gray-500 md:ml-2">Modifier {{ $class->label }}</span>
+                            <span class="ml-1 text-gray-500 md:ml-2">Modifier {{ $classe->label }}</span>
                         </div>
                     </li>
                 </ol>
@@ -122,7 +122,7 @@
                     <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
-                    <span>Modifier la Classe "{{ $class->label }}"</span>
+                    <span>Modifier la Classe "{{ $classe->label }}"</span>
                 </h1>
                 <p class="text-gray-600 mt-2">Modifiez les informations de cette classe ci-dessous.</p>
             </div>
@@ -133,9 +133,9 @@
                     <div>
                         <h3 class="text-sm font-semibold text-gray-700">Informations actuelles</h3>
                         <p class="text-sm text-gray-600 mt-1">
-                            <span class="font-medium">Classe:</span> {{ $class->label }} •
-                            <span class="font-medium">Année:</span> {{ $class->schoolYear->year ?? 'Non définie' }} •
-                            <span class="font-medium">Étudiants:</span> {{ $class->students->count() }}
+                            <span class="font-medium">Classe:</span> {{ $classe->label }} •
+                            <span class="font-medium">Année:</span> {{ $classe->schoolYear->year ?? 'Non définie' }} •
+                            <span class="font-medium">Étudiants:</span> {{ $classe->students->count() }}
                         </p>
                     </div>
                     <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@
             </div>
 
             {{-- Formulaire --}}
-            <form method="POST" action="{{ route('classes.update', $class) }}" class="space-y-6">
+            <form method="POST" action="{{ route('classes.update', $classe) }}" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -158,7 +158,7 @@
                         type="text"
                         name="label"
                         id="label"
-                        value="{{ old('label', $class->label) }}"
+                        value="{{ old('label', $classe->label) }}"
                         required
                         autofocus
                         placeholder="Ex: 2nde A, Terminale S, 1ère L..."
@@ -187,7 +187,7 @@
                     >
                         <option value="">Sélectionnez une année scolaire</option>
                         @foreach($schoolYears as $year)
-                            <option value="{{ $year->id }}" {{ old('year_id', $class->year_id) == $year->id ? 'selected' : '' }}>
+                            <option value="{{ $year->id }}" {{ old('year_id', $classe->year_id) == $year->id ? 'selected' : '' }}>
                                 {{ $year->year }}
                             </option>
                         @endforeach
@@ -231,13 +231,13 @@
             </form>
 
             {{-- Formulaire de suppression caché --}}
-            <form id="deleteForm" method="POST" action="{{ route('classes.destroy', $class) }}" style="display: none;">
+            <form id="deleteForm" method="POST" action="{{ route('classes.destroy', $classe) }}" style="display: none;">
                 @csrf
                 @method('DELETE')
             </form>
 
             {{-- Avertissement pour la suppression --}}
-            @if($class->students->count() > 0)
+            @if($classe->students->count() > 0)
                 <div class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                     <div class="flex items-start space-x-3">
                         <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
@@ -246,7 +246,7 @@
                         <div>
                             <h3 class="text-sm font-semibold text-yellow-800">Attention</h3>
                             <p class="text-sm text-yellow-700 mt-1">
-                                Cette classe contient {{ $class->students->count() }} étudiant(s).
+                                Cette classe contient {{ $classe->students->count() }} étudiant(s).
                                 Vous devez d'abord réassigner ou supprimer ces étudiants avant de pouvoir supprimer la classe.
                             </p>
                         </div>

@@ -28,7 +28,7 @@ class UpdateClasseRequest extends FormRequest
    */
   public function rules(): array
   {
-    $classId = $this->route('class')->id;
+    $classId = $this->route('classe')->id;
 
     return [
       'label' => [

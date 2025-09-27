@@ -93,30 +93,30 @@ class ClasseController extends Controller
     /**
      * Show the form for editing the specified class.
      *
-     * @param Classe $class
+     * @param Classe $classe
      * @return View
      */
-    public function edit(Classe $class): View
+    public function edit(Classe $classe): View
     {
         $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        return view('classes.edit', compact('class', 'schoolYears'));
+        return view('classes.edit', compact('classe', 'schoolYears'));
     }
 
     /**
      * Update the specified class in storage.
      *
      * @param UpdateClasseRequest $request
-     * @param Classe $class
+     * @param Classe $classe
      * @return RedirectResponse
      */
-    public function update(UpdateClasseRequest $request, Classe $class): RedirectResponse
+    public function update(UpdateClasseRequest $request, Classe $classe): RedirectResponse
     {
         try {
-            $class->update($request->validated());
-            Log::info('Classe modifiée: ' . $class->label . ' (ID: ' . $class->id . ')');
+            $classe->update($request->validated());
+            Log::info('Classe modifiée: ' . $classe->label . ' (ID: ' . $classe->id . ')');
 
             return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $class->label . '" a été mise à jour avec succès.');
+                ->with('success', 'La classe "' . $classe->label . '" a été mise à jour avec succès.');
         } catch (Exception $e) {
             Log::error('Erreur lors de la mise à jour de la classe: ' . $e->getMessage());
             return redirect()->back()
@@ -128,21 +128,21 @@ class ClasseController extends Controller
     /**
      * Remove the specified class from storage.
      *
-     * @param Classe $class
+     * @param Classe $classe
      * @return RedirectResponse
      */
-    public function destroy(Classe $class): RedirectResponse
+    public function destroy(Classe $classe): RedirectResponse
     {
         try {
-            if ($class->students()->count() > 0) {
+            if ($classe->students()->count() > 0) {
                 return redirect()->route('classes.index')
-                    ->with('error', 'Impossible de supprimer la classe "' . $class->label . '" car elle contient des étudiants. Veuillez d\'abord réassigner ou supprimer les étudiants.');
+                    ->with('error', 'Impossible de supprimer la classe "' . $classe->label . '" car elle contient des étudiants. Veuillez d\'abord réassigner ou supprimer les étudiants.');
             }
 
-            $classLabel = $class->label;
-            $classId = $class->id;
+            $classLabel = $classe->label;
+            $classId = $classe->id;
 
-            $class->delete();
+            $classe->delete();
             Log::info('Classe supprimée: ' . $classLabel . ' (ID: ' . $classId . ')');
 
             return redirect()->route('classes.index')
