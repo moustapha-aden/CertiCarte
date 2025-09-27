@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\SchoolYear;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,6 +31,9 @@ class ClasseFactory extends Factory
 
         return [
             'label' => fake()->unique()->randomElement($classes),
+            'year_id' => fake()->numberBetween(1, 3), // Assuming you have 3 school years created in the seeder
         ];
     }
+
+
 }

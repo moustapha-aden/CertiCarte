@@ -17,6 +17,7 @@ class Classe extends Model
      */
     protected $fillable = [
         'label',
+        'year_id',
     ];
 
     /**
@@ -33,5 +34,10 @@ class Classe extends Model
     public function school_year()
     {
         return $this->belongsTo(SchoolYear::class, 'year_id');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class);
     }
 }
