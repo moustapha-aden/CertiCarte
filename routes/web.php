@@ -5,6 +5,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClasseController;
+use App\Http\Controllers\UserController;
 
 // Page de connexion (nommée 'login')
 Route::get('/', function () {
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('classes', ClasseController::class);
     // Ajout de la route manquante pour afficher les élèves d'une classe spécifique
     Route::get('/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');
+    Route::resource('users', UserController::class);
+    
 });
 
 // Réinitialisation de mot de passe
