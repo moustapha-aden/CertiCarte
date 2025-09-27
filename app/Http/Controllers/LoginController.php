@@ -30,8 +30,8 @@ class LoginController extends Controller
             switch ($user->role) {
                 case 'admin':
                     return redirect()->intended('/dashboard');
-                case 'client':
-                    return redirect()->intended('/home');
+                case 'secretary':
+                    return redirect()->intended('/dashboard');
                 default:
                     // Redirection par défaut si le rôle n'est pas reconnu
                     return redirect()->intended('/home');
