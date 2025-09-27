@@ -18,7 +18,7 @@ class StudentFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'id_number' => strtoupper(fake()->lexify('??')) . fake()->unique()->numberBetween(1000, 9999),
+            'matricule' => strtoupper(fake()->lexify('??')) . fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
             'gender' => fake()->randomElement(['male', 'female']),
             'photo' => fake()->imageUrl(),
