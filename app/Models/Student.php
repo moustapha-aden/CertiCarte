@@ -23,7 +23,7 @@ class Student extends Model
         'gender',
         'photo',
         'situation',
-        'class_id',
+        'classe_id',
     ];
 
     /**
@@ -40,7 +40,6 @@ class Student extends Model
      */
     public function classe()
     {
-        return $this->belongsTo(Classe::class, 'class_id');
+        return $this->belongsTo(Classe::class, 'classe_id');
     }
-
 }
