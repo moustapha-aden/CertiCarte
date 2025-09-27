@@ -18,6 +18,7 @@ class StudentFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'situation' => fake()->randomElement(['NR', 'R']),
             'matricule' => strtoupper(fake()->lexify('??')) . fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
             'gender' => fake()->randomElement(['male', 'female']),

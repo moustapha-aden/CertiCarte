@@ -22,6 +22,7 @@ class Student extends Model
         'date_of_birth',
         'gender',
         'photo',
+        'situation',
         'class_id',
     ];
 
