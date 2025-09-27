@@ -25,19 +25,14 @@ class Classe extends Model
      */
     public function students()
     {
-        return $this->hasMany(Student::class, 'class_id');
+        return $this->hasMany(Student::class, 'classe_id');
     }
 
     /**
-     * Get the school year of that the class belongs to.
+     * Get the school year that the class belongs to.
      */
-    public function school_year()
-    {
-        return $this->belongsTo(SchoolYear::class, 'year_id');
-    }
-
     public function schoolYear()
     {
-        return $this->belongsTo(SchoolYear::class);
+        return $this->belongsTo(SchoolYear::class, 'year_id');
     }
 }
