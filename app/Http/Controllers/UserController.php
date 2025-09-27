@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -22,7 +22,6 @@ class UserController extends Controller
         }
 
         $users = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
-
         return view('Administration.index', compact('users'));
     }
 
@@ -103,7 +102,6 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès.');
     }
 }
