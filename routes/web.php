@@ -15,6 +15,7 @@ use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -155,4 +156,27 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
+
+    // ========================================================================
+    // USER MANAGEMENT ROUTES
+    // ========================================================================
+
+    /**
+     * User resource routes
+     * Provides full CRUD operations for user management
+     *
+     * Generated routes:
+     * - GET    /users           (index)   - List all users
+     * - GET    /users/create    (create)  - Show create form
+     * - POST   /users           (store)   - Store new user
+     * - GET    /users/{user}    (show)    - Show specific user
+     * - GET    /users/{user}/edit (edit)    - Show edit form
+     * - PUT    /users/{user}    (update)  - Update user
+     * - DELETE /users/{user}    (destroy) - Delete user
+     *
+     * @route resource /users
+     *
+     * @uses UserController
+     */
+    Route::resource('users', UserController::class);
 });

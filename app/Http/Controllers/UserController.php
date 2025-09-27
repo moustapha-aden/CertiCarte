@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -17,11 +17,12 @@ class UserController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where('name', 'like', "%{$q}%")
-                  ->orWhere('email', 'like', "%{$q}%")
-                  ->orWhere('role', 'like', "%{$q}%");
+                ->orWhere('email', 'like', "%{$q}%")
+                ->orWhere('role', 'like', "%{$q}%");
         }
 
         $users = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
+
         return view('Administration.index', compact('users'));
     }
 
@@ -78,7 +79,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'role' => 'required|in:admin,secretary',
         ]);
@@ -102,8 +103,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès.');
     }
-    
-    
 }
