@@ -26,4 +26,12 @@ class Classe extends Model
     {
         return $this->hasMany(Student::class, 'class_id');
     }
+
+    /**
+     * Get the school year of that the class belongs to.
+     */
+    public function school_year()
+    {
+        return $this->belongsTo(SchoolYear::class, 'year_id');
+    }
 }

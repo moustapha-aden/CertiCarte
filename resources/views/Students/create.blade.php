@@ -109,12 +109,12 @@
                         @enderror
                     </div>
 
-                    {{-- Champ Numéro d'Identification (id_number) - CLÉ POUR LA VALIDATION --}}
+                    {{-- Champ Numéro d'Identification (matricule) - CLÉ POUR LA VALIDATION --}}
                     <div>
-                        <label for="id_number" class="block text-sm font-medium text-gray-700">Numéro d'Identification (Max 10)</label>
-                        <input type="text" name="id_number" id="id_number" value="{{ old('id_number') }}" required
+                        <label for="matricule" class="block text-sm font-medium text-gray-700">Numéro d'Identification (Max 10)</label>
+                        <input type="text" name="matricule" id="matricule" value="{{ old('matricule') }}" required
                             class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
-                        @error('id_number')
+                        @error('matricule')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>

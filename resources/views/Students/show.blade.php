@@ -163,7 +163,7 @@
                 {{-- ID de l'Étudiant (Répétition pour l'affichage séparé) --}}
                 <div class="detail-card bg-gray-50 hover:bg-gray-100/70 border-gray-200">
                     <p class="text-sm font-medium text-gray-500">Référence Unique</p>
-                    <p class="text-lg font-bold text-gray-900 mt-1">ID: **{{ $student->id_number }}**</p>
+                    <p class="text-lg font-bold text-gray-900 mt-1">ID: **{{ $student->matricule }}**</p>
                 </div>
 
             </div>
