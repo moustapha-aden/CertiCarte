@@ -121,6 +121,12 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             {{-- Statistiques rapides --}}
             @if($selectedYearId)
                 @php
@@ -143,16 +149,40 @@
             {{-- Grille des Classes --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse ($classes as $classe)
-                    {{-- Lien cliquable vers la liste des étudiants de cette classe --}}
-                    <a href="{{ route('classes.students', $classe->id) }}"
-                       class="block p-6 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl hover:ring-2 hover:ring-indigo-500 transition-all duration-300 transform hover:scale-[1.02]">
-
+                    {{-- Carte de classe avec actions --}}
+                    <div class="p-6 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                        
+                        {{-- En-tête avec titre et actions --}}
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xl font-extrabold text-indigo-700">{{ $classe->label }}</span>
-                            <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            <div class="flex items-center space-x-2">
+                                {{-- Bouton Modifier --}}
+                                <a href="{{ route('classes.edit', $classe) }}" 
+                                   class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                   title="Modifier la classe">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                
+                                {{-- Bouton Supprimer --}}
+                                <form method="POST" action="{{ route('classes.destroy', $classe) }}" class="inline-block"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer la classe {{ $classe->label }} ?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Supprimer la classe">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
-                        <div class="space-y-2">
+                        {{-- Informations de la classe --}}
+                        <div class="space-y-2 mb-4">
                             <p class="text-sm font-medium text-gray-500">
                                 Total Élèves: <span class="font-bold text-gray-900">{{ $classe->students->count() }}</span>
                             </p>
@@ -161,11 +191,17 @@
                                     Année: {{ $classe->schoolYear->year }}
                                 </p>
                             @endif
-                            <p class="text-xs text-indigo-400 mt-1">
-                                Cliquez pour voir la liste des étudiants
-                            </p>
                         </div>
-                    </a>
+
+                        {{-- Bouton pour voir les étudiants --}}
+                        <a href="{{ route('classes.students', $classe->id) }}"
+                           class="block w-full text-center px-4 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-lg hover:bg-indigo-100 transition-colors">
+                            Voir les étudiants
+                            <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
+                        </a>
+                    </div>
                 @empty
                     <div class="col-span-full p-6 text-center text-gray-500 bg-gray-100 rounded-lg">
                         <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
