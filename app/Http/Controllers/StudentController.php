@@ -100,7 +100,7 @@ class StudentController extends Controller
             'name' => 'required|string|max:255',
             'id_number' => 'required|string|max:10|unique:students,id_number,' . $student->id,
             'date_of_birth' => 'required|date',
-            'gender' => 'required|in:M,F',
+            'gender' => 'required|in:male,female',
             'class_id' => 'required|exists:classes,id',
             // La photo peut être mise à jour ou non (règle 'sometimes')
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
