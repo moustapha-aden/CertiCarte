@@ -18,6 +18,11 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\ClasseController;
+use App\Http\Controllers\UserController;
+>>>>>>> 5b69dce (sans statut , le reste est bon)
 
 // ============================================================================
 // PUBLIC ROUTES (No Authentication Required)
