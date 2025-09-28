@@ -2,29 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
-use App\Http\Requests\StoreStudentRequest;
-use App\Http\Requests\UpdateStudentRequest;
-use Illuminate\Http\Request;
+use Exception;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Exception;
+use Illuminate\View\View;
 
 /**
  * Controller for managing students (Student CRUD operations)
- *
- * @package App\Http\Controllers
  */
 class StudentController extends Controller
 {
     /**
      * Display a listing of students with optional filters.
      *
-     * @param Request $request The HTTP request containing optional filter parameters
+     * @param  Request  $request  The HTTP request containing optional filter parameters
      * @return View The students index view with paginated students
      */
     public function index(Request $request): View
@@ -59,7 +57,7 @@ class StudentController extends Controller
 
         // Search by name or matricule
         if ($request->filled('search')) {
-            $searchTerm = '%' . $request->input('search') . '%';
+            $searchTerm = '%'.$request->input('search').'%';
             $students->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', $searchTerm)
                     ->orWhere('matricule', 'like', $searchTerm);
@@ -83,7 +81,7 @@ class StudentController extends Controller
     public function create(): View
     {
         // Get classes for the current school year
-        $currentYearStr = date('Y') . '-' . (date('Y') + 1);
+        $currentYearStr = date('Y').'-'.(date('Y') + 1);
         $currentYear = SchoolYear::where('year', $currentYearStr)->first();
 
         if ($currentYear) {
@@ -98,7 +96,7 @@ class StudentController extends Controller
     /**
      * Store a newly created student in storage.
      *
-     * @param StoreStudentRequest $request The validated request containing student data
+     * @param  StoreStudentRequest  $request  The validated request containing student data
      * @return RedirectResponse Redirect to students list with success/error message
      */
     public function store(StoreStudentRequest $request): RedirectResponse
@@ -113,12 +111,13 @@ class StudentController extends Controller
             }
 
             $student = Student::create($validatedData);
-            Log::info('Nouvel étudiant créé: ' . $student->name . ' (ID: ' . $student->id . ')');
+            Log::info('Nouvel étudiant créé: '.$student->name.' (ID: '.$student->id.')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $student->name . '" a été ajouté avec succès.');
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la création de l\'étudiant: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de l\'étudiant: '.$e->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la création de l\'étudiant. Veuillez réessayer.');
@@ -128,32 +127,34 @@ class StudentController extends Controller
     /**
      * Display the specified student.
      *
-     * @param Student $student The student to display
+     * @param  Student  $student  The student to display
      * @return View The student details view
      */
     public function show(Student $student): View
     {
         $student->load('classe');
+
         return view('students.show', compact('student'));
     }
 
     /**
      * Show the form for editing the specified student.
      *
-     * @param Student $student The student to edit
+     * @param  Student  $student  The student to edit
      * @return View The student edit form view
      */
     public function edit(Student $student): View
     {
         $classes = Classe::pluck('label', 'id');
+
         return view('students.edit', compact('student', 'classes'));
     }
 
     /**
      * Update the specified student in storage.
      *
-     * @param UpdateStudentRequest $request The validated request containing updated student data
-     * @param Student $student The student to update
+     * @param  UpdateStudentRequest  $request  The validated request containing updated student data
+     * @param  Student  $student  The student to update
      * @return RedirectResponse Redirect to students list with success/error message
      */
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
@@ -173,12 +174,13 @@ class StudentController extends Controller
             }
 
             $student->update($validatedData);
-            Log::info('Étudiant modifié: ' . $student->name . ' (ID: ' . $student->id . ')');
+            Log::info('Étudiant modifié: '.$student->name.' (ID: '.$student->id.')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $student->name . '" a été mis à jour avec succès.');
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de l\'étudiant: ' . $e->getMessage());
+            Log::error('Erreur lors de la mise à jour de l\'étudiant: '.$e->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la mise à jour de l\'étudiant. Veuillez réessayer.');
@@ -188,7 +190,7 @@ class StudentController extends Controller
     /**
      * Remove the specified student from storage.
      *
-     * @param Student $student The student to delete
+     * @param  Student  $student  The student to delete
      * @return RedirectResponse Redirect to students list with success/error message
      */
     public function destroy(Student $student): RedirectResponse
@@ -202,12 +204,13 @@ class StudentController extends Controller
             $studentName = $student->name;
             $studentId = $student->id;
             $student->delete();
-            Log::info('Étudiant supprimé: ' . $studentName . ' (ID: ' . $studentId . ')');
+            Log::info('Étudiant supprimé: '.$studentName.' (ID: '.$studentId.')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $studentName . '" a été supprimé avec succès.');
+                ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage());
+            Log::error('Erreur lors de la suppression de l\'étudiant: '.$e->getMessage());
+
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
         }

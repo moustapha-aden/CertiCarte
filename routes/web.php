@@ -2,21 +2,21 @@
 
 /**
  * Web Routes for CertiCarte Application
- * 
+ *
  * This file contains all the web routes for the CertiCarte school management system.
  * Routes are organized by functionality: authentication, dashboard, and resource management.
- * 
- * @package CertiCarte
+ *
  * @author Your Name
+ *
  * @version 1.0.0
  */
 
+use App\Http\Controllers\ClasseController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\DashboardController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ClasseController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // ============================================================================
 // PUBLIC ROUTES (No Authentication Required)
@@ -24,9 +24,11 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Home page route - redirects authenticated users to dashboard
- * 
+ *
  * @route GET /
+ *
  * @name login
+ *
  * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
  */
 Route::get('/', function () {
@@ -34,34 +36,43 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard'); // redirige vers le tableau de bord
     }
+
     return view('login');
 })->name('login');
 
 /**
  * User authentication route
- * 
+ *
  * @route POST /login
+ *
  * @name authenticate
+ *
  * @uses LoginController@authenticate
+ *
  * @return \Illuminate\Http\RedirectResponse
  */
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
 
 /**
  * User logout route
- * 
+ *
  * @route POST /logout
+ *
  * @name logout
+ *
  * @uses LoginController@logout
+ *
  * @return \Illuminate\Http\RedirectResponse
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 /**
  * Password reset request page
- * 
+ *
  * @route GET /password/request
+ *
  * @name password.request
+ *
  * @return string
  */
 Route::get('/password/request', function () {
@@ -80,10 +91,13 @@ Route::middleware('auth')->group(function () {
 
     /**
      * Dashboard main page
-     * 
+     *
      * @route GET /dashboard
+     *
      * @name dashboard
+     *
      * @uses DashboardController@index
+     *
      * @return \Illuminate\View\View
      */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -95,7 +109,7 @@ Route::middleware('auth')->group(function () {
     /**
      * Student resource routes
      * Provides full CRUD operations for student management
-     * 
+     *
      * Generated routes:
      * - GET    /dashboard/students           (index)   - List all students
      * - GET    /dashboard/students/create    (create)  - Show create form
@@ -104,8 +118,9 @@ Route::middleware('auth')->group(function () {
      * - GET    /dashboard/students/{id}/edit (edit)    - Show edit form
      * - PUT    /dashboard/students/{id}      (update)  - Update student
      * - DELETE /dashboard/students/{id}       (destroy) - Delete student
-     * 
+     *
      * @route resource /dashboard/students
+     *
      * @uses StudentController
      */
     Route::resource('/dashboard/students', StudentController::class);
@@ -117,7 +132,7 @@ Route::middleware('auth')->group(function () {
     /**
      * Classe resource routes
      * Provides full CRUD operations for classe management
-     * 
+     *
      * Generated routes:
      * - GET    /dashboard/classes           (index)   - List all classes
      * - GET    /dashboard/classes/create    (create)  - Show create form
@@ -126,8 +141,9 @@ Route::middleware('auth')->group(function () {
      * - GET    /dashboard/classes/{classe}/edit (edit)    - Show edit form
      * - PUT    /dashboard/classes/{classe}  (update)  - Update classe
      * - DELETE /dashboard/classes/{classe}  (destroy) - Delete classe
-     * 
+     *
      * @route resource /dashboard/classes
+     *
      * @uses ClasseController
      */
     Route::get('/dashboard/classes', [ClasseController::class, 'index'])->name('classes.index');
@@ -141,11 +157,15 @@ Route::middleware('auth')->group(function () {
     /**
      * Show students for a specific classe (alternative route)
      * This route provides an alternative way to access the class details view
-     * 
+     *
      * @route GET /dashboard/classes/{classe}/students
+     *
      * @name classes.students
-     * @param \App\Models\Classe $classe The classe to show students for
+     *
+     * @param  \App\Models\Classe  $classe  The classe to show students for
+     *
      * @uses ClasseController@show
+     *
      * @return \Illuminate\View\View
      */
     Route::get('/dashboard/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');

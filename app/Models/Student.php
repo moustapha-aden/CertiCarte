@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Classe;
 
 class Student extends Model
 {
@@ -46,14 +45,12 @@ class Student extends Model
     /**
      * Get the avatar URL for the student.
      * Returns the uploaded photo if available, otherwise generates an avatar from ui-avatars.com
-     *
-     * @return string
      */
     public function getAvatarUrlAttribute(): string
     {
         // If student has a custom uploaded photo, return it
         if ($this->photo) {
-            return asset('storage/' . $this->photo);
+            return asset('storage/'.$this->photo);
         }
 
         // Generate avatar URL from ui-avatars.com with student's initials
@@ -66,8 +63,6 @@ class Student extends Model
     /**
      * Get a consistent background color for the avatar based on the student's name.
      * This ensures the same student always gets the same color.
-     *
-     * @return string
      */
     private function getAvatarBackgroundColor(): string
     {

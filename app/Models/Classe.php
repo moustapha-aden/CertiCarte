@@ -17,8 +17,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\SchoolYear $schoolYear
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Student> $students
- *
- * @package App\Models
  */
 class Classe extends Model
 {

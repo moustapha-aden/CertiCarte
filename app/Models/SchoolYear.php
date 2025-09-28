@@ -18,6 +18,7 @@ class SchoolYear extends Model
     protected $fillable = [
         'year',
     ];
+
     public function classes()
     {
         return $this->hasMany(Classe::class);
