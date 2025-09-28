@@ -19,10 +19,10 @@ class StudentFactory extends Factory
         return [
             'name' => fake()->name(),
             'situation' => fake()->randomElement(['NR', 'R']),
-            'matricule' => strtoupper(fake()->lexify('??')) . fake()->unique()->numberBetween(1000, 9999),
+            'matricule' => strtoupper(fake()->lexify('??')).fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
             'gender' => fake()->randomElement(['male', 'female']),
-            'photo' => fake()->imageUrl(),
+            'photo' => null, // Leave null so the model's accessor handles avatar generation
             'class_id' => fake()->numberBetween(1, 9),
         ];
     }

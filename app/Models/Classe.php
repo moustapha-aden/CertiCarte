@@ -4,7 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Class representing a school class.
+ *
+ * @property int $id
+ * @property string $label
+ * @property int $year_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\SchoolYear $schoolYear
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Student> $students
+ */
 class Classe extends Model
 {
     /** @use HasFactory<\Database\Factories\ClasseFactory> */
@@ -13,7 +26,7 @@ class Classe extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'label',
@@ -21,23 +34,22 @@ class Classe extends Model
     ];
 
     /**
-     * Get the students for the class.
+     * Get the students belonging to this class.
+     *
+     * @return HasMany<\App\Models\Student>
      */
-    public function students()
+    public function students(): HasMany
     {
         return $this->hasMany(Student::class, 'class_id');
     }
 
     /**
-     * Get the school year of that the class belongs to.
+     * Get the school year that this class belongs to.
+     *
+     * @return BelongsTo<\App\Models\SchoolYear, \App\Models\Classe>
      */
-    public function school_year()
+    public function schoolYear(): BelongsTo
     {
         return $this->belongsTo(SchoolYear::class, 'year_id');
-    }
-
-    public function schoolYear()
-    {
-        return $this->belongsTo(SchoolYear::class);
     }
 }

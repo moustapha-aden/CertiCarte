@@ -2,212 +2,247 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Classe; // Ajouté : Pour afficher la liste des classes lors de la création/édition
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
+use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage; // Ajouté : Pour gérer l'upload de fichiers
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
+/**
+ * Controller for managing students (Student CRUD operations)
+ */
 class StudentController extends Controller
 {
     /**
-     * Affiche la liste des élèves avec pagination.
+     * Display a listing of students with optional filters.
+     *
+     * @param  Request  $request  The HTTP request containing optional filter parameters
+     * @return View The students index view with paginated students
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        // --- 1. Préparation des Listes de Filtres ---
+        // Get all classes for the filter dropdown
+        $allClasses = Classe::select('id', 'label')
+            ->orderBy('label')
+            ->pluck('label', 'id');
 
-        // A. Récupérer toutes les années scolaires disponibles (pour le premier sélecteur)
-        // On suppose que le modèle SchoolYear a une colonne 'start_year' ou 'year' pour trier/afficher
-        $allYears = SchoolYear::select('id', 'year')
-                              ->orderBy('year', 'desc')
-                              ->pluck('year', 'id'); // Pluck(value, key)
-
-        // B. Déterminer l'ID de l'année actuellement sélectionnée
-        $selectedYearId = $request->input('year');
-        $classesByYear = collect(); // Initialiser une collection vide pour les classes
-
-        // C. Si une année est sélectionnée, récupérer les classes associées
-        if ($selectedYearId) {
-            $classesByYear = Classe::where('year_id', $selectedYearId)
-                                    ->pluck('label', 'id');
-        }
-
-        // --- 2. Construction de la Requête des Étudiants ---
-
-        // Initialisation de la requête avec la relation 'classe' chargée
+        // Build the students query
         $students = Student::with('classe');
 
-        // FILTRE 1 : Année Scolaire (Prioritaire)
-        if ($selectedYearId) {
-            // Récupérer les IDs des classes valides pour l'année sélectionnée
-            $validClassIds = Classe::where('year_id', $selectedYearId)->pluck('id');
-            // Appliquer le filtre aux étudiants
-            $students->whereIn('class_id', $validClassIds);
-        }
-
-        // FILTRE 2 : Classe (Appliqué si une année est sélectionnée et qu'une classe est choisie)
+        // Filter by specific class
         if ($request->filled('class_id')) {
             $students->where('class_id', $request->input('class_id'));
         }
 
-        // FILTRE 3 : Recherche (Nom ou Matricule)
+        // Filter by gender
+        if ($request->filled('gender')) {
+            $students->where('gender', $request->input('gender'));
+        }
+
+        // Search by name or matricule
         if ($request->filled('search')) {
-            $searchTerm = '%' . $request->input('search') . '%';
-            // Utiliser une closure pour grouper les conditions OR et ne pas polluer les WHERE précédents
+            $searchTerm = '%'.$request->input('search').'%';
             $students->where(function ($query) use ($searchTerm) {
-                 $query->where('name', 'like', $searchTerm)
-                       ->orWhere('matricule', 'like', $searchTerm);
+                $query->where('name', 'like', $searchTerm)
+                    ->orWhere('matricule', 'like', $searchTerm);
             });
         }
 
-        // Note: Le bloc `if (isset($currentClasse))` est inutile ici, car il est géré par la route spécifique
-        // si elle existe (e.g., classes/{id}/students). On le retire pour simplifier.
-
-        // --- 3. Exécution et Rendu de la Vue ---
-
-        // Paginer les résultats (maintenir les paramètres de la requête dans les liens)
         $students = $students->paginate(10)->withQueryString();
 
         return view('students.index', [
             'students' => $students,
-            'allYears' => $allYears,           // Pour le sélecteur d'année (ID => Année/Label)
-            'classesByYear' => $classesByYear, // Pour le sélecteur de classe (ID => Label)
+            'allClasses' => $allClasses,
         ]);
     }
+
     /**
-     * Affiche le formulaire de création d'un nouvel élève.
+     * Show the form for creating a new student.
+     *
+     * @return View The student creation form view
      */
-    public function create()
+    public function create(Request $request): View
     {
-        // Déterminer l'année scolaire actuelle
-        $currentYearStr = date('Y') . '-' . (date('Y') + 1);
-        Log::info('Current school year: ' . $currentYearStr);
+        // Get all school years for the dropdown
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
-        // Récupérer l'année scolaire correspondante
-        $currentYear = SchoolYear::where('year', $currentYearStr)->first();
+        // Get classes based on selected school year
+        $selectedYearId = $request->input('school_year_id') ?? old('school_year_id');
+        $classes = collect();
 
-        Log::info('Current school year object: ' . $currentYear);
-                // Récupérer les classes liées à cette année
-        if ($currentYear) {
-            $classes = Classe::where('year_id', $currentYear->id)->get();
-            Log::info('classes: ' . $classes);
-        } else {
-            $classes = collect(); // collection vide si l'année n'existe pas encore
+        if ($selectedYearId) {
+            $classes = Classe::where('year_id', $selectedYearId)->pluck('label', 'id');
         }
 
-        // 2. Passer les classes à la vue
-        return view('students.create', compact('classes'));
+        return view('students.create', compact('classes', 'schoolYears'));
     }
 
     /**
-     * Enregistre un nouvel élève dans la base de données.
+     * Store a newly created student in storage.
+     *
+     * @param  StoreStudentRequest  $request  The validated request containing student data
+     * @return RedirectResponse Redirect to students list with success/error message
      */
-    public function store(Request $request)
+    public function store(StoreStudentRequest $request): RedirectResponse
     {
-        // 1. Validation des données
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'matricule' => 'required|string|max:10|unique:students',
-            'date_of_birth' => 'required|date',
-            'gender' => 'required|in:male,female',
-            'class_id' => 'required|exists:classes,id',
-            // La photo est optionnelle, mais doit être une image si présente
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        try {
+            $validatedData = $request->validated();
 
-        $photoPath = null;
+            // Handle photo upload
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('photos/students', 'public');
+                $validatedData['photo'] = $photoPath;
+            }
 
-        // 2. Traitement de l'upload de la photo
-        if ($request->hasFile('photo')) {
-            // Stocke la photo dans le dossier 'public/photos/students'
-            $photoPath = $request->file('photo')->store('photos/students', 'public');
-            $validatedData['photo'] = $photoPath;
+            $student = Student::create($validatedData);
+            Log::info('Nouvel étudiant créé: '.$student->name.' (ID: '.$student->id.')');
+
+            return redirect()->route('students.index')
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la création de l\'étudiant: '.$e->getMessage());
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la création de l\'étudiant. Veuillez réessayer.');
         }
-
-        // 3. Création de l'enregistrement
-        $student = Student::create($validatedData);
-
-        // 4. Redirection avec message de succès
-        return redirect()->route('classes.students', $student->class_id)
-                         ->with('success', 'L\'élève a été ajouté avec succès.');
     }
 
     /**
-     * Affiche les détails de l'élève spécifié.
+     * Display the specified student.
+     *
+     * @param  Student  $student  The student to display
+     * @return View The student details view
      */
-    public function show(Student $student)
+    public function show(Student $student): View
     {
-        // La variable $student est injectée par l'ID de la route
-        // On s'assure que la relation 'class' est chargée
         $student->load('classe');
 
         return view('students.show', compact('student'));
     }
 
     /**
-     * Affiche le formulaire pour modifier l'élève spécifié.
+     * Show the form for editing the specified student.
+     *
+     * @param  Student  $student  The student to edit
+     * @return View The student edit form view
      */
-    public function edit(Student $student)
+    public function edit(Student $student, Request $request): View
     {
-        // Récupère la liste de toutes les classes pour le menu déroulant
-        $classes = Classe::pluck('label', 'id');
+        // Get all school years for the dropdown
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
-        // Retourne la vue 'students.edit'
-        return view('students.edit', compact('student', 'classes'));
+        // Get classes based on selected school year or student's current year
+        $selectedYearId = $request->input('school_year_id') ?? old('school_year_id') ?? $student->school_year_id;
+        $classes = collect();
+
+        if ($selectedYearId) {
+            $classes = Classe::where('year_id', $selectedYearId)->pluck('label', 'id');
+        }
+
+        return view('students.edit', compact('student', 'classes', 'schoolYears'));
     }
 
     /**
-     * Met à jour l'élève spécifié dans la base de données.
+     * Update the specified student in storage.
+     *
+     * @param  UpdateStudentRequest  $request  The validated request containing updated student data
+     * @param  Student  $student  The student to update
+     * @return RedirectResponse Redirect to students list with success/error message
      */
-    public function update(Request $request, Student $student)
+    public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
-        // 1. Validation des données
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'matricule' => 'required|string|max:10|unique:students,matricule,' . $student->id,
-            'date_of_birth' => 'required|date',
-            'gender' => 'required|in:male,female',
-            'class_id' => 'required|exists:classes,id',
-            // La photo peut être mise à jour ou non (règle 'sometimes')
-            'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        try {
+            $validatedData = $request->validated();
 
-        // 2. Traitement de la nouvelle photo
-        if ($request->hasFile('photo')) {
-            // Supprimer l'ancienne photo si elle existe
+            // Handle photo update
+            if ($request->hasFile('photo')) {
+                // Delete old photo if exists
+                if ($student->photo) {
+                    Storage::disk('public')->delete($student->photo);
+                }
+                // Store new photo
+                $photoPath = $request->file('photo')->store('photos/students', 'public');
+                $validatedData['photo'] = $photoPath;
+            }
+
+            $student->update($validatedData);
+            Log::info('Étudiant modifié: '.$student->name.' (ID: '.$student->id.')');
+
+            return redirect()->route('students.index')
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la mise à jour de l\'étudiant: '.$e->getMessage());
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la mise à jour de l\'étudiant. Veuillez réessayer.');
+        }
+    }
+
+    /**
+     * Remove the specified student from storage.
+     *
+     * @param  Student  $student  The student to delete
+     * @return RedirectResponse Redirect to students list with success/error message
+     */
+    public function destroy(Student $student): RedirectResponse
+    {
+        try {
+            // Delete associated photo if exists
             if ($student->photo) {
                 Storage::disk('public')->delete($student->photo);
             }
-            // Stocker la nouvelle photo
-            $photoPath = $request->file('photo')->store('photos/students', 'public');
-            $validatedData['photo'] = $photoPath;
+
+            $studentName = $student->name;
+            $studentId = $student->id;
+            $student->delete();
+            Log::info('Étudiant supprimé: '.$studentName.' (ID: '.$studentId.')');
+
+            return redirect()->route('students.index')
+                ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la suppression de l\'étudiant: '.$e->getMessage());
+
+            return redirect()->route('students.index')
+                ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
         }
-
-        // 3. Mise à jour de l'enregistrement
-        $student->update($validatedData);
-
-        // 4. Redirection avec message de succès
-        return redirect()->route('students.index')
-                         ->with('success', 'La fiche élève a été mise à jour.');
     }
 
     /**
-     * Supprime l'élève spécifié de la base de données.
+     * Get classes by school year for AJAX requests.
+     *
+     * @param  int  $yearId  The school year ID
+     * @return JsonResponse JSON response with classes data
      */
-    public function destroy(Student $student)
+    public function getClassesByYear(int $yearId): JsonResponse
     {
-        // 1. Suppression de la photo associée
-        if ($student->photo) {
-            Storage::disk('public')->delete($student->photo);
+        try {
+            $classes = Classe::where('year_id', $yearId)
+                ->orderBy('label')
+                ->pluck('label', 'id');
+
+            return response()->json([
+                'success' => true,
+                'classes' => $classes,
+                'count' => $classes->count(),
+            ]);
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la récupération des classes par année: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des classes',
+                'classes' => [],
+                'count' => 0,
+            ], 500);
         }
-
-        // 2. Suppression de l'enregistrement
-        $student->delete();
-
-        // 3. Redirection avec message de succès
-        return redirect()->route('students.index')
-                         ->with('success', 'L\'élève a été supprimé avec succès.');
     }
 }
