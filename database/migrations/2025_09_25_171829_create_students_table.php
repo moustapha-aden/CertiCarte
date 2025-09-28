@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female']);
             $table->string('photo')->nullable()->default('https://cdn-icons-png.flaticon.com/512/5850/5850276.png');
+            $table->string('pays')->nullable();
             $table->string('situation')->nullable();
             $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
             $table->timestamps();

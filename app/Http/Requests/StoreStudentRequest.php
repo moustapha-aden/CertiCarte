@@ -29,6 +29,8 @@ class StoreStudentRequest extends FormRequest
             'matricule' => 'required|string|max:10|unique:students',
             'date_of_birth' => 'required|date|before:today',
             'gender' => 'required|in:male,female',
+            'pays' => 'nullable|string|max:255',
+            'situation' => 'nullable|string|max:255',
             'class_id' => 'required|exists:classes,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
@@ -50,6 +52,8 @@ class StoreStudentRequest extends FormRequest
             'date_of_birth.required' => 'La date de naissance est obligatoire.',
             'date_of_birth.date' => 'La date de naissance doit être une date valide.',
             'date_of_birth.before' => 'La date de naissance doit être antérieure à aujourd\'hui.',
+            'pays.max' => 'Le pays ne peut pas dépasser 255 caractères.',
+            'situation.max' => 'La situation ne peut pas dépasser 255 caractères.',
             'gender.required' => 'Le genre est obligatoire.',
             'gender.in' => 'Le genre doit être masculin ou féminin.',
             'class_id.required' => 'La classe est obligatoire.',
