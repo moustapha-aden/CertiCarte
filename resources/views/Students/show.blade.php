@@ -108,6 +108,23 @@
                 <p class="text-sm text-gray-600 mt-1">{{ \Carbon\Carbon::parse($student->date_of_birth)->age }} ans</p>
             </div>
 
+            {{-- pays --}}
+            <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-green-700 uppercase tracking-wide">Pays de naissance</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">
+                    {{ $student->pays ?? 'N/A' }}</p>
+            </div>
+
+
             {{-- Gender --}}
             <div class="p-6 bg-pink-50 rounded-xl border border-pink-200 hover:shadow-md transition-shadow">
                 <div class="flex items-center space-x-3 mb-3">
@@ -134,7 +151,7 @@
                     </div>
                     <h3 class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Année scolaire</h3>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ $student->schoolYear->year ?? 'N/A' }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->classe->schoolYear->year ?? 'N/A' }}</p>
             </div>
         </div>
 
