@@ -25,19 +25,24 @@ class ClasseController extends Controller
      */
     public function index(Request $request): View
     {
+        // Get all school years for the filter dropdown
         $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        $selectedYearId = $request->get('year_id', $schoolYears->first()?->id);
 
+        // Build the classes query
         $query = Classe::with(['schoolYear'])
             ->withCount('students');
 
-        if ($selectedYearId) {
-            $query->where('year_id', $selectedYearId);
+        // Filter by school year
+        if ($request->filled('year_id')) {
+            $query->where('year_id', $request->input('year_id'));
         }
 
-        $classes = $query->paginate(12);
+        $classes = $query->paginate(12)->withQueryString();
 
-        return view('classes.index', compact('classes', 'schoolYears', 'selectedYearId'));
+        return view('classes.index', [
+            'classes' => $classes,
+            'schoolYears' => $schoolYears,
+        ]);
     }
 
     /**
@@ -54,13 +59,35 @@ class ClasseController extends Controller
     }
 
     /**
+     * Display students from a specific class.
+     *
+     * @param  Classe  $classe  The class to show students for
+     * @return View The students index view filtered by class
+     */
+    public function students(Classe $classe): View
+    {
+        $students = $classe->students()->with('classe')->paginate(10);
+
+        // Get all classes for the filter dropdown
+        $allClasses = Classe::select('id', 'label')
+            ->orderBy('label')
+            ->pluck('label', 'id');
+
+        return view('students.index', [
+            'students' => $students,
+            'currentClasse' => $classe,
+            'allClasses' => $allClasses,
+        ]);
+    }
+
+    /**
      * Show the form for creating a new class.
      *
      * @return View The class creation form view
      */
     public function create(): View
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
         return view('classes.create', compact('schoolYears'));
     }
@@ -96,7 +123,7 @@ class ClasseController extends Controller
      */
     public function edit(Classe $classe): View
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
         return view('classes.edit', compact('classe', 'schoolYears'));
     }

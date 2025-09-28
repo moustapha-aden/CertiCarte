@@ -8,6 +8,7 @@ use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,32 +28,22 @@ class StudentController extends Controller
      */
     public function index(Request $request): View
     {
-        // Get all school years for the filter dropdown
-        $allYears = SchoolYear::select('id', 'year')
-            ->orderBy('year', 'desc')
-            ->pluck('year', 'id');
-
-        $selectedYearId = $request->input('year');
-        $classesByYear = collect();
-
-        // Get classes for the selected year
-        if ($selectedYearId) {
-            $classesByYear = Classe::where('year_id', $selectedYearId)
-                ->pluck('label', 'id');
-        }
+        // Get all classes for the filter dropdown
+        $allClasses = Classe::select('id', 'label')
+            ->orderBy('label')
+            ->pluck('label', 'id');
 
         // Build the students query
         $students = Student::with('classe');
 
-        // Filter by school year
-        if ($selectedYearId) {
-            $validClassIds = Classe::where('year_id', $selectedYearId)->pluck('id');
-            $students->whereIn('class_id', $validClassIds);
-        }
-
         // Filter by specific class
         if ($request->filled('class_id')) {
             $students->where('class_id', $request->input('class_id'));
+        }
+
+        // Filter by gender
+        if ($request->filled('gender')) {
+            $students->where('gender', $request->input('gender'));
         }
 
         // Search by name or matricule
@@ -68,8 +59,7 @@ class StudentController extends Controller
 
         return view('students.index', [
             'students' => $students,
-            'allYears' => $allYears,
-            'classesByYear' => $classesByYear,
+            'allClasses' => $allClasses,
         ]);
     }
 
@@ -78,19 +68,20 @@ class StudentController extends Controller
      *
      * @return View The student creation form view
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        // Get classes for the current school year
-        $currentYearStr = date('Y').'-'.(date('Y') + 1);
-        $currentYear = SchoolYear::where('year', $currentYearStr)->first();
+        // Get all school years for the dropdown
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
-        if ($currentYear) {
-            $classes = Classe::where('year_id', $currentYear->id)->get();
-        } else {
-            $classes = collect();
+        // Get classes based on selected school year
+        $selectedYearId = $request->input('school_year_id') ?? old('school_year_id');
+        $classes = collect();
+
+        if ($selectedYearId) {
+            $classes = Classe::where('year_id', $selectedYearId)->pluck('label', 'id');
         }
 
-        return view('students.create', compact('classes'));
+        return view('students.create', compact('classes', 'schoolYears'));
     }
 
     /**
@@ -143,11 +134,20 @@ class StudentController extends Controller
      * @param  Student  $student  The student to edit
      * @return View The student edit form view
      */
-    public function edit(Student $student): View
+    public function edit(Student $student, Request $request): View
     {
-        $classes = Classe::pluck('label', 'id');
+        // Get all school years for the dropdown
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
-        return view('students.edit', compact('student', 'classes'));
+        // Get classes based on selected school year or student's current year
+        $selectedYearId = $request->input('school_year_id') ?? old('school_year_id') ?? $student->school_year_id;
+        $classes = collect();
+
+        if ($selectedYearId) {
+            $classes = Classe::where('year_id', $selectedYearId)->pluck('label', 'id');
+        }
+
+        return view('students.edit', compact('student', 'classes', 'schoolYears'));
     }
 
     /**
@@ -213,6 +213,36 @@ class StudentController extends Controller
 
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
+        }
+    }
+
+    /**
+     * Get classes by school year for AJAX requests.
+     *
+     * @param  int  $yearId  The school year ID
+     * @return JsonResponse JSON response with classes data
+     */
+    public function getClassesByYear(int $yearId): JsonResponse
+    {
+        try {
+            $classes = Classe::where('year_id', $yearId)
+                ->orderBy('label')
+                ->pluck('label', 'id');
+
+            return response()->json([
+                'success' => true,
+                'classes' => $classes,
+                'count' => $classes->count(),
+            ]);
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la récupération des classes par année: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des classes',
+                'classes' => [],
+                'count' => 0,
+            ], 500);
         }
     }
 }

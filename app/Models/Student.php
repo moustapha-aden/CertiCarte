@@ -23,6 +23,7 @@ class Student extends Model
         'photo',
         'situation',
         'class_id',
+        'school_year_id',
     ];
 
     /**
@@ -40,6 +41,14 @@ class Student extends Model
     public function classe()
     {
         return $this->belongsTo(Classe::class, 'class_id');
+    }
+
+    /**
+     * Get the school year that the student belongs to.
+     */
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'school_year_id');
     }
 
     /**

@@ -169,4 +169,20 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\View\View
      */
     Route::get('/dashboard/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');
+
+    /**
+     * API route to fetch classes by school year
+     * Used for dynamic dropdown population via AJAX
+     *
+     * @route GET /api/classes/by-year/{year_id}
+     *
+     * @name api.classes.by-year
+     *
+     * @param  int  $yearId  The school year ID
+     *
+     * @uses StudentController@getClassesByYear
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
 });

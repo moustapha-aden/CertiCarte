@@ -1,327 +1,207 @@
-<!DOCTYPE html>
-<html lang="fr">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails de l'Étudiant - {{ $student->name }} - Lycée de Balbala</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@section('title', 'Détails de l\'Étudiant - ' . $student->name)
+@section('page-subtitle', 'Détails de l\'Étudiant')
 
-<body class="bg-gray-50 min-h-screen">
+@section('content')
+    <x-breadcrumb :items="[['label' => 'Étudiants', 'url' => route('students.index')], ['label' => $student->name]]" />
 
-    {{-- Header avec profil et déconnexion intégrés --}}
-    <header class="bg-white sticky top-0 z-10 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-
-                {{-- Logo et Titre --}}
-                <div class="flex items-center space-x-4">
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-blue-700 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 2.18L18.09 9L12 12.73L5.91 9L12 5.18z" />
-                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-extrabold text-gray-900 tracking-tight">Lycée de Balbala</h1>
-                        <p class="text-xs text-gray-500 font-medium">Détails de l'Étudiant</p>
-                    </div>
-                </div>
-
-                {{-- Navigation et Actions --}}
-                <div class="flex items-center space-x-6">
-                    {{-- Liens de navigation --}}
-                    <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('dashboard') }}"
-                            class="text-sm font-medium text-gray-500 hover:text-indigo-600 transition duration-150">
-                            Dashboard
-                        </a>
-                        <a href="{{ route('classes.index') }}"
-                            class="text-sm font-medium text-gray-500 hover:text-indigo-600 transition duration-150">
-                            Classes
-                        </a>
-                        <a href="{{ route('students.index') }}"
-                            class="text-sm font-medium text-gray-500 hover:text-indigo-600 transition duration-150">
-                            Étudiants
-                        </a>
-                    </div>
-
-                    {{-- Profil et Déconnexion Intégrés --}}
-                    <div class="relative group">
-                        <div
-                            class="flex items-center space-x-3 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors">
-                            <div class="text-right hidden sm:block">
-                                <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name ?? 'Admin' }}</p>
-                                <p class="text-xs text-gray-500">
-                                    {{ Auth::user()->email ?? 'Administrateur' }}
-                                </p>
-                            </div>
-                            <div
-                                class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full flex items-center justify-center ring-2 ring-gray-200 group-hover:ring-indigo-300 transition-all">
-                                <span
-                                    class="text-white text-md font-bold">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </div>
-
-                        {{-- Menu déroulant avec le bouton de déconnexion --}}
-                        <div
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <div class="py-1">
-                                <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                                    <p class="font-semibold">{{ Auth::user()->name ?? 'Admin' }}</p>
-                                    <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'Administrateur' }}</p>
-                                </div>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 hover:text-red-800 transition-colors flex items-center space-x-2">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z" />
-                                        </svg>
-                                        <span>Déconnexion</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="max-w-7xl mx-auto p-8 pt-10 sm:px-6 lg:px-8">
-
-        {{-- Breadcrumbs --}}
-        <nav class="mb-6" aria-label="Breadcrumb">
-            <ol class="flex items-center space-x-2 text-sm">
-                <li>
-                    <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-indigo-600 transition-colors">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
-                            </path>
-                        </svg>
-                    </a>
-                </li>
-                <li>
-                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                </li>
-                <li>
-                    <a href="{{ route('students.index') }}"
-                        class="text-gray-500 hover:text-indigo-600 transition-colors">Étudiants</a>
-                </li>
-                <li>
-                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                </li>
-                <li>
-                    <span class="text-gray-900 font-medium">{{ $student->name }}</span>
-                </li>
-            </ol>
-        </nav>
-
-        {{-- En-tête avec photo et informations principales --}}
-        <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
-            <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
-                {{-- Photo de l'étudiant --}}
-                <div class="flex-shrink-0">
-                    <img src="{{ $student->avatar_url }}" alt="Photo de {{ $student->name }}"
-                        class="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover">
-                </div>
-
-                {{-- Informations principales --}}
-                <div class="flex-grow text-center sm:text-left">
-                    <h1 class="text-4xl font-extrabold mb-2">{{ $student->name }}</h1>
-                    <p class="text-xl text-indigo-100 mb-4">Matricule : {{ $student->matricule ?? 'N/A' }}</p>
-                    <p class="text-lg text-indigo-200">
-                        Classe : {{ $student->classe->label ?? 'Non assignée' }}
-                    </p>
-                </div>
-
-                {{-- Actions --}}
-                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                    <a href="{{ route('students.edit', $student) }}"
-                        class="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-100 transition duration-200 shadow-md flex items-center justify-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                        <span>Modifier</span>
-                    </a>
-                    <a href="{{ route('students.index') }}"
-                        class="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-400 transition duration-200 shadow-md flex items-center justify-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        <span>Retour</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Détails de l'étudiant --}}
-        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-
-            {{-- Titre de la section --}}
-            <div class="mb-8 border-b pb-4">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-3">
-                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    <span>Informations Détaillées</span>
-                </h2>
-            </div>
-
-            {{-- Grille des informations --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {{-- Date de naissance --}}
-                <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-blue-700 uppercase tracking-wide">Date de naissance</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900">
-                        {{ \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') }}</p>
-                    <p class="text-sm text-gray-600 mt-1">Âge :
-                        {{ \Carbon\Carbon::parse($student->date_of_birth)->age }} ans</p>
-                </div>
-
-                {{-- Genre --}}
-                <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Genre</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900 capitalize">
-                        {{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}</p>
-                </div>
-
-                {{-- Classe --}}
-                <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 hover:shadow-md transition-shadow">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Classe</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ $student->classe->label ?? 'Non assignée' }}</p>
-                    @if ($student->classe && $student->classe->schoolYear)
-                        <p class="text-sm text-gray-600 mt-1">Année : {{ $student->classe->schoolYear->year }}</p>
-                    @endif
-                </div>
-
-                {{-- Date d'inscription --}}
-                <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-green-700 uppercase tracking-wide">Inscrit le</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ $student->created_at->format('d/m/Y') }}</p>
-                    <p class="text-sm text-gray-600 mt-1">À {{ $student->created_at->format('H:i') }}</p>
-                </div>
-
-                {{-- ID étudiant --}}
-                <div class="p-6 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">ID Étudiant</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900">#{{ $student->id }}</p>
-                    <p class="text-sm text-gray-600 mt-1">Référence unique</p>
-                </div>
-
-                {{-- Situation --}}
-                <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200 hover:shadow-md transition-shadow">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Situation</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ $student->situation ?? 'Active' }}</p>
-                    <p class="text-sm text-gray-600 mt-1">Statut scolaire</p>
+    {{-- Hero Section --}}
+    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
+            {{-- Student Photo --}}
+            <div class="flex-shrink-0">
+                <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+                    <img src="{{ $student->avatar_url }}" alt="{{ $student->name }}" class="w-full h-full object-cover">
                 </div>
             </div>
 
-            {{-- Actions supplémentaires --}}
-            <div class="mt-8 pt-6 border-t border-gray-200">
-                <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-                    <div class="text-sm text-gray-600">
-                        <p>Dernière mise à jour : {{ $student->updated_at->format('d/m/Y à H:i') }}</p>
-                    </div>
-                    <div class="flex space-x-3">
-                        <a href="{{ route('students.edit', $student) }}"
-                            class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200">
-                            Modifier les informations
-                        </a>
-                        <form method="POST" action="{{ route('students.destroy', $student) }}" class="inline-block"
-                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-200">
-                                Supprimer
-                            </button>
-                        </form>
-                    </div>
-                </div>
+            {{-- Main Info --}}
+            <div class="flex-grow text-center sm:text-left">
+                <h1 class="text-4xl font-extrabold mb-2">{{ $student->name }}</h1>
+                <p class="text-xl text-indigo-100 mb-2">Matricule: {{ $student->matricule ?? 'N/A' }}</p>
+                <p class="text-lg text-indigo-200">
+                    {{ $student->classe->label ?? 'Classe non assignée' }} • {{ $student->schoolYear->year ?? 'N/A' }}
+                </p>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                <x-button href="{{ route('students.edit', $student) }}" variant="outline" size="lg"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                    class="bg-white text-indigo-600 hover:bg-gray-100">
+                    Modifier
+                </x-button>
+                <x-button href="{{ route('students.index') }}" variant="secondary" size="lg"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
+                    Retour
+                </x-button>
             </div>
         </div>
     </div>
-</body>
 
-</html>
+    {{-- Student Details Card --}}
+    <x-card title="Informations Détaillées"
+        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
+        class="mb-8">
+
+        {{-- Information Grid --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{-- Student Name --}}
+            <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-blue-700 uppercase tracking-wide">Nom complet</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->name }}</p>
+            </div>
+
+            {{-- Matricule --}}
+            <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Matricule</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->matricule ?? 'N/A' }}</p>
+            </div>
+
+            {{-- Class --}}
+            <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Classe</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->classe->label ?? 'N/A' }}</p>
+            </div>
+
+            {{-- Birth Date --}}
+            <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-green-700 uppercase tracking-wide">Date de naissance</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">
+                    {{ \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ \Carbon\Carbon::parse($student->date_of_birth)->age }} ans</p>
+            </div>
+
+            {{-- Gender --}}
+            <div class="p-6 bg-pink-50 rounded-xl border border-pink-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-pink-700 uppercase tracking-wide">Genre</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}</p>
+            </div>
+
+            {{-- School Year --}}
+            <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Année scolaire</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->schoolYear->year ?? 'N/A' }}</p>
+            </div>
+        </div>
+
+        {{-- Contact Information --}}
+        @if ($student->email || $student->phone || $student->address || $student->parent_name)
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span>Informations de Contact</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @if ($student->email)
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm font-medium text-gray-500">Email</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $student->email }}</p>
+                        </div>
+                    @endif
+
+                    @if ($student->phone)
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm font-medium text-gray-500">Téléphone</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $student->phone }}</p>
+                        </div>
+                    @endif
+
+                    @if ($student->address)
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm font-medium text-gray-500">Adresse</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $student->address }}</p>
+                        </div>
+                    @endif
+
+                    @if ($student->parent_name)
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm font-medium text-gray-500">Parent/Tuteur</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $student->parent_name }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endif
+
+        {{-- Additional Actions --}}
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                <div class="text-sm text-gray-600">
+                    <p>Dernière mise à jour : {{ $student->updated_at->format('d/m/Y à H:i') }}</p>
+                </div>
+                <div class="flex space-x-3">
+                    <x-button href="{{ route('students.edit', $student) }}" variant="primary">
+                        Modifier l'étudiant
+                    </x-button>
+                    <form method="POST" action="{{ route('students.destroy', $student) }}" class="inline-block"
+                        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')">
+                        @csrf
+                        @method('DELETE')
+                        <x-button type="submit" variant="danger">
+                            Supprimer
+                        </x-button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </x-card>
+@endsection
