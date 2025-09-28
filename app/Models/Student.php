@@ -23,7 +23,7 @@ class Student extends Model
         'photo',
         'situation',
         'class_id',
-        "year",
+        'year',
         'school_year_id',
     ];
 
