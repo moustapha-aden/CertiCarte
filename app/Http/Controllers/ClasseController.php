@@ -43,19 +43,16 @@ class ClasseController extends Controller
     }
 
     /**
-     * Display students for the specified class.
+     * Display the specified class with its students.
      *
-     * @param Classe $classe The class to display students for
-     * @return View The students index view filtered by class
+     * @param Classe $classe The class to display
+     * @return View The class details view with students list
      */
     public function show(Classe $classe): View
     {
         $students = $classe->students()->with('classe')->paginate(10);
 
-        return view('students.index', [
-            'students' => $students,
-            'currentClasse' => $classe
-        ]);
+        return view('classes.show', compact('classe', 'students'));
     }
 
     /**

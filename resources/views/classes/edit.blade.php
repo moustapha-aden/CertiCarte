@@ -134,7 +134,7 @@
                         </svg>
                     </li>
                     <li>
-                        <span class="text-gray-900 font-medium">Modifier la Classe "{{ $classe->label }}"</span>
+                        <span class="text-gray-900 font-medium">{{ $classe->label }}</span>
                     </li>
                 </ol>
             </nav>

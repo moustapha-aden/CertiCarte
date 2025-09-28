@@ -139,7 +139,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/dashboard/classes/{classe}', [ClasseController::class, 'destroy'])->name('classes.destroy');
 
     /**
-     * Show students for a specific classe
+     * Show students for a specific classe (alternative route)
+     * This route provides an alternative way to access the class details view
      * 
      * @route GET /dashboard/classes/{classe}/students
      * @name classes.students

@@ -111,13 +111,17 @@
                 <li>
                     <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-indigo-600 transition-colors">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                            <path
+                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                            </path>
                         </svg>
                     </a>
                 </li>
                 <li>
                     <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"></path>
                     </svg>
                 </li>
                 <li>
@@ -203,6 +207,18 @@
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xl font-extrabold text-indigo-700">{{ $classe->label }}</span>
                             <div class="flex items-center space-x-2">
+                                {{-- Bouton Voir les détails --}}
+                                <a href="{{ route('classes.show', $classe) }}"
+                                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="Voir les détails de la classe">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+
                                 {{-- Bouton Modifier --}}
                                 <a href="{{ route('classes.edit', $classe) }}"
                                     class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
@@ -247,19 +263,22 @@
                             @endif
                         </div>
 
-                        {{-- Bouton pour voir les étudiants --}}
-                        <a href="{{ route('classes.students', $classe->id) }}"
+                        {{-- Bouton pour voir les détails de la classe --}}
+                        <a href="{{ route('classes.show', $classe) }}"
                             class="block w-full text-center px-4 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-lg hover:bg-indigo-100 transition-colors">
-                            Voir les étudiants
+                            Voir les détails
                             <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                             </svg>
                         </a>
                     </div>
                 @empty
-                    <div class="col-span-full p-8 text-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-dashed border-gray-300">
+                    <div
+                        class="col-span-full p-8 text-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-dashed border-gray-300">
                         <div class="max-w-md mx-auto">
                             <svg class="w-16 h-16 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -268,14 +287,14 @@
                                 </path>
                             </svg>
                             <h3 class="text-lg font-semibold text-gray-700 mb-2">
-                                @if($selectedYearId)
+                                @if ($selectedYearId)
                                     Aucune classe trouvée
                                 @else
                                     Aucune classe enregistrée
                                 @endif
                             </h3>
                             <p class="text-sm text-gray-600 mb-6">
-                                @if($selectedYearId)
+                                @if ($selectedYearId)
                                     Il n'y a pas de classes pour l'année scolaire sélectionnée.
                                 @else
                                     Commencez par créer votre première classe.
@@ -284,7 +303,8 @@
                             <a href="{{ route('classes.create') }}"
                                 class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 Créer une nouvelle classe
                             </a>

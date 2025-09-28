@@ -219,7 +219,7 @@
                         <p class="text-xs text-gray-600">Gestion de l'équipe</p>
                     </a>
 
-                    <a href="/dashboard/classes" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                    <a href="{{ route('classes.index') }}" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
                         <svg class="w-8 h-8 text-indigo-600 mb-3 group-hover:text-indigo-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M18 10h-2V7c0-1.66-1.34-3-3-3s-3 1.34-3 3v3H8c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm-5-6c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM7 20v-8h10v8H7z"/>
                         </svg>
