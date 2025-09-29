@@ -23,7 +23,7 @@
 
 <body class="bg-gray-50 min-h-screen">
     {{-- Header Component --}}
-    @include('partials.header')
+    @include('partials._header')
 
     {{-- Main Content Area --}}
     <main class="max-w-7xl mx-auto p-8 pt-10 sm:px-6 lg:px-8">

@@ -141,6 +141,29 @@ Route::middleware('auth')->group(function () {
     Route::put('/dashboard/classes/{classe}', [ClasseController::class, 'update'])->name('classes.update');
     Route::delete('/dashboard/classes/{classe}', [ClasseController::class, 'destroy'])->name('classes.destroy');
 
+    // ========================================================================
+    // USER MANAGEMENT ROUTES
+    // ========================================================================
+
+    /**
+     * User resource routes
+     * Provides full CRUD operations for user management
+     *
+     * Generated routes:
+     * - GET    /dashboard/users           (index)   - List all users
+     * - GET    /dashboard/users/create    (create)  - Show create form
+     * - POST   /dashboard/users           (store)   - Store new user
+     * - GET    /dashboard/users/{user}    (show)    - Show specific user
+     * - GET    /dashboard/users/{user}/edit (edit)    - Show edit form
+     * - PUT    /dashboard/users/{user}    (update)  - Update user
+     * - DELETE /dashboard/users/{user}    (destroy) - Delete user
+     *
+     * @route resource /dashboard/users
+     *
+     * @uses UserController
+     */
+    Route::resource('/dashboard/users', UserController::class);
+
     /**
      * API route to fetch classes by school year
      * Used for dynamic dropdown population via AJAX
@@ -156,27 +179,4 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
-
-    // ========================================================================
-    // USER MANAGEMENT ROUTES
-    // ========================================================================
-
-    /**
-     * User resource routes
-     * Provides full CRUD operations for user management
-     *
-     * Generated routes:
-     * - GET    /users           (index)   - List all users
-     * - GET    /users/create    (create)  - Show create form
-     * - POST   /users           (store)   - Store new user
-     * - GET    /users/{user}    (show)    - Show specific user
-     * - GET    /users/{user}/edit (edit)    - Show edit form
-     * - PUT    /users/{user}    (update)  - Update user
-     * - DELETE /users/{user}    (destroy) - Delete user
-     *
-     * @route resource /users
-     *
-     * @uses UserController
-     */
-    Route::resource('users', UserController::class);
 });
