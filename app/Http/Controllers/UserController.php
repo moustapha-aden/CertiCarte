@@ -158,12 +158,4 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès.');
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    
-    
->>>>>>> 54158b8 (personnel)
-=======
->>>>>>> 9551f7a3e195307ccd0bce2da1043e4e40b1c3b3
 }
