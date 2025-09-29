@@ -52,6 +52,22 @@
 
         {{-- Information Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{-- Class ID --}}
+            <div class="p-6 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">ID Classe</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">#{{ $classe->id }}</p>
+                <p class="text-sm text-gray-600 mt-1">Référence unique</p>
+            </div>
+
             {{-- Class Name --}}
             <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
                 <div class="flex items-center space-x-3 mb-3">
@@ -111,22 +127,6 @@
                 </div>
                 <p class="text-2xl font-bold text-gray-900">{{ $classe->created_at->format('d/m/Y') }}</p>
                 <p class="text-sm text-gray-600 mt-1">À {{ $classe->created_at->format('H:i') }}</p>
-            </div>
-
-            {{-- Class ID --}}
-            <div class="p-6 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">ID Classe</h3>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">#{{ $classe->id }}</p>
-                <p class="text-sm text-gray-600 mt-1">Référence unique</p>
             </div>
 
             {{-- Last Modified --}}

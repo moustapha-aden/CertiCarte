@@ -21,7 +21,8 @@
                 <h1 class="text-4xl font-extrabold mb-2">{{ $student->name }}</h1>
                 <p class="text-xl text-indigo-100 mb-2">Matricule: {{ $student->matricule ?? 'N/A' }}</p>
                 <p class="text-lg text-indigo-200">
-                    {{ $student->classe->label ?? 'Classe non assignée' }} • {{ $student->schoolYear->year ?? 'N/A' }}
+                    {{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }} •
+                    {{ $student->situation === 'NR' ? 'Non Redoublant' : 'Redoublant' }}
                 </p>
             </div>
 
@@ -47,35 +48,6 @@
 
         {{-- Information Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {{-- Student Name --}}
-            <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-blue-700 uppercase tracking-wide">Nom complet</h3>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ $student->name }}</p>
-            </div>
-
-            {{-- Matricule --}}
-            <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Matricule</h3>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ $student->matricule ?? 'N/A' }}</p>
-            </div>
-
             {{-- Class --}}
             <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 hover:shadow-md transition-shadow">
                 <div class="flex items-center space-x-3 mb-3">
@@ -89,6 +61,52 @@
                     <h3 class="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Classe</h3>
                 </div>
                 <p class="text-2xl font-bold text-gray-900">{{ $student->classe->label ?? 'N/A' }}</p>
+            </div>
+
+            {{-- School Year --}}
+            <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Année scolaire</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->classe->schoolYear->year ?? 'N/A' }}</p>
+            </div>
+
+            {{-- Situation --}}
+            <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Situation</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">
+                    {{ $student->situation === 'NR' ? 'Non Redoublant' : 'Redoublant' }}</p>
+            </div>
+
+            {{-- pays --}}
+            <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-green-700 uppercase tracking-wide">Pays de naissance</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">
+                    {{ $student->pays ?? 'N/A' }}</p>
             </div>
 
             {{-- Birth Date --}}
@@ -108,23 +126,6 @@
                 <p class="text-sm text-gray-600 mt-1">{{ \Carbon\Carbon::parse($student->date_of_birth)->age }} ans</p>
             </div>
 
-            {{-- pays --}}
-            <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-green-700 uppercase tracking-wide">Pays de naissance</h3>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">
-                    {{ $student->pays ?? 'N/A' }}</p>
-            </div>
-
-
             {{-- Gender --}}
             <div class="p-6 bg-pink-50 rounded-xl border border-pink-200 hover:shadow-md transition-shadow">
                 <div class="flex items-center space-x-3 mb-3">
@@ -138,20 +139,6 @@
                     <h3 class="text-sm font-semibold text-pink-700 uppercase tracking-wide">Genre</h3>
                 </div>
                 <p class="text-2xl font-bold text-gray-900">{{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}</p>
-            </div>
-
-            {{-- School Year --}}
-            <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Année scolaire</h3>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ $student->classe->schoolYear->year ?? 'N/A' }}</p>
             </div>
         </div>
 
