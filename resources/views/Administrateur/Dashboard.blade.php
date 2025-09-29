@@ -191,6 +191,54 @@
                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
+                    Actions Rapides
+                </h3>
+
+                {{-- Utilisation de liens <a> au lieu de <button> si elles mènent à d'autres pages --}}
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+
+                    <a href="#" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-blue-600 mb-3 group-hover:text-blue-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Rapports</h4>
+                        <p class="text-xs text-gray-600">Générer et consulter</p>
+                    </a>
+
+                    <a href="{{ route('students.create') ?? '#' }}" class="bg-green-50 hover:bg-green-100 border border-green-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                       <svg class="w-8 h-8 text-green-600 mb-3 group-hover:text-green-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Nouvel Élève</h4>
+                        <p class="text-xs text-gray-600">Inscription rapide</p>
+                    </a>
+
+                    <a href="{{ route('users.index') ?? '#' }}" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-yellow-600 mb-3 group-hover:text-yellow-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 6h-2.18c.11-.31.18-.65.18-1a2.996 2.996 0 0 0-5.5-1.65l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Personnel</h4>
+                        <p class="text-xs text-gray-600">Gestion de l'équipe</p>
+                    </a>
+
+                    <a href="/classes" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-indigo-600 mb-3 group-hover:text-indigo-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 10h-2V7c0-1.66-1.34-3-3-3s-3 1.34-3 3v3H8c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm-5-6c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM7 20v-8h10v8H7z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Classes</h4>
+                        <p class="text-xs text-gray-600">Structure des cours</p>
+                    </a>
+
+                    <a href="#" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-gray-600 mb-3 group-hover:text-gray-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.4-1.07-.75-1.68-.98l-.37-2.65c-.06-.32-.34-.56-.67-.56h-4c-.33 0-.6.24-.66.56l-.37 2.65c-.6.23-1.16.58-1.68.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.08.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.31.61.22l2.49-1c.52.4 1.07.75 1.68.98l.37 2.65c.06.32.34.56.67.56h4c.33 0 .6-.24.66-.56l.37-2.65c.6-.23 1.16-.58 1.68-.98l2.49 1c.22.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Configuration</h4>
+                        <p class="text-xs text-gray-600">Paramètres système</p>
+                    </a>
+                </div>
+            </div>
+        </div>
                 </div>
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-900">Nouvelle classe créée</p>
