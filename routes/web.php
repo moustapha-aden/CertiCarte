@@ -32,9 +32,8 @@ use Illuminate\Support\Facades\Route;
  * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
  */
 Route::get('/', function () {
-    // Vérifie si l'utilisateur est déjà authentifié
     if (Auth::check()) {
-        return redirect()->route('dashboard'); // redirige vers le tableau de bord
+        return redirect()->route('dashboard');
     }
 
     return view('login');
@@ -65,19 +64,6 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('authentic
  * @return \Illuminate\Http\RedirectResponse
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-/**
- * Password reset request page
- *
- * @route GET /password/request
- *
- * @name password.request
- *
- * @return string
- */
-Route::get('/password/request', function () {
-    return 'Page de demande de réinitialisation du mot de passe.';
-})->name('password.request');
 
 // ============================================================================
 // PROTECTED ROUTES (Authentication Required)
@@ -153,22 +139,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/classes/{classe}/edit', [ClasseController::class, 'edit'])->name('classes.edit');
     Route::put('/dashboard/classes/{classe}', [ClasseController::class, 'update'])->name('classes.update');
     Route::delete('/dashboard/classes/{classe}', [ClasseController::class, 'destroy'])->name('classes.destroy');
-
-    /**
-     * Show students for a specific classe (alternative route)
-     * This route provides an alternative way to access the class details view
-     *
-     * @route GET /dashboard/classes/{classe}/students
-     *
-     * @name classes.students
-     *
-     * @param  \App\Models\Classe  $classe  The classe to show students for
-     *
-     * @uses ClasseController@show
-     *
-     * @return \Illuminate\View\View
-     */
-    Route::get('/dashboard/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');
 
     /**
      * API route to fetch classes by school year
