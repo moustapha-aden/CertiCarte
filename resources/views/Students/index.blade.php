@@ -90,13 +90,19 @@
         @if ($students->count() > 0)
             <x-table :headers="[
                 ['label' => 'Photo'],
-                ['label' => 'Nom & Prénom'],
-                ['label' => 'Matricule'],
+                ['field' => 'name', 'label' => 'Nom & Prénom', 'sortable' => true, 'route' => 'students.index'],
+                ['field' => 'matricule', 'label' => 'Matricule', 'sortable' => true, 'route' => 'students.index'],
                 ['label' => 'Classe'],
-                ['label' => 'Date de naissance'],
-                ['label' => 'Genre'],
+                [
+                    'field' => 'date_of_birth',
+                    'label' => 'Date de naissance',
+                    'sortable' => true,
+                    'route' => 'students.index',
+                ],
+                ['field' => 'gender', 'label' => 'Genre', 'sortable' => true, 'route' => 'students.index'],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]">
+            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()">
+
                 @foreach ($students as $student)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
                         {{-- Photo --}}
@@ -162,10 +168,26 @@
                 @endforeach
             </x-table>
 
-            {{-- Pagination --}}
+            {{-- Enhanced Pagination --}}
             @if ($students->hasPages())
-                <div class="mt-8">
-                    {{ $students->appends(request()->query())->links() }}
+                <div class="mt-8 bg-gray-50 rounded-lg p-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        {{-- Pagination Info --}}
+                        <div class="text-sm text-gray-700">
+                            Affichage de
+                            <span class="font-medium">{{ $students->firstItem() }}</span>
+                            à
+                            <span class="font-medium">{{ $students->lastItem() }}</span>
+                            sur
+                            <span class="font-medium">{{ $students->total() }}</span>
+                            résultats
+                        </div>
+
+                        {{-- Pagination Links --}}
+                        <div class="flex justify-center sm:justify-end">
+                            {{ $students->appends(request()->query())->links() }}
+                        </div>
+                    </div>
                 </div>
             @endif
         @else

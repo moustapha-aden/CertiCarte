@@ -6,10 +6,17 @@
             <thead class="bg-indigo-50">
                 <tr>
                     @foreach ($headers as $header)
-                        <th
-                            class="px-6 py-4 text-left text-xs font-bold text-indigo-700 uppercase tracking-wider {{ $header['class'] ?? '' }}">
-                            {{ $header['label'] ?? $header }}
-                        </th>
+                        @if (isset($header['sortable']) && $header['sortable'])
+                            {{-- Sortable Header --}}
+                            <x-sortable-header :field="$header['field']" :label="$header['label']" :currentSort="$currentSort ?? ''" :currentOrder="$currentOrder ?? 'asc'"
+                                :route="$header['route'] ?? ''" :queryParams="$queryParams ?? []" />
+                        @else
+                            {{-- Regular Header --}}
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider {{ $header['class'] ?? '' }}">
+                                {{ $header['label'] ?? $header }}
+                            </th>
+                        @endif
                     @endforeach
                 </tr>
             </thead>

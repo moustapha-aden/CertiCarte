@@ -37,11 +37,36 @@ class ClasseController extends Controller
             $query->where('year_id', $request->input('year_id'));
         }
 
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        // Validate sort parameters
+        $allowedSortFields = ['label', 'created_at', 'students_count'];
+        $allowedSortOrders = ['asc', 'desc'];
+
+        if (! in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+
+        // Apply sorting
+        if ($sortBy === 'students_count') {
+            $query->orderBy('students_count', $sortOrder);
+        } else {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
         $classes = $query->paginate(12)->withQueryString();
 
         return view('classes.index', [
             'classes' => $classes,
             'schoolYears' => $schoolYears,
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
         ]);
     }
 

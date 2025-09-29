@@ -73,12 +73,23 @@
         {{-- Classes Table Section --}}
         @if ($classes->count() > 0)
             <x-table :headers="[
-                ['label' => 'Nom de la Classe'],
+                ['field' => 'label', 'label' => 'Nom de la Classe', 'sortable' => true, 'route' => 'classes.index'],
                 ['label' => 'Année Scolaire'],
-                ['label' => 'Nombre d\'Élèves'],
-                ['label' => 'Date de Création'],
+                [
+                    'field' => 'students_count',
+                    'label' => 'Nombre d\'Élèves',
+                    'sortable' => true,
+                    'route' => 'classes.index',
+                ],
+                [
+                    'field' => 'created_at',
+                    'label' => 'Date de Création',
+                    'sortable' => true,
+                    'route' => 'classes.index',
+                ],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]">
+            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()">
+
                 @foreach ($classes as $classe)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
                         {{-- Class Name --}}
@@ -144,10 +155,26 @@
                 @endforeach
             </x-table>
 
-            {{-- Pagination --}}
+            {{-- Enhanced Pagination --}}
             @if ($classes->hasPages())
-                <div class="mt-8">
-                    {{ $classes->appends(request()->query())->links() }}
+                <div class="mt-8 bg-gray-50 rounded-lg p-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        {{-- Pagination Info --}}
+                        <div class="text-sm text-gray-700">
+                            Affichage de
+                            <span class="font-medium">{{ $classes->firstItem() }}</span>
+                            à
+                            <span class="font-medium">{{ $classes->lastItem() }}</span>
+                            sur
+                            <span class="font-medium">{{ $classes->total() }}</span>
+                            résultats
+                        </div>
+
+                        {{-- Pagination Links --}}
+                        <div class="flex justify-center sm:justify-end">
+                            {{ $classes->appends(request()->query())->links() }}
+                        </div>
+                    </div>
                 </div>
             @endif
         @else

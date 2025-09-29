@@ -55,11 +55,32 @@ class StudentController extends Controller
             });
         }
 
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        // Validate sort parameters
+        $allowedSortFields = ['name', 'matricule', 'date_of_birth', 'gender', 'created_at'];
+        $allowedSortOrders = ['asc', 'desc'];
+
+        if (! in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+
+        // Apply sorting
+        $students->orderBy($sortBy, $sortOrder);
+
         $students = $students->paginate(10)->withQueryString();
 
         return view('students.index', [
             'students' => $students,
             'allClasses' => $allClasses,
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
         ]);
     }
 
