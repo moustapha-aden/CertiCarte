@@ -26,7 +26,7 @@ class StoreClasseRequest extends FormRequest
     {
         return [
             'label' => ['required', 'string', 'max:255', 'unique:classes,label'],
-            'year_id' => ['required', 'integer', 'exists:school_years,id'],
+            'year' => ['required', 'string', 'regex:/^\d{4}-\d{4}$/', 'max:9'],
         ];
     }
 
@@ -42,9 +42,10 @@ class StoreClasseRequest extends FormRequest
             'label.string' => 'Le nom de la classe doit être une chaîne de caractères.',
             'label.max' => 'Le nom de la classe ne peut pas dépasser 255 caractères.',
             'label.unique' => 'Une classe avec ce nom existe déjà.',
-            'year_id.required' => 'L\'année scolaire est obligatoire.',
-            'year_id.integer' => 'L\'année scolaire doit être un nombre entier.',
-            'year_id.exists' => 'L\'année scolaire sélectionnée n\'existe pas.',
+            'year.required' => 'L\'année scolaire est obligatoire.',
+            'year.string' => 'L\'année scolaire doit être une chaîne de caractères.',
+            'year.regex' => 'L\'année scolaire doit être au format YYYY-YYYY (ex: 2024-2025).',
+            'year.max' => 'L\'année scolaire ne peut pas dépasser 9 caractères.',
         ];
     }
 }

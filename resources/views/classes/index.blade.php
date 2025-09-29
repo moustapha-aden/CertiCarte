@@ -19,12 +19,13 @@
                 </svg>
                 <h1 class="text-2xl font-bold text-gray-800">Catalogue des Classes</h1>
             </div>
-            
+
             {{-- School Year Filter and Add Button --}}
             <div class="flex flex-col sm:flex-row sm:items-center gap-3">
                 {{-- School Year Filter --}}
                 <form method="GET" action="{{ route('classes.index') }}" class="flex items-center space-x-2">
-                    <label for="year_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Année scolaire:</label>
+                    <label for="year_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Année
+                        scolaire:</label>
                     <select name="year_id" id="year_id" onchange="this.form.submit()"
                         class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
                         <option value="">Toutes les années</option>
@@ -37,7 +38,7 @@
                         @endif
                     </select>
                 </form>
-                
+
                 {{-- Add Class Button --}}
                 <x-button href="{{ route('classes.create') }}" variant="primary" size="md"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
@@ -57,8 +58,10 @@
             <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-indigo-800">{{ $selectedYear->year ?? 'Année sélectionnée' }}</h3>
-                        <p class="text-sm text-indigo-600">{{ $classes->count() }} classe(s) • {{ $totalStudents }} élève(s)</p>
+                        <h3 class="text-lg font-semibold text-indigo-800">{{ $selectedYear->year ?? 'Année sélectionnée' }}
+                        </h3>
+                        <p class="text-sm text-indigo-600">{{ $classes->count() }} classe(s) • {{ $totalStudents }} élève(s)
+                        </p>
                     </div>
                     <svg class="w-8 h-8 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />

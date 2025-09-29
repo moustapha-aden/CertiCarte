@@ -33,7 +33,7 @@ class LoginController extends Controller
                     return redirect()->intended('/dashboard');
                 default:
                     // Redirection par défaut si le rôle n'est pas reconnu
-                    return redirect()->intended('/home');
+                    return redirect()->intended('/dashboard');
             }
         }
 

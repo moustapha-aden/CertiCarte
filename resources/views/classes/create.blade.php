@@ -26,24 +26,12 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {{-- Class Name --}}
-                    <x-input 
-                        name="label" 
-                        label="Nom de la classe" 
-                        placeholder="Ex: 1ère A, Terminale C, Seconde B" 
-                        :value="old('label')" 
-                        required 
-                    />
-                    
+                    <x-input name="label" label="Nom de la classe" placeholder="Ex: 1ère A, Terminale C, Seconde B"
+                        :value="old('label')" required />
+
                     {{-- School Year --}}
-                    <x-input 
-                        name="year_id" 
-                        type="select" 
-                        label="Année scolaire" 
-                        :options="$schoolYears" 
-                        :value="old('year_id')" 
-                        placeholder="Sélectionner une année scolaire"
-                        required 
-                    />
+                    <x-input name="year" label="Année scolaire" placeholder="Ex: 2024-2025, 2025-2026" :value="old('year')"
+                        required />
                 </div>
             </div>
 
@@ -66,9 +54,11 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                         <div>
-                            <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour le nom de la classe</h4>
+                            <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la création de classe</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• Utilisez des formats cohérents (ex: "1ère A", "Terminale C")</li>
+                                <li>• <strong>Nom de classe:</strong> Utilisez des formats cohérents (ex:"2nde A" "1ère B2",
+                                    "Tle C3")</li>
+                                <li>• <strong>Année scolaire:</strong> Format recommandé "2024-2025" ou "2025-2026"</li>
                                 <li>• Évitez les caractères spéciaux et les espaces multiples</li>
                                 <li>• Le nom doit être unique pour chaque année scolaire</li>
                             </ul>

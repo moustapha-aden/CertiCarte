@@ -59,37 +59,13 @@ class ClasseController extends Controller
     }
 
     /**
-     * Display students from a specific class.
-     *
-     * @param  Classe  $classe  The class to show students for
-     * @return View The students index view filtered by class
-     */
-    public function students(Classe $classe): View
-    {
-        $students = $classe->students()->with('classe')->paginate(10);
-
-        // Get all classes for the filter dropdown
-        $allClasses = Classe::select('id', 'label')
-            ->orderBy('label')
-            ->pluck('label', 'id');
-
-        return view('students.index', [
-            'students' => $students,
-            'currentClasse' => $classe,
-            'allClasses' => $allClasses,
-        ]);
-    }
-
-    /**
      * Show the form for creating a new class.
      *
      * @return View The class creation form view
      */
     public function create(): View
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
-
-        return view('classes.create', compact('schoolYears'));
+        return view('classes.create');
     }
 
     /**
@@ -101,11 +77,24 @@ class ClasseController extends Controller
     public function store(StoreClasseRequest $request): RedirectResponse
     {
         try {
-            $classe = Classe::create($request->validated());
-            Log::info('Nouvelle classe créée: '.$classe->label.' (ID: '.$classe->id.')');
+            $validatedData = $request->validated();
+
+            // Handle school year: create or find existing
+            $schoolYear = SchoolYear::firstOrCreate(
+                ['year' => $validatedData['year']],
+                ['year' => $validatedData['year']]
+            );
+
+            // Create the class with the school year ID
+            $classe = Classe::create([
+                'label' => $validatedData['label'],
+                'year_id' => $schoolYear->id,
+            ]);
+
+            Log::info('Nouvelle classe créée: '.$classe->label.' (ID: '.$classe->id.') pour l\'année '.$schoolYear->year);
 
             return redirect()->route('classes.index')
-                ->with('success', 'La classe "'.$classe->label.'" a été créée avec succès.');
+                ->with('success', 'La classe "'.$classe->label.'" a été créée avec succès pour l\'année '.$schoolYear->year.'.');
         } catch (Exception $e) {
             Log::error('Erreur lors de la création de la classe: '.$e->getMessage());
 
