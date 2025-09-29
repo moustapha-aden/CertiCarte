@@ -17,20 +17,20 @@ class ClasseFactory extends Factory
     public function definition(): array
     {
         $classes = [
-            'Terminale A',
-            'Terminale B',
-            'Terminale C',
-            'Première A',
-            'Première B',
-            'Première C',
-            'Seconde A',
-            'Seconde B',
-            'Seconde C',
+            'Tle S1',
+            'Tle ES2',
+            'Tle SG3',
+            '1ère S4',
+            '1ère ES5',
+            '1ère SG6',
+            '2nde 7',
+            '2nde 8',
+            '2nde 9',
         ];
 
         return [
             'label' => fake()->unique()->randomElement($classes),
-            'year_id' => fake()->numberBetween(1, 3), // Assuming you have 3 school years created in the seeder
+            'year_id' => fake()->numberBetween(1, 3),
         ];
     }
 }

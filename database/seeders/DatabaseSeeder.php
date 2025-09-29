@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create specific admin and secretary users
         User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',

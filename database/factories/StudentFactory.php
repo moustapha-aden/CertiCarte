@@ -22,7 +22,7 @@ class StudentFactory extends Factory
             'matricule' => strtoupper(fake()->lexify('??')).fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
             'gender' => fake()->randomElement(['male', 'female']),
-            'photo' => null, // Leave null so the model's accessor handles avatar generation
+            'photo' => null,
             'class_id' => fake()->numberBetween(1, 9),
         ];
     }
