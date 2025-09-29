@@ -22,10 +22,6 @@
 
             {{-- Navigation Links (Centered) --}}
             <nav class="hidden md:flex items-center space-x-6">
-                <a href="{{ route('dashboard') }}"
-                    class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('dashboard') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
-                    Dashboard
-                </a>
                 <a href="{{ route('classes.index') }}"
                     class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('classes.*') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
                     Classes
@@ -33,6 +29,10 @@
                 <a href="{{ route('students.index') }}"
                     class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('students.*') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
                     Étudiants
+                </a>
+                <a href="{{ route('users.index') }}"
+                    class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('users.*') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
+                    Utilisateurs
                 </a>
             </nav>
 
@@ -91,10 +91,6 @@
         {{-- Mobile Menu --}}
         <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 py-4">
             <div class="space-y-2">
-                <a href="{{ route('dashboard') }}"
-                    class="block px-4 py-3 text-base font-semibold text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('dashboard') ? 'text-indigo-600 bg-indigo-50' : '' }}">
-                    Dashboard
-                </a>
                 <a href="{{ route('classes.index') }}"
                     class="block px-4 py-3 text-base font-semibold text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('classes.*') ? 'text-indigo-600 bg-indigo-50' : '' }}">
                     Classes
@@ -102,6 +98,10 @@
                 <a href="{{ route('students.index') }}"
                     class="block px-4 py-3 text-base font-semibold text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('students.*') ? 'text-indigo-600 bg-indigo-50' : '' }}">
                     Étudiants
+                </a>
+                <a href="{{ route('users.index') }}"
+                    class="block px-4 py-3 text-base font-semibold text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('users.*') ? 'text-indigo-600 bg-indigo-50' : '' }}">
+                    Utilisateurs
                 </a>
 
                 {{-- Mobile Action Button --}}

@@ -21,6 +21,6 @@ class DashboardController extends Controller
         $evolution_eleves = 5.2; // Remplacer par une logique réelle si disponible
         $taux_reussite = 94.2;   // Remplacer par une logique réelle si disponible
 
-        return view('Administrateur.Dashboard', compact('eleves_inscrits', 'classes_actives', 'evolution_eleves', 'taux_reussite'));
+        return view('dashboard', compact('eleves_inscrits', 'classes_actives', 'evolution_eleves', 'taux_reussite'));
     }
 }
