@@ -100,35 +100,18 @@
             </div>
         </div>
 
-        {{-- Cartes de Statistiques --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+    {{-- Quick Actions Card --}}
+    <x-card title="Actions Rapides"
+            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>'
+            class="mb-8">
 
-            {{-- Carte 1: Élèves Inscrits (Corrigée de la duplication) --}}
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-indigo-500 uppercase tracking-widest">Élèves Inscrits</p>
-                        {{-- Utilise la variable $eleves_inscrits --}}
-                        <p class="text-4xl font-extrabold text-gray-900 mt-2">{{ number_format($eleves_inscrits ?? 1247, 0, ',', ' ') }}</p>
-                        <div class="flex items-center mt-3">
-                            {{-- Utilise la variable $evolution_eleves --}}
-                            @if (($evolution_eleves ?? 5.2) >= 0)
-                                <svg class="w-5 h-5 text-green-500 mr-1" fill="currentColor" viewBox="0 0 24 24" style="transform: rotate(180deg);">
-                                    <path d="M7 14l5-5 5 5z"/>
-                                </svg>
-                                <span class="text-green-600 text-sm font-bold">+{{ number_format($evolution_eleves ?? 5.2, 1) }}%</span>
-                            @else
-                                <svg class="w-5 h-5 text-red-500 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M7 14l5-5 5 5z"/>
-                                </svg>
-                                <span class="text-red-600 text-sm font-bold">{{ number_format($evolution_eleves ?? -2.1, 1) }}%</span>
-                            @endif
-                            <span class="text-gray-500 text-xs ml-2">vs l'an dernier</span>
-                        </div>
-                    </div>
-                    <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center shadow-inner">
-                        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zM4 18v-4h3v-2c0-1.1.9-2 2-2h2V8c0-1.1.9-2 2-2s2 .9 2 2v2h2c1.1 0 2 .9 2 2v2h3v4H4z"/>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{-- Manage Classes --}}
+            <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
                     </div>
                 </div>
@@ -179,15 +162,18 @@
                 </div>
             </div>
         </div>
+    </x-card>
 
-        <hr class="my-8 border-gray-200">
+    {{-- Recent Activity Card --}}
+    <x-card title="Activité Récente"
+            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+            class="mb-8">
 
-        {{-- Section Actions Rapides --}}
-        <div class="grid grid-cols-1 gap-8 mb-10">
-            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-                <h3 class="text-xl font-bold text-gray-900 mb-6 border-b pb-3 flex items-center">
-                    <svg class="w-6 h-6 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+        <div class="space-y-4">
+            <div class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
                     Actions Rapides
                 </h3>
@@ -296,32 +282,59 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </main>
 
-    {{-- Footer Amélioré --}}
-    <footer class="bg-white border-t border-gray-200 mt-16">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-                <div class="flex items-center space-x-6">
-                    <p class="text-sm text-gray-500 font-medium">© {{ date('Y') }} Lycée de Balbala</p>
-                    <div class="flex space-x-1 items-center">
-                        {{-- Référence subtile aux couleurs nationales (Djibouti) --}}
-                        <div class="w-2 h-2 bg-green-600 rounded-full"></div>
-                        <div class="w-2 h-2 bg-white border border-gray-300 rounded-full"></div>
-                        <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
-                    </div>
+                    <a href="#" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-blue-600 mb-3 group-hover:text-blue-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Rapports</h4>
+                        <p class="text-xs text-gray-600">Générer et consulter</p>
+                    </a>
+
+                    <a href="{{ route('students.create') ?? '#' }}" class="bg-green-50 hover:bg-green-100 border border-green-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                       <svg class="w-8 h-8 text-green-600 mb-3 group-hover:text-green-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Nouvel Élève</h4>
+                        <p class="text-xs text-gray-600">Inscription rapide</p>
+                    </a>
+
+                    <a href="#" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-yellow-600 mb-3 group-hover:text-yellow-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 6h-2.18c.11-.31.18-.65.18-1a2.996 2.996 0 0 0-5.5-1.65l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Personnel</h4>
+                        <p class="text-xs text-gray-600">Gestion de l'équipe</p>
+                    </a>
+
+                    <a href="/dashboard/classes" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-indigo-600 mb-3 group-hover:text-indigo-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 10h-2V7c0-1.66-1.34-3-3-3s-3 1.34-3 3v3H8c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm-5-6c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM7 20v-8h10v8H7z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Classes</h4>
+                        <p class="text-xs text-gray-600">Structure des cours</p>
+                    </a>
+
+                    <a href="#" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
+                        <svg class="w-8 h-8 text-gray-600 mb-3 group-hover:text-gray-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.4-1.07-.75-1.68-.98l-.37-2.65c-.06-.32-.34-.56-.67-.56h-4c-.33 0-.6.24-.66.56l-.37 2.65c-.6.23-1.16.58-1.68.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.08.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.31.61.22l2.49-1c.52.4 1.07.75 1.68.98l.37 2.65c.06.32.34.56.67.56h4c.33 0 .6-.24.66-.56l.37-2.65c.6-.23 1.16-.58 1.68-.98l2.49 1c.22.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                        </svg>
+                        <h4 class="font-bold text-gray-900 mb-1">Configuration</h4>
+                        <p class="text-xs text-gray-600">Paramètres système</p>
+                    </a>
+
+            <div class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
                 </div>
-                <div class="flex items-center space-x-8 text-sm text-gray-500 font-light">
-                    <span>Version <strong class="text-gray-700">2.1.0</strong></span>
-                    <span class="flex items-center space-x-1">
-                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.74 21 3 13.26 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.12.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                        <span>Support: +253 77 <strong class="text-gray-700">12 34 56</strong></span>
-                    </span>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">Classe modifiée</p>
+                    <p class="text-xs text-gray-500">Il y a 1 jour</p>
+
                 </div>
             </div>
         </div>
-    </footer>
-
-</body>
-</html>
+    </x-card>
+@endsection

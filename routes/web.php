@@ -8,9 +8,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// ============================================================================
+//                     ======
 // PUBLIC ROUTES (No Authentication Required)
-// ============================================================================
+//                     ======
 
 /**
  * Home page route - redirects authenticated users to dashboard
@@ -32,15 +32,94 @@ Route::get('/', function () {
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Protected Routes
+
+// Routes protégées par l'authentification
+Route::middleware('auth')->group(function () {
+
+    // Tableau de bord dynamique
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Gestion des étudiants
+    Route::resource('/dashboard/students', StudentController::class);
+    Route::resource('/dashboard/classes', ClasseController::class);
+    // Ajout de la route manquante pour afficher les élèves d'une classe spécifique
+    Route::get('/dashboard/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');
+
+    // NOUVELLE LIGNE (Ajout de /dashboard/ pour correspondre à votre URL)
+    Route::get('/dashboard/students/{student}/certificate', [StudentController::class, 'generateCertificate'])->name('students.certificate');
+});
+
+// Réinitialisation de mot de passe
+
+/**
+ * Password reset request page
+ *
+ * @route GET /password/request
+ *
+ * @name password.request
+ *
+ * @return string
+ */
+
+Route::get('/password/request', function () {
+    return 'Page de demande de réinitialisation du mot de passe.';
+})->name('password.request');
+
+//                     ======
+// PROTECTED ROUTES (Authentication Required)
+//                     ======
+
+/**
+ * Authenticated routes group
+ * All routes within this group require user authentication
+ */
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Student Management
-    Route::resource('/dashboard/students', StudentController::class);
-    Route::get('/dashboard/students/{student}/certificate', [StudentController::class, 'generateCertificate'])->name('students.certificate');
+    //                     ==
+    // STUDENT MANAGEMENT ROUTES
+    //                     ==
 
-    // Class Management
+    /**
+     * Student resource routes
+     * Provides full CRUD operations for student management
+     *
+     * Generated routes:
+     * - GET    /dashboard/students           (index)   - List all students
+     * - GET    /dashboard/students/create    (create)  - Show create form
+     * - POST   /dashboard/students           (store)   - Store new student
+     * - GET    /dashboard/students/{id}      (show)    - Show specific student
+     * - GET    /dashboard/students/{id}/edit (edit)    - Show edit form
+     * - PUT    /dashboard/students/{id}      (update)  - Update student
+     * - DELETE /dashboard/students/{id}       (destroy) - Delete student
+     *
+     * @route resource /dashboard/students
+     *
+     * @uses StudentController
+     */
+    Route::resource('/dashboard/students', StudentController::class);
+
+    //                     ==
+    // CLASSE MANAGEMENT ROUTES
+    //                     ==
+
+    /**
+     * Classe resource routes
+     * Provides full CRUD operations for classe management
+     *
+     * Generated routes:
+     * - GET    /dashboard/classes           (index)   - List all classes
+     * - GET    /dashboard/classes/create    (create)  - Show create form
+     * - POST   /dashboard/classes           (store)   - Store new classe
+     * - GET    /dashboard/classes/{classe}  (show)    - Show specific classe
+     * - GET    /dashboard/classes/{classe}/edit (edit)    - Show edit form
+     * - PUT    /dashboard/classes/{classe}  (update)  - Update classe
+     * - DELETE /dashboard/classes/{classe}  (destroy) - Delete classe
+     *
+     * @route resource /dashboard/classes
+     *
+     * @uses ClasseController
+     */
     Route::get('/dashboard/classes', [ClasseController::class, 'index'])->name('classes.index');
     Route::get('/dashboard/classes/create', [ClasseController::class, 'create'])->name('classes.create');
     Route::post('/dashboard/classes', [ClasseController::class, 'store'])->name('classes.store');
