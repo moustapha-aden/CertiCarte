@@ -24,8 +24,8 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" required />
-                    <x-input name="email" type="email" label="Adresse email" placeholder="exemple@lycee-balbala.dj" required />
+                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name')" required />
+                    <x-input name="email" type="email" label="Adresse email" placeholder="exemple@lycee-balbala.dj" :value="old('email')" required />
                 </div>
             </div>
 
@@ -41,7 +41,7 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="role" type="select" label="Rôle" :options="['admin' => 'Administrateur', 'secretary' => 'Secrétaire']" required />
+                    <x-input name="role" type="select" label="Rôle" :options="['admin' => 'Administrateur', 'secretary' => 'Secrétaire']" :value="old('role')" required />
                     <x-input name="password" type="password" label="Mot de passe" placeholder="Mot de passe sécurisé" required />
                 </div>
 

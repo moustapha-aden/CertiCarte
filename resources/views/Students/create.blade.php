@@ -24,10 +24,10 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" required />
-                    <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" />
-                    <x-input name="date_of_birth" type="date" label="Date de naissance" required />
-                    <x-input name="gender" type="select" label="Genre" :options="['male' => 'Masculin', 'female' => 'Féminin']" required />
+                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name')" required />
+                    <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule')" />
+                    <x-input name="date_of_birth" type="date" label="Date de naissance" :value="old('date_of_birth')" required />
+                    <x-input name="gender" type="select" label="Genre" :options="['male' => 'Masculin', 'female' => 'Féminin']" :value="old('gender')" required />
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
             </div>
 
             {{-- Contact Information Section --}}
-            <div class="border-b border-gray-200 pb-6">
+            {{-- <div class="border-b border-gray-200 pb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
                     <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,7 +70,7 @@
                     <x-input name="address" label="Adresse" placeholder="Adresse complète" />
                     <x-input name="parent_name" label="Nom du parent/tuteur" placeholder="Nom du parent ou tuteur" />
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Photo Section --}}
             <div class="pb-6">

@@ -12,16 +12,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
-/**
- * Controller for managing classes (Classe CRUD operations)
- */
 class ClasseController extends Controller
 {
     /**
-     * Display a listing of classes with optional year filter.
+     * Display a paginated listing of classes with filtering and sorting capabilities.
      *
-     * @param  Request  $request  The HTTP request containing optional year_id filter parameter
-     * @return View The classes index view with paginated classes filtered by school year
+     * Supports filtering by school year and sorting by label, creation date, or student count.
+     * Results are paginated with query string preservation for navigation.
+     * Includes student count for each class.
+     *
+     * @param  Request  $request  The HTTP request containing filter and sort parameters
+     * @return View The classes index view with paginated and filtered class data
+     *
+     * @throws \Exception If database query fails
      */
     public function index(Request $request): View
     {
@@ -71,9 +74,12 @@ class ClasseController extends Controller
     }
 
     /**
-     * Display the specified class with its students.
+     * Display the specified class with its associated students.
      *
-     * @param  Classe  $classe  The class to display
+     * Shows detailed class information along with a paginated list of students
+     * enrolled in the class. Includes class metadata and student relationships.
+     *
+     * @param  Classe  $classe  The class model instance to display
      * @return View The class details view with students list
      */
     public function show(Classe $classe): View
@@ -86,6 +92,9 @@ class ClasseController extends Controller
     /**
      * Show the form for creating a new class.
      *
+     * Displays the class creation form with necessary fields
+     * for class label and school year selection.
+     *
      * @return View The class creation form view
      */
     public function create(): View
@@ -94,10 +103,16 @@ class ClasseController extends Controller
     }
 
     /**
-     * Store a newly created class in storage.
+     * Store a newly created class in the database.
+     *
+     * Validates incoming request data and creates a new class record.
+     * Automatically creates or finds the associated school year.
+     * Logs successful creation and handles exceptions gracefully.
      *
      * @param  StoreClasseRequest  $request  The validated request containing class data
      * @return RedirectResponse Redirect to classes index with success/error message
+     *
+     * @throws \Exception If class creation fails
      */
     public function store(StoreClasseRequest $request): RedirectResponse
     {
@@ -132,8 +147,11 @@ class ClasseController extends Controller
     /**
      * Show the form for editing the specified class.
      *
-     * @param  Classe  $classe  The class to edit
-     * @return View The class edit form view
+     * Loads all available school years for dropdown selection
+     * and pre-populates the form with current class data.
+     *
+     * @param  Classe  $classe  The class model instance to edit
+     * @return View The class edit form view with pre-populated data
      */
     public function edit(Classe $classe): View
     {
@@ -143,11 +161,16 @@ class ClasseController extends Controller
     }
 
     /**
-     * Update the specified class in storage.
+     * Update the specified class in the database.
+     *
+     * Validates incoming request data and updates the class record.
+     * Logs successful updates and handles exceptions gracefully.
      *
      * @param  UpdateClasseRequest  $request  The validated request containing updated class data
-     * @param  Classe  $classe  The class to update
+     * @param  Classe  $classe  The class model instance to update
      * @return RedirectResponse Redirect to classes index with success/error message
+     *
+     * @throws \Exception If class update fails
      */
     public function update(UpdateClasseRequest $request, Classe $classe): RedirectResponse
     {
@@ -167,10 +190,16 @@ class ClasseController extends Controller
     }
 
     /**
-     * Remove the specified class from storage.
+     * Remove the specified class from the database.
      *
-     * @param  Classe  $classe  The class to delete
+     * Permanently deletes the class record after checking for associated students.
+     * Prevents deletion if students are still enrolled in the class.
+     * This action cannot be undone. Logs successful deletion.
+     *
+     * @param  Classe  $classe  The class model instance to delete
      * @return RedirectResponse Redirect to classes index with success/error message
+     *
+     * @throws \Exception If class deletion fails
      */
     public function destroy(Classe $classe): RedirectResponse
     {

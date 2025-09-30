@@ -8,9 +8,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-//                     ======
+// ============================================================================
 // PUBLIC ROUTES (No Authentication Required)
-//                     ======
+// ============================================================================
 
 /**
  * Home page route - redirects authenticated users to dashboard
@@ -29,56 +29,58 @@ Route::get('/', function () {
     return view('login');
 })->name('login');
 
+/**
+ * User authentication route
+ *
+ * @route POST /login
+ *
+ * @name authenticate
+ *
+ * @uses LoginController@authenticate
+ *
+ * @return \Illuminate\Http\RedirectResponse
+ */
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
-// Routes protégées par l'authentification
-Route::middleware('auth')->group(function () {
-
-    // Tableau de bord dynamique
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Gestion des étudiants
-    Route::resource('/dashboard/students', StudentController::class);
-    Route::resource('/dashboard/classes', ClasseController::class);
-    // Ajout de la route manquante pour afficher les élèves d'une classe spécifique
-    Route::get('/dashboard/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');
-
-    // NOUVELLE LIGNE (Ajout de /dashboard/ pour correspondre à votre URL)
-    Route::get('/dashboard/students/{student}/certificate', [StudentController::class, 'generateCertificate'])->name('students.certificate');
-});
-
-// Réinitialisation de mot de passe
 
 /**
- * Password reset request page
+ * User logout route
  *
- * @route GET /password/request
+ * @route POST /logout
  *
- * @name password.request
+ * @name logout
  *
- * @return string
+ * @uses LoginController@logout
+ *
+ * @return \Illuminate\Http\RedirectResponse
  */
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/password/request', function () {
-    return 'Page de demande de réinitialisation du mot de passe.';
-})->name('password.request');
-
-//                     ======
+// ============================================================================
 // PROTECTED ROUTES (Authentication Required)
-//                     ======
+// ============================================================================
 
 /**
  * Authenticated routes group
  * All routes within this group require user authentication
  */
 Route::middleware('auth')->group(function () {
+
+    /**
+     * Dashboard main page
+     *
+     * @route GET /dashboard
+     *
+     * @name dashboard
+     *
+     * @uses DashboardController@index
+     *
+     * @return \Illuminate\View\View
+     */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    //                     ==
+    // ========================================================================
     // STUDENT MANAGEMENT ROUTES
-    //                     ==
+    // ========================================================================
 
     /**
      * Student resource routes
@@ -91,7 +93,7 @@ Route::middleware('auth')->group(function () {
      * - GET    /dashboard/students/{id}      (show)    - Show specific student
      * - GET    /dashboard/students/{id}/edit (edit)    - Show edit form
      * - PUT    /dashboard/students/{id}      (update)  - Update student
-     * - DELETE /dashboard/students/{id}       (destroy) - Delete student
+     * - DELETE /dashboard/students/{id}     (destroy) - Delete student
      *
      * @route resource /dashboard/students
      *
@@ -99,9 +101,22 @@ Route::middleware('auth')->group(function () {
      */
     Route::resource('/dashboard/students', StudentController::class);
 
-    //                     ==
+    /**
+     * Student certificate generation route
+     * Generates a PDF certificate for a specific student
+     *
+     * @route GET /dashboard/students/{student}/certificate
+     *
+     * @name students.certificate
+     *
+     * @param  \App\Models\Student  $student  The student to generate certificate for
+     * @return \Illuminate\Http\Response PDF stream response
+     */
+    Route::get('/dashboard/students/{student}/certificate', [StudentController::class, 'generateCertificate'])->name('students.certificate');
+
+    // ========================================================================
     // CLASSE MANAGEMENT ROUTES
-    //                     ==
+    // ========================================================================
 
     /**
      * Classe resource routes
@@ -151,6 +166,23 @@ Route::middleware('auth')->group(function () {
      */
     Route::resource('/dashboard/users', UserController::class);
 
-    // API Routes
+    // ========================================================================
+    // API ROUTES
+    // ========================================================================
+
+    /**
+     * API route to fetch classes by school year
+     * Used for dynamic dropdown population via AJAX
+     *
+     * @route GET /api/classes/by-year/{year_id}
+     *
+     * @name api.classes.by-year
+     *
+     * @param  int  $yearId  The school year ID
+     *
+     * @uses StudentController@getClassesByYear
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
 });

@@ -38,6 +38,8 @@ class Student extends Model
 
     /**
      * Get the class that the student belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Classe, \App\Models\Student>
      */
     public function classe()
     {
@@ -46,6 +48,8 @@ class Student extends Model
 
     /**
      * Get the school year that the student belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\SchoolYear, \App\Models\Student>
      */
     public function schoolYear()
     {
@@ -54,7 +58,11 @@ class Student extends Model
 
     /**
      * Get the avatar URL for the student.
-     * Returns the uploaded photo if available, otherwise generates an avatar from ui-avatars.com
+     *
+     * Returns the uploaded photo if available, otherwise generates an avatar
+     * from ui-avatars.com using the student's initials and a consistent color.
+     *
+     * @return string The avatar URL (either uploaded photo or generated avatar)
      */
     public function getAvatarUrlAttribute(): string
     {
@@ -72,7 +80,11 @@ class Student extends Model
 
     /**
      * Get a consistent background color for the avatar based on the student's name.
-     * This ensures the same student always gets the same color.
+     *
+     * This ensures the same student always gets the same color by using
+     * the first character of their name to determine the color index.
+     *
+     * @return string The hex color code for the avatar background
      */
     private function getAvatarBackgroundColor(): string
     {

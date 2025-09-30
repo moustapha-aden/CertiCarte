@@ -7,26 +7,29 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
-/**
- * Controller for managing students (Student CRUD operations)
- */
 class StudentController extends Controller
 {
     /**
-     * Display a listing of students with optional filters.
+     * Display a paginated listing of students with filtering and sorting capabilities.
      *
-     * @param  Request  $request  The HTTP request containing optional filter parameters
-     * @return View The students index view with paginated students
+     * Supports filtering by class, gender, and search terms (name or matricule).
+     * Provides sorting by name, matricule, date of birth, gender, or creation date.
+     * Results are paginated with query string preservation for navigation.
+     *
+     * @param  Request  $request  The HTTP request containing filter and sort parameters
+     * @return View The students index view with paginated and filtered student data
+     *
+     * @throws \Exception If database query fails
      */
     public function index(Request $request): View
     {
@@ -50,7 +53,7 @@ class StudentController extends Controller
 
         // Search by name or matricule
         if ($request->filled('search')) {
-            $searchTerm = '%' . $request->input('search') . '%';
+            $searchTerm = '%'.$request->input('search').'%';
             $students->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', $searchTerm)
                     ->orWhere('matricule', 'like', $searchTerm);
@@ -89,7 +92,11 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new student.
      *
-     * @return View The student creation form view
+     * Loads all available school years and classes for dropdown selection.
+     * Classes are dynamically loaded based on selected school year.
+     *
+     * @param  Request  $request  The HTTP request containing school year selection
+     * @return View The student creation form view with school years and classes data
      */
     public function create(Request $request): View
     {
@@ -108,10 +115,16 @@ class StudentController extends Controller
     }
 
     /**
-     * Store a newly created student in storage.
+     * Store a newly created student in the database.
+     *
+     * Validates incoming request data and creates a new student record.
+     * Handles optional photo upload to public storage.
+     * Logs successful creation and handles exceptions gracefully.
      *
      * @param  StoreStudentRequest  $request  The validated request containing student data
-     * @return RedirectResponse Redirect to students list with success/error message
+     * @return RedirectResponse Redirect to students index with success/error message
+     *
+     * @throws \Exception If student creation fails
      */
     public function store(StoreStudentRequest $request): RedirectResponse
     {
@@ -125,12 +138,12 @@ class StudentController extends Controller
             }
 
             $student = Student::create($validatedData);
-            Log::info('Nouvel étudiant créé: ' . $student->name . ' (ID: ' . $student->id . ')');
+            Log::info('Nouvel étudiant créé: '.$student->name.' (ID: '.$student->id.')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $student->name . '" a été ajouté avec succès.');
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la création de l\'étudiant: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de l\'étudiant: '.$e->getMessage());
 
             return redirect()->back()
                 ->withInput()
@@ -139,10 +152,13 @@ class StudentController extends Controller
     }
 
     /**
-     * Display the specified student.
+     * Display the specified student's detailed information.
      *
-     * @param  Student  $student  The student to display
-     * @return View The student details view
+     * Loads the student's associated class information and displays
+     * all student details including personal information and academic data.
+     *
+     * @param  Student  $student  The student model instance to display
+     * @return View The student details view with complete student information
      */
     public function show(Student $student): View
     {
@@ -154,31 +170,46 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified student.
      *
-     * @param  Student  $student  The student to edit
-     * @return View The student edit form view
+     * Loads all available school years and classes for dropdown selection.
+     * Pre-selects the student's current school year and class.
+     * Classes are dynamically loaded based on selected school year.
+     *
+     * @param  Student  $student  The student model instance to edit
+     * @param  Request  $request  The HTTP request containing school year selection
+     * @return View The student edit form view with pre-populated data
      */
     public function edit(Student $student, Request $request): View
     {
         // Get all school years for the dropdown
         $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
-        // Get classes based on selected school year or student's current year
-        $selectedYearId = $request->input('school_year_id') ?? old('school_year_id') ?? $student->school_year_id;
-        $classes = collect();
+        // Figure out the school year ID:
+        $selectedYearId = $request->input('school_year_id')
+            ?? old('school_year_id')
+            ?? optional($student->classe)->year_id;
 
+        // Get classes for that school year
+        $classes = collect();
         if ($selectedYearId) {
-            $classes = Classe::where('year_id', $selectedYearId)->pluck('label', 'id');
+            $classes = Classe::where('year_id', $selectedYearId)
+                ->pluck('label', 'id');
         }
 
-        return view('students.edit', compact('student', 'classes', 'schoolYears'));
+        return view('students.edit', compact('student', 'classes', 'schoolYears', 'selectedYearId'));
     }
 
     /**
-     * Update the specified student in storage.
+     * Update the specified student in the database.
+     *
+     * Validates incoming request data and updates the student record.
+     * Handles optional photo update with automatic deletion of old photo.
+     * Logs successful updates and handles exceptions gracefully.
      *
      * @param  UpdateStudentRequest  $request  The validated request containing updated student data
-     * @param  Student  $student  The student to update
-     * @return RedirectResponse Redirect to students list with success/error message
+     * @param  Student  $student  The student model instance to update
+     * @return RedirectResponse Redirect to students index with success/error message
+     *
+     * @throws \Exception If student update fails
      */
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
@@ -197,12 +228,12 @@ class StudentController extends Controller
             }
 
             $student->update($validatedData);
-            Log::info('Étudiant modifié: ' . $student->name . ' (ID: ' . $student->id . ')');
+            Log::info('Étudiant modifié: '.$student->name.' (ID: '.$student->id.')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $student->name . '" a été mis à jour avec succès.');
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de l\'étudiant: ' . $e->getMessage());
+            Log::error('Erreur lors de la mise à jour de l\'étudiant: '.$e->getMessage());
 
             return redirect()->back()
                 ->withInput()
@@ -211,10 +242,15 @@ class StudentController extends Controller
     }
 
     /**
-     * Remove the specified student from storage.
+     * Remove the specified student from the database.
      *
-     * @param  Student  $student  The student to delete
-     * @return RedirectResponse Redirect to students list with success/error message
+     * Permanently deletes the student record and associated photo file.
+     * This action cannot be undone. Logs successful deletion.
+     *
+     * @param  Student  $student  The student model instance to delete
+     * @return RedirectResponse Redirect to students index with success/error message
+     *
+     * @throws \Exception If student deletion fails
      */
     public function destroy(Student $student): RedirectResponse
     {
@@ -227,12 +263,12 @@ class StudentController extends Controller
             $studentName = $student->name;
             $studentId = $student->id;
             $student->delete();
-            Log::info('Étudiant supprimé: ' . $studentName . ' (ID: ' . $studentId . ')');
+            Log::info('Étudiant supprimé: '.$studentName.' (ID: '.$studentId.')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $studentName . '" a été supprimé avec succès.');
+                ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage());
+            Log::error('Erreur lors de la suppression de l\'étudiant: '.$e->getMessage());
 
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
@@ -242,8 +278,14 @@ class StudentController extends Controller
     /**
      * Get classes by school year for AJAX requests.
      *
-     * @param  int  $yearId  The school year ID
-     * @return JsonResponse JSON response with classes data
+     * Returns a JSON response containing classes associated with the specified school year.
+     * Used for dynamic dropdown population in student forms.
+     * Includes error handling with appropriate HTTP status codes.
+     *
+     * @param  int  $yearId  The school year ID to filter classes by
+     * @return JsonResponse JSON response with classes data and metadata
+     *
+     * @throws \Exception If database query fails
      */
     public function getClassesByYear(int $yearId): JsonResponse
     {
@@ -258,7 +300,7 @@ class StudentController extends Controller
                 'count' => $classes->count(),
             ]);
         } catch (Exception $e) {
-            Log::error('Erreur lors de la récupération des classes par année: ' . $e->getMessage());
+            Log::error('Erreur lors de la récupération des classes par année: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -269,42 +311,50 @@ class StudentController extends Controller
         }
     }
 
-    // App/Http/Controllers/StudentController.php
-    // Si vous utilisez DomPDF, sinon vous pouvez juste retourner la vue
-    // App/Http/Controllers/StudentController.php
-    // App/Http/Controllers/StudentController.php
-
-
-
-    // App/Http/Controllers/StudentController.php (méthode generateCertificate)
-
+    /**
+     * Generate a PDF certificate for the specified student.
+     *
+     * Creates a school enrollment certificate using DomPDF library.
+     * Includes student information, school details, and current date.
+     * Returns the PDF as a stream for inline browser display.
+     *
+     * @param  Student  $student  The student model instance to generate certificate for
+     * @return \Illuminate\Http\Response PDF stream response for inline display
+     *
+     * @throws \Exception If PDF generation fails or GD extension is not available
+     */
     public function generateCertificate(Student $student)
     {
-        // ... (Assurez-vous que l'importation de Barryvdh\DomPDF\Facade\Pdf est faite)
+        try {
+            // Get school year information
+            $schoolYearObject = optional($student->classe)->school_year;
+            $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
 
-        // Définition de l'année scolaire (avec la correction optionnelle pour la sécurité)
-        $schoolYearObject = optional($student->classe)->school_year;
-        $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
+            // School information
+            $lyceeInfo = [
+                'name' => 'Lycée de Balbala',
+                'ministry' => 'Ministère de l\'Éducation Nationale',
+                'country' => 'République de Djibouti',
+                'city' => 'Balbala',
+                'proviseur' => 'Nom et Prénom du Proviseur',
+            ];
 
-        // Informations du lycée
-        $lyceeInfo = [
-            'name' => 'Lycée de Balbala',
-            'ministry' => 'Ministère de l\'Éducation Nationale',
-            'country' => 'République de Djibouti',
-            'city' => 'Balbala',
-            'proviseur' => 'Nom et Prénom du Proviseur',
-        ];
+            $currentDate = Carbon::now();
 
-        $currentDate = Carbon::now();
+            // Load the certificate view with data
+            $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'lyceeInfo', 'currentDate'));
 
-        // 1. Charger la vue avec les données
-        $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'lyceeInfo', 'currentDate'));
+            // Define filename for download
+            $filename = 'Certificat_Scolarite_'.$student->matricule.'_'.$currentDate->format('Ymd').'.pdf';
 
-        // 2. Définir le nom du fichier (utilisé par le navigateur si l'utilisateur télécharge)
-        $filename = 'Certificat_Scolarite_' . $student->matricule . '_' . $currentDate->format('Ymd') . '.pdf';
+            // Stream the PDF for inline display
+            return $pdf->stream($filename);
+        } catch (\Exception $e) {
+            Log::error('Certificate generation failed for student '.$student->id.': '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
 
-        // 3. 🏆 CHANGER DOWNLOAD() PAR STREAM()
-        // 'I' force l'affichage 'inline' dans le navigateur (par défaut)
-        return $pdf->stream($filename);
+            return redirect()->back()
+                ->with('error', 'Erreur lors de la génération du certificat: '.$e->getMessage());
+        }
     }
 }

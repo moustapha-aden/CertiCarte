@@ -10,6 +10,16 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    /**
+     * Display the main dashboard with statistics and recent activity.
+     *
+     * Provides comprehensive overview including:
+     * - Total counts for students, classes, and users
+     * - Current school year information
+     * - Recent activity metrics (daily, weekly, monthly)
+     *
+     * @return \Illuminate\View\View The dashboard view with statistics data
+     */
     public function index()
     {
         // Basic counts

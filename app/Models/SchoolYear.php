@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SchoolYear extends Model
 {
-    /** @use HasFactory<\Database\Factories\StudentFactory> */
+    /** @use HasFactory<\Database\Factories\SchoolYearFactory> */
     use HasFactory;
 
     /**
@@ -19,6 +19,11 @@ class SchoolYear extends Model
         'year',
     ];
 
+    /**
+     * Get all classes belonging to this school year.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Classe>
+     */
     public function classes()
     {
         return $this->hasMany(Classe::class);
