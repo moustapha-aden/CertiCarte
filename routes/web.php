@@ -185,4 +185,11 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
+    // ... (autres routes)
+
+    // Route pour la carte d'étudiant
+    Route::get('/students/{student}/id-card', [StudentController::class, 'idCard'])
+        ->name('students.id_card');
+
+
 });
