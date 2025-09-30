@@ -199,6 +199,16 @@
                     Générer le Certificat de Scolarité
                 </a>
             </div>
+            {{-- 💳 NOUVEAU BOUTON : CARTE D'ÉTUDIANT --}}
+            <div class="text-center mt-4">
+                <a href="{{ route('students.id_card', $student->id) }}" target="_blank"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.01]">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Générer la Carte d'Étudiant
+                </a>
         </div>
 
         {{-- Additional Actions --}}

@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Http\Response;
 
 class StudentController extends Controller
 {
@@ -348,4 +349,59 @@ class StudentController extends Controller
                 ->with('error', 'Erreur lors de la génération du certificat: '.$e->getMessage());
         }
     }
+
+public function idCard(Student $student): Response
+{
+    // Charger les relations nécessaires
+    $student->load('classe.schoolYear');
+
+    // Image de fond du lycée (Base64)
+    try {
+        $path = public_path('images/lycee_balbala.jpg');
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $lyceePhotoUrl = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        } else {
+            $lyceePhotoUrl = null;
+        }
+    } catch (\Exception $e) {
+        $lyceePhotoUrl = null;
+    }
+
+    // Avatar de l’élève (Base64)
+    if ($student->photo && Storage::disk('public')->exists($student->photo)) {
+        $path = storage_path('app/public/' . $student->photo);
+    } else {
+        $path = public_path('images/default-avatar.png');
+    }
+
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $data = file_get_contents($path);
+    $avatar = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+    // Année scolaire
+    $schoolYearObject = optional($student->classe)->schoolYear;
+    $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
+
+    // Infos lycée
+    $lyceeInfo = [
+        'name' => 'Lycée de Balbala',
+        'ministry' => 'Ministère de l\'Éducation Nationale',
+        'country' => 'République de Djibouti',
+        'city' => 'Balbala',
+        'proviseur' => 'Nom et Prénom du Proviseur',
+    ];
+
+    $currentDate = Carbon::now();
+
+    // Génération du PDF
+    $pdf = Pdf::setOptions(['isRemoteEnabled' => true])
+        ->loadView('students.id_card', compact('student', 'school_year', 'currentDate', 'lyceeInfo', 'lyceePhotoUrl', 'avatar'));
+
+    $filename = 'Carte_Eleve_' . $student->matricule . '_' . $currentDate->format('Ymd') . '.pdf';
+
+    return $pdf->stream($filename);
+}
+
 }
