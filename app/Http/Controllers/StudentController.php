@@ -10,7 +10,10 @@ use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -48,7 +51,7 @@ class StudentController extends Controller
 
         // Search by name or matricule
         if ($request->filled('search')) {
-            $searchTerm = '%'.$request->input('search').'%';
+            $searchTerm = '%' . $request->input('search') . '%';
             $students->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', $searchTerm)
                     ->orWhere('matricule', 'like', $searchTerm);
@@ -123,12 +126,12 @@ class StudentController extends Controller
             }
 
             $student = Student::create($validatedData);
-            Log::info('Nouvel étudiant créé: '.$student->name.' (ID: '.$student->id.')');
+            Log::info('Nouvel étudiant créé: ' . $student->name . ' (ID: ' . $student->id . ')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
+                ->with('success', 'L\'étudiant "' . $student->name . '" a été ajouté avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la création de l\'étudiant: '.$e->getMessage());
+            Log::error('Erreur lors de la création de l\'étudiant: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
@@ -195,12 +198,12 @@ class StudentController extends Controller
             }
 
             $student->update($validatedData);
-            Log::info('Étudiant modifié: '.$student->name.' (ID: '.$student->id.')');
+            Log::info('Étudiant modifié: ' . $student->name . ' (ID: ' . $student->id . ')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
+                ->with('success', 'L\'étudiant "' . $student->name . '" a été mis à jour avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de l\'étudiant: '.$e->getMessage());
+            Log::error('Erreur lors de la mise à jour de l\'étudiant: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
@@ -225,12 +228,12 @@ class StudentController extends Controller
             $studentName = $student->name;
             $studentId = $student->id;
             $student->delete();
-            Log::info('Étudiant supprimé: '.$studentName.' (ID: '.$studentId.')');
+            Log::info('Étudiant supprimé: ' . $studentName . ' (ID: ' . $studentId . ')');
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
+                ->with('success', 'L\'étudiant "' . $studentName . '" a été supprimé avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de l\'étudiant: '.$e->getMessage());
+            Log::error('Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage());
 
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
@@ -256,7 +259,7 @@ class StudentController extends Controller
                 'count' => $classes->count(),
             ]);
         } catch (Exception $e) {
-            Log::error('Erreur lors de la récupération des classes par année: '.$e->getMessage());
+            Log::error('Erreur lors de la récupération des classes par année: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -265,5 +268,44 @@ class StudentController extends Controller
                 'count' => 0,
             ], 500);
         }
+    }
+
+    // App/Http/Controllers/StudentController.php
+    // Si vous utilisez DomPDF, sinon vous pouvez juste retourner la vue
+    // App/Http/Controllers/StudentController.php
+    // App/Http/Controllers/StudentController.php
+
+
+
+    // App/Http/Controllers/StudentController.php (méthode generateCertificate)
+
+    public function generateCertificate(Student $student)
+    {
+        // ... (Assurez-vous que l'importation de Barryvdh\DomPDF\Facade\Pdf est faite)
+
+        // Définition de l'année scolaire (avec la correction optionnelle pour la sécurité)
+        $schoolYearObject = optional($student->classe)->school_year;
+        $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
+
+        // Informations du lycée
+        $lyceeInfo = [
+            'name' => 'Lycée de Balbala',
+            'ministry' => 'Ministère de l\'Éducation Nationale',
+            'country' => 'République de Djibouti',
+            'city' => 'Balbala',
+            'proviseur' => 'Nom et Prénom du Proviseur',
+        ];
+
+        $currentDate = Carbon::now();
+
+        // 1. Charger la vue avec les données
+        $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'lyceeInfo', 'currentDate'));
+
+        // 2. Définir le nom du fichier (utilisé par le navigateur si l'utilisateur télécharge)
+        $filename = 'Certificat_Scolarite_' . $student->matricule . '_' . $currentDate->format('Ymd') . '.pdf';
+
+        // 3. 🏆 CHANGER DOWNLOAD() PAR STREAM()
+        // 'I' force l'affichage 'inline' dans le navigateur (par défaut)
+        return $pdf->stream($filename);
     }
 }
