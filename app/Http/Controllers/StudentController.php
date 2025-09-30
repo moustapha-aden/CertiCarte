@@ -327,22 +327,13 @@ class StudentController extends Controller
     {
         try {
             // Get school year information
-            $schoolYearObject = optional($student->classe)->school_year;
+            $schoolYearObject = optional($student->classe)->schoolYear;
             $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
-
-            // School information
-            $lyceeInfo = [
-                'name' => 'Lycée de Balbala',
-                'ministry' => 'Ministère de l\'Éducation Nationale',
-                'country' => 'République de Djibouti',
-                'city' => 'Balbala',
-                'proviseur' => 'Nom et Prénom du Proviseur',
-            ];
 
             $currentDate = Carbon::now();
 
             // Load the certificate view with data
-            $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'lyceeInfo', 'currentDate'));
+            $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'currentDate'));
 
             // Define filename for download
             $filename = 'Certificat_Scolarite_'.$student->matricule.'_'.$currentDate->format('Ymd').'.pdf';

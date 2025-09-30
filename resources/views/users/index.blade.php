@@ -35,7 +35,8 @@
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
                     {{-- Search Filter --}}
                     <div class="relative flex-1 max-w-md">
-                        <input type="search" name="q" placeholder="Rechercher par nom, email ou rôle..." value="{{ request('q') }}"
+                        <input type="search" name="q" placeholder="Rechercher par nom, email ou rôle..."
+                            value="{{ request('q') }}"
                             class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -50,8 +51,10 @@
                         <select name="role" id="role" onchange="this.form.submit()"
                             class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
                             <option value="">Tous les rôles</option>
-                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Administrateur</option>
-                            <option value="secretary" {{ request('role') == 'secretary' ? 'selected' : '' }}>Secrétaire</option>
+                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Administrateur
+                            </option>
+                            <option value="secretary" {{ request('role') == 'secretary' ? 'selected' : '' }}>Secrétaire
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -83,8 +86,10 @@
                     <tr class="hover:bg-indigo-50/30 transition-colors">
                         {{-- Avatar --}}
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                            <div
+                                class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <span
+                                    class="text-white text-sm font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                             </div>
                         </td>
 
@@ -121,8 +126,7 @@
                                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
                                     title="Modifier" />
 
-                                <form method="POST" action="{{ route('users.destroy', $user) }}"
-                                    class="inline-block"
+                                <form method="POST" action="{{ route('users.destroy', $user) }}" class="inline-block"
                                     onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer l\'utilisateur {{ $user->name }} ?')">
                                     @csrf
                                     @method('DELETE')
@@ -145,8 +149,7 @@
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">
-                <svg class="w-16 h-16 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
                     </path>

@@ -24,7 +24,8 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name')" required />
+                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name')"
+                        required />
                     <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule')" />
                     <x-input name="date_of_birth" type="date" label="Date de naissance" :value="old('date_of_birth')" required />
                     <x-input name="gender" type="select" label="Genre" :options="['male' => 'Masculin', 'female' => 'Féminin']" :value="old('gender')" required />

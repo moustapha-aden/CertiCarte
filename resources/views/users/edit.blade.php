@@ -31,7 +31,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name', $user->name)"
                         required />
-                    <x-input name="email" type="email" label="Adresse email" placeholder="exemple@lycee-balbala.dj" :value="old('email', $user->email)" required />
+                    <x-input name="email" type="email" label="Adresse email" placeholder="exemple@lycee-balbala.dj"
+                        :value="old('email', $user->email)" required />
                 </div>
             </div>
 
@@ -48,11 +49,13 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-input name="role" type="select" label="Rôle" :options="['admin' => 'Administrateur', 'secretary' => 'Secrétaire']" :value="old('role', $user->role)" required />
-                    <x-input name="password" type="password" label="Nouveau mot de passe" placeholder="Laisser vide pour conserver le mot de passe actuel" />
+                    <x-input name="password" type="password" label="Nouveau mot de passe"
+                        placeholder="Laisser vide pour conserver le mot de passe actuel" />
                 </div>
 
                 <div class="mt-6">
-                    <x-input name="password_confirmation" type="password" label="Confirmer le nouveau mot de passe" placeholder="Répétez le nouveau mot de passe" />
+                    <x-input name="password_confirmation" type="password" label="Confirmer le nouveau mot de passe"
+                        placeholder="Répétez le nouveau mot de passe" />
                 </div>
             </div>
 

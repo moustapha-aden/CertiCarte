@@ -21,7 +21,8 @@
                 <h1 class="text-4xl font-extrabold mb-2">{{ $user->name }}</h1>
                 <p class="text-xl text-indigo-100 mb-2">{{ $user->email }}</p>
                 <p class="text-lg text-indigo-200">
-                    {{ $user->role === 'admin' ? 'Administrateur' : 'Secrétaire' }} • Membre depuis {{ $user->created_at->format('Y') }}
+                    {{ $user->role === 'admin' ? 'Administrateur' : 'Secrétaire' }} • Membre depuis
+                    {{ $user->created_at->format('Y') }}
                 </p>
             </div>
 
@@ -88,7 +89,8 @@
                     </div>
                     <h3 class="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Rôle</h3>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ $user->role === 'admin' ? 'Administrateur' : 'Secrétaire' }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ $user->role === 'admin' ? 'Administrateur' : 'Secrétaire' }}
+                </p>
             </div>
 
             {{-- User ID --}}
