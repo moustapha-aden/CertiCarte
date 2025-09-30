@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Classe; // Ajouté : Pour afficher la liste des classes lors de la création/édition
 use App\Models\SchoolYear;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage; // Ajouté : Pour gérer l'upload de fichiers
 
@@ -210,4 +213,43 @@ class StudentController extends Controller
         return redirect()->route('students.index')
                          ->with('success', 'L\'élève a été supprimé avec succès.');
     }
+
+    // App/Http/Controllers/StudentController.php
+// Si vous utilisez DomPDF, sinon vous pouvez juste retourner la vue
+// App/Http/Controllers/StudentController.php
+// App/Http/Controllers/StudentController.php
+
+
+
+// App/Http/Controllers/StudentController.php (méthode generateCertificate)
+
+public function generateCertificate(Student $student)
+{
+    // ... (Assurez-vous que l'importation de Barryvdh\DomPDF\Facade\Pdf est faite)
+
+    // Définition de l'année scolaire (avec la correction optionnelle pour la sécurité)
+    $schoolYearObject = optional($student->classe)->school_year;
+    $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
+
+    // Informations du lycée
+    $lyceeInfo = [
+        'name' => 'Lycée de Balbala',
+        'ministry' => 'Ministère de l\'Éducation Nationale',
+        'country' => 'République de Djibouti',
+        'city' => 'Balbala',
+        'proviseur' => 'Nom et Prénom du Proviseur',
+    ];
+
+    $currentDate = Carbon::now();
+
+    // 1. Charger la vue avec les données
+    $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'lyceeInfo', 'currentDate'));
+
+    // 2. Définir le nom du fichier (utilisé par le navigateur si l'utilisateur télécharge)
+    $filename = 'Certificat_Scolarite_' . $student->matricule . '_' . $currentDate->format('Ymd') . '.pdf';
+
+    // 3. 🏆 CHANGER DOWNLOAD() PAR STREAM()
+    // 'I' force l'affichage 'inline' dans le navigateur (par défaut)
+    return $pdf->stream($filename);
+}
 }

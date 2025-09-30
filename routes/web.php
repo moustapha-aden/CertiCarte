@@ -38,6 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('/dashboard/classes', ClasseController::class);
     // Ajout de la route manquante pour afficher les élèves d'une classe spécifique
     Route::get('/dashboard/classes/{classe}/students', [ClasseController::class, 'show'])->name('classes.students');
+
+   // NOUVELLE LIGNE (Ajout de /dashboard/ pour correspondre à votre URL)
+    Route::get('/dashboard/students/{student}/certificate', [StudentController::class, 'generateCertificate'])->name('students.certificate');
 });
 
 // Réinitialisation de mot de passe
