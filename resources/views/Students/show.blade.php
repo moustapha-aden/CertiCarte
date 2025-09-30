@@ -33,6 +33,11 @@
                     class="bg-white text-indigo-600 hover:bg-gray-100">
                     Modifier
                 </x-button>
+                <x-button href="{{ route('students.certificate', $student->id) }}" variant="outline" size="lg" target="_blank"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
+                    class="bg-white text-indigo-600 hover:bg-gray-100">
+                    Certificat
+                </x-button>
                 <x-button href="{{ route('students.index') }}" variant="secondary" size="lg"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
                     Retour
@@ -185,21 +190,6 @@
                 </div>
             </div>
         @endif
-
-        {{-- Certificate Generation Button --}}
-        <div class="mt-6 pt-6 border-t border-gray-200">
-            <div class="text-center">
-                <a href="{{ route('students.certificate', $student->id) }}" target="_blank"
-                    class="inline-flex items-center px-6 py-3 bg-yellow-600 text-white font-bold rounded-xl hover:bg-yellow-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.01]">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    Générer le Certificat de Scolarité
-                </a>
-            </div>
-        </div>
 
         {{-- Additional Actions --}}
         <div class="mt-8 pt-6 border-t border-gray-200">

@@ -144,15 +144,27 @@
 
                         {{-- Actions --}}
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                            <div class="flex items-center justify-center space-x-2">
+                            <div class="flex items-center justify-center space-x-1">
+                                {{-- View Button --}}
                                 <x-button href="{{ route('students.show', $student) }}" variant="ghost" size="sm"
+                                    title="Voir les détails"
                                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
-                                    title="Voir les détails" />
+                                    title="Voir les détails" 
+                                    class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 border-blue-200 hover:border-blue-300" />
 
+                                {{-- Edit Button --}}
                                 <x-button href="{{ route('students.edit', $student) }}" variant="ghost" size="sm"
                                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
-                                    title="Modifier" />
+                                    title="Modifier" 
+                                    class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border-indigo-200 hover:border-indigo-300" />
 
+                                {{-- Certificate Button --}}
+                                <x-button href="{{ route('students.certificate', $student->id) }}" size="sm"
+                                    target="_blank" title="Générer le Certificat" variant="ghost"
+                                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
+                                    class="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 border-yellow-200 hover:border-yellow-300" />
+
+                                {{-- Delete Button --}}
                                 <form method="POST" action="{{ route('students.destroy', $student) }}"
                                     class="inline-block"
                                     onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer l\'étudiant {{ $student->name }} ?')">
@@ -160,7 +172,8 @@
                                     @method('DELETE')
                                     <x-button type="submit" variant="ghost" size="sm"
                                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>'
-                                        title="Supprimer" class="text-red-600 hover:text-red-800 hover:bg-red-50" />
+                                        title="Supprimer" 
+                                        class="text-red-600 hover:text-red-800 hover:bg-red-50 border-red-200 hover:border-red-300" />
                                 </form>
                             </div>
                         </td>
