@@ -220,7 +220,7 @@
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
+
 
         {{-- Contenu Principal des Détails --}}
         <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-gray-100">
@@ -339,7 +339,7 @@
 
 </body>
 </html>
-=======
+
     </x-card>
 @endsection
->>>>>>> 25ec0b94b233c9e4a18eaee46f88572a104b355c
+

@@ -7,13 +7,13 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
-<<<<<<< HEAD
+
 use Barryvdh\DomPDF\Facade\Pdf;
-=======
+
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
->>>>>>> 25ec0b94b233c9e4a18eaee46f88572a104b355c
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Carbon;

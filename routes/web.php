@@ -18,9 +18,9 @@ use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// ============================================================================
+//                     ======
 // PUBLIC ROUTES (No Authentication Required)
-// ============================================================================
+//                     ======
 
 /**
  * Home page route - redirects authenticated users to dashboard
@@ -66,7 +66,7 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('authentic
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-<<<<<<< HEAD
+
 // Routes protégées par l'authentification
 Route::middleware('auth')->group(function () {
 
@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Réinitialisation de mot de passe
-=======
+
 /**
  * Password reset request page
  *
@@ -94,14 +94,14 @@ Route::middleware('auth')->group(function () {
  *
  * @return string
  */
->>>>>>> 25ec0b94b233c9e4a18eaee46f88572a104b355c
+
 Route::get('/password/request', function () {
     return 'Page de demande de réinitialisation du mot de passe.';
 })->name('password.request');
 
-// ============================================================================
+//                     ======
 // PROTECTED ROUTES (Authentication Required)
-// ============================================================================
+//                     ======
 
 /**
  * Authenticated routes group
@@ -122,9 +122,9 @@ Route::middleware('auth')->group(function () {
      */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ========================================================================
+    //                     ==
     // STUDENT MANAGEMENT ROUTES
-    // ========================================================================
+    //                     ==
 
     /**
      * Student resource routes
@@ -145,9 +145,9 @@ Route::middleware('auth')->group(function () {
      */
     Route::resource('/dashboard/students', StudentController::class);
 
-    // ========================================================================
+    //                     ==
     // CLASSE MANAGEMENT ROUTES
-    // ========================================================================
+    //                     ==
 
     /**
      * Classe resource routes

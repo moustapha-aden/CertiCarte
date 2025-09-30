@@ -110,10 +110,10 @@
     </div>
 
     {{-- Quick Actions Card --}}
-    <x-card title="Actions Rapides" 
+    <x-card title="Actions Rapides"
             icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>'
             class="mb-8">
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {{-- Manage Classes --}}
             <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
@@ -181,10 +181,10 @@
     </x-card>
 
     {{-- Recent Activity Card --}}
-    <x-card title="Activité Récente" 
+    <x-card title="Activité Récente"
             icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
             class="mb-8">
-        
+
         <div class="space-y-4">
             <div class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                 <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -210,7 +210,6 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
                     <a href="#" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 group">
                         <svg class="w-8 h-8 text-blue-600 mb-3 group-hover:text-blue-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
@@ -250,7 +249,7 @@
                         <h4 class="font-bold text-gray-900 mb-1">Configuration</h4>
                         <p class="text-xs text-gray-600">Paramètres système</p>
                     </a>
-=======
+
             <div class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                 <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,7 +259,7 @@
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-900">Classe modifiée</p>
                     <p class="text-xs text-gray-500">Il y a 1 jour</p>
->>>>>>> 25ec0b94b233c9e4a18eaee46f88572a104b355c
+
                 </div>
             </div>
         </div>
