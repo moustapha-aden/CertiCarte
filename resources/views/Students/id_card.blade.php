@@ -10,10 +10,11 @@
         }
 
         body {
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-family: 'Montserrat', 'Arial', sans-serif;
             margin: 0;
-            padding: 20mm;
-            font-size: 10pt;
+            padding: 18mm;
+            font-size: 10.5pt;
+            background: #f3f4f6;
         }
 
         .page {
@@ -28,26 +29,45 @@
 
         /* Dimensions carte standard (85.6mm x 53.98mm) */
         .card-wrapper {
-            width: 85mm;
+            width: 86mm;
             height: 54mm;
-            border-radius: 3mm;
+            border-radius: 8mm;
             overflow: hidden;
-            margin: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            margin: 12px;
+            box-shadow: 0 2px 8px rgba(30,64,175,0.10);
             position: relative;
             display: inline-block;
             vertical-align: top;
-            margin-right: 5mm;
+            margin-right: 7mm;
+            background: #f7f8fa;
+            border: none;
         }
 
         /* === RECTO PROFESSIONNEL === */
         .recto {
             width: 100%;
             height: 100%;
-            padding: 5mm;
+            padding: 0;
             position: relative;
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
-            color: white;
+            background: #fff url('/images/photo_carte.jpg') center center/cover no-repeat;
+            color: #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .recto::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.75);
+            z-index: 1;
+        }
+        .recto-content, .logo-section, .badge-d, .year-footer {
+            position: relative;
+            z-index: 2;
         }
 
         /* Contenu principal */
@@ -59,151 +79,173 @@
 
         /* Logo section */
         .logo-section {
-            text-align: center;
-            margin-bottom: 2mm;
+            position: absolute;
+            top: 7mm;
+            left: 7mm;
+            width: 18mm;
+            height: 18mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .school-logo {
-            width: 12mm;
-            height: 12mm;
-            border-radius: 2mm;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            background: white;
-            padding: 1mm;
+            width: 13mm;
+            height: 13mm;
+            border-radius: 3mm;
+            border: none;
+            background: #fff;
+            padding: 0;
+            box-shadow: none;
         }
 
         /* En-tête */
         .recto-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-            padding-bottom: 2.5mm;
+            border-bottom: 1.5px solid rgba(255,255,255,0.25);
+            padding-bottom: 2mm;
             margin-bottom: 2mm;
-            text-align: center;
+            text-align: left;
         }
 
         .recto-title {
-            font-size: 9pt;
-            font-weight: bold;
+            font-size: 10pt;
+            font-weight: 700;
             line-height: 1.2;
             margin: 0 0 1mm 0;
-            letter-spacing: 0.2px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.5px;
+            text-shadow: none;
         }
 
         .recto-subtitle {
-            font-size: 6.5pt;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 7pt;
+            color: #dbeafe;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
             margin: 0;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            opacity: 0.7;
+            text-shadow: none;
         }
 
         /* Type de carte */
         .card-type-badge {
-            text-align: center;
-            font-size: 6.5pt;
-            color: white;
+            text-align: left;
+            font-size: 7pt;
+            color: #fff;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
-            padding: 1.2mm 0;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            padding: 1.2mm 0 1.2mm 2mm;
             margin: 1.5mm 0;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.18);
             border-radius: 2mm;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.22);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.18);
         }
 
         /* Section étudiant */
         .student-section {
-            margin: 3mm 0;
+            margin: 2.5mm 0 0 0;
         }
 
         .student-layout {
-            display: table;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 2mm;
             width: 100%;
         }
 
         .photo-cell {
-            display: table-cell;
-            vertical-align: middle;
-            width: 22mm;
-            padding-right: 3mm;
+            flex: 0 0 20mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-right: 2mm;
         }
 
         .info-cell {
-            display: table-cell;
-            vertical-align: middle;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 1mm;
         }
 
         .student-photo {
-            width: 18mm;
-            height: 18mm;
-            border-radius: 2mm;
-            border: 2px solid white;
+            width: 16mm;
+            height: 16mm;
+            border-radius: 50%;
+            border: 2px solid #fff;
             object-fit: cover;
+            box-shadow: 0 2px 8px rgba(30,64,175,0.12);
+            background: #e0e7ff;
         }
 
         .student-name {
-            font-size: 8.5pt;
-            font-weight: bold;
+            font-size: 12pt;
+            font-weight: 700;
             line-height: 1.2;
-            margin: 0 0 1.5mm 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            color: white;
+            margin: 0 0 1mm 0;
+            color: #1e293b;
+            letter-spacing: 0.7px;
+            text-shadow: 0 1px 2px #fff;
         }
 
         .student-detail {
-            font-size: 7pt;
+            font-size: 9pt;
             line-height: 1.3;
-            margin: 0.8mm 0;
-            color: rgba(255, 255, 255, 0.95);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            margin: 0.5mm 0;
+            color: #2563eb;
+            text-shadow: 0 1px 2px #fff;
         }
 
         .detail-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 6pt;
+            color: #f59e00;
+            font-size: 8pt;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            font-weight: 600;
+            letter-spacing: 0.7px;
+            font-weight: 700;
         }
 
         /* Footer année */
         .year-footer {
             position: absolute;
-            bottom: 5mm;
+            bottom: 4mm;
             left: 5mm;
             right: 5mm;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            padding-top: 2mm;
+            text-align: right;
+            border: none;
+            padding-top: 1.5mm;
         }
 
         .year-label {
-            font-size: 6pt;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 6.5pt;
+            color: #dbeafe;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.7px;
             display: block;
-            margin-bottom: 1mm;
+            margin-bottom: 0.7mm;
         }
 
         .year-value {
-            font-size: 13pt;
-            font-weight: bold;
-            letter-spacing: 1.5px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 12pt;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: #2563eb;
+            text-shadow: none;
         }
 
         /* === VERSO PROFESSIONNEL === */
         .verso {
             width: 100%;
             height: 100%;
-            padding: 5mm;
-            background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+            padding: 0;
+            background: #fff;
             position: relative;
-            color: #1f2937;
+            color: #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         /* Bande décorative */
@@ -212,8 +254,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3mm;
-            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            height: 3.5mm;
+            display: none;
         }
 
         /* Badge sécurité */
@@ -221,76 +263,84 @@
             position: absolute;
             top: 5mm;
             right: 5mm;
-            width: 7mm;
-            height: 7mm;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1.5px solid #3b82f6;
+            width: 8mm;
+            height: 8mm;
+            background: rgba(59,130,246,0.08);
+            border: 2px solid #2563eb;
             border-radius: 50%;
             text-align: center;
-            line-height: 7mm;
-            font-size: 9pt;
-            color: #1e40af;
+            line-height: 8mm;
+            font-size: 10pt;
+            color: #2563eb;
             font-weight: bold;
+            box-shadow: 0 2px 8px rgba(30,64,175,0.10);
         }
 
         /* Contenu verso */
         .verso-content {
-            margin-top: 5mm;
+            margin-top: 7mm;
+            padding: 0 7mm;
         }
 
         .verso-title {
-            font-size: 8.5pt;
-            font-weight: bold;
-            text-align: center;
-            margin: 0 0 3mm 0;
-            color: #1e40af;
+            font-size: 9pt;
+            font-weight: 700;
+            text-align: left;
+            margin: 0 0 2.5mm 0;
+            color: #2563eb;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
         }
 
         /* Lignes d'information */
         .info-grid {
-            margin-bottom: 3mm;
+            margin-bottom: 2.5mm;
         }
 
         .info-line {
-            background: white;
-            padding: 1.5mm 2mm;
-            margin-bottom: 1.5mm;
-            border-radius: 1.5mm;
-            border-left: 2.5px solid #3b82f6;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            background: transparent;
+            padding: 0.5mm 0;
+            margin-bottom: 0.5mm;
+            border-radius: 0;
+            border-left: none;
+            box-shadow: none;
+            border-bottom: 1px solid #e0e7ff;
+            display: flex;
+            align-items: center;
         }
 
         .info-line-content {
-            display: table;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
             width: 100%;
         }
 
         .info-label {
-            display: table-cell;
-            width: 35%;
+            flex: 0 0 38%;
             font-weight: 600;
-            font-size: 6.5pt;
-            color: #6b7280;
+            font-size: 7pt;
+            color: #2563eb;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
             vertical-align: middle;
+            display: flex;
+            align-items: center;
         }
 
         .info-value {
-            display: table-cell;
-            width: 65%;
-            font-size: 7.5pt;
-            color: #111827;
+            flex: 1;
+            font-size: 8pt;
+            color: #222;
             font-weight: 500;
             vertical-align: middle;
+            text-align: left;
         }
 
         .info-address {
-            margin-top: 2mm;
-            padding-top: 2mm;
-            border-top: 1px dashed #d1d5db;
+            margin-top: 0.5mm;
+            padding-top: 0.5mm;
+            border-top: none;
         }
 
         /* Signatures */
@@ -299,35 +349,39 @@
             bottom: 4mm;
             left: 5mm;
             right: 5mm;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 2mm;
+            border-top: none;
+            padding-top: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
         }
 
         .signatures-layout {
-            display: table;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
             width: 100%;
         }
 
         .signature-cell {
-            display: table-cell;
-            width: 48%;
+            flex: 1;
             text-align: center;
-            font-size: 6pt;
-            color: #6b7280;
+            font-size: 7pt;
+            color: #2563eb;
         }
 
         .signature-title {
-            font-weight: bold;
-            color: #374151;
-            font-size: 6.5pt;
-            margin-bottom: 1mm;
+            font-weight: 600;
+            color: #2563eb;
+            font-size: 7pt;
+            margin-bottom: 0.7mm;
         }
 
         .signature-line {
             width: 100%;
-            height: 5mm;
-            border-bottom: 1px solid #d1d5db;
-            margin: 1mm 0;
+            height: 3mm;
+            border-bottom: 1px solid #e0e7ff;
+            margin: 0.7mm 0;
         }
     </style>
 </head>
@@ -338,51 +392,48 @@
             <!-- RECTO -->
             <div class="card-wrapper">
                 <div class="recto">
-                    <div class="recto-content">
+                    <div class="recto-content" style="position:relative; height:100%;">
                         <!-- Logo -->
                         <div class="logo-section">
                             @if($logoUrl)
                                 <img src="{{ $logoUrl }}" alt="Logo" class="school-logo">
                             @else
-                                <div class="school-logo" style="display: flex; align-items: center; justify-content: center; font-size: 8pt; font-weight: bold;">
+                                <div class="school-logo" style="display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: bold;">
                                     LOGO
                                 </div>
                             @endif
                         </div>
 
-                        <!-- En-tête -->
-                        <div class="recto-header">
-                            <div class="recto-title">{{ $lyceeInfo['name'] }}</div>
-                            <div class="recto-subtitle">{{ $lyceeInfo['country'] }}</div>
+                        <!-- Lycée -->
+                        <div style="position:absolute; top:7mm; left:30mm; right:7mm; text-align:left; color:#2563eb; font-size:9pt; font-weight:600; opacity:0.85; letter-spacing:1px;">
+                            Lycée Ahmed Farah Ali
                         </div>
 
-                        <!-- Type de carte -->
-                        <div class="card-type-badge">
-                            Carte d'identité scolaire
+                        <!-- Titre carte -->
+                        <div style="position:absolute; top:15mm; left:0; width:100%; text-align:center;">
+                            <span style="font-size:5pt; font-weight:700; color:#2563eb; background:#fff; padding:2px 12px; border-radius:12px; box-shadow:0 1px 4px #e0e7ff; letter-spacing:1.2px;">CARTE D'IDENTITÉ SCOLAIRE</span>
                         </div>
 
-                        <!-- Section étudiant -->
-                        <div class="student-section">
-                            <div class="student-layout">
-                                <div class="photo-cell">
-                                    <img src="{{ $avatar }}" alt="Photo" class="student-photo">
-                                </div>
-                                <div class="info-cell">
-                                    <div class="student-name">{{ $student->name }}</div>
-                                    <div class="student-detail">
-                                        <span class="detail-label">Matricule:</span> {{ $student->matricule ?? 'N/A' }}
-                                    </div>
-                                    <div class="student-detail">
-                                        <span class="detail-label">Classe:</span> {{ optional($student->classe)->label ?? 'N/A' }}
-                                    </div>
+                        <!-- Photo et nom -->
+                        <div style="position:absolute; top:20mm; left:7mm; display:flex; align-items:center;">
+                            <img src="{{ $avatar }}" alt="Photo" class="student-photo" style="margin-right:7mm;">
+                            <div style=" width: auto; display: flex; justify-content: left;">
+                                <div class="student-name" style="font-size:8pt; font-weight:700; color:#1e293b; margin-bottom:2mm;">Nom :{{ $student->name }}</div>
+                                <div style="display:flex; gap:8px; justify-content:center; margin-top:2px;">
+                                    <span style="color:#f59e00; font-size:9pt; font-weight:700;">Classe:</span>
+                                    <span style="color:#2563eb; font-size:9pt; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Badge D -->
+                        <div class="badge-d">
+                        </div>
+
                         <!-- Année scolaire -->
-                        <div class="year-footer">
-                            <span class="year-label">Année Scolaire</span>
-                            <div class="year-value">{{ $school_year }}</div>
+                        <div class="year-footer" style="right:7mm; bottom:7mm; text-align:right; font-size:8pt; color:#2563eb; font-weight:700;">
+                            <span class="year-label" style="font-size:5pt; color:#2563eb; text-transform:uppercase; letter-spacing:0.7px; display:block; margin-bottom:0.7mm;">Année Scolaire</span>
+                            <div class="year-value" style="font-size:8pt; font-weight:700; letter-spacing:1.2px; color:#2563eb;">{{ $student->classe->schoolYear->year ?? 'N/A'  }}</div>
                         </div>
                     </div>
                 </div>
@@ -391,8 +442,8 @@
             <!-- VERSO -->
             <div class="card-wrapper">
                 <div class="verso">
-                    <div class="verso-top-band"></div>
-                    <div class="security-badge">✓</div>
+                    {{-- <div class="verso-top-band"></div>
+                    <div class="security-badge">✓</div> --}}
 
                     <div class="verso-content">
                         <h3 class="verso-title">Informations Personnelles</h3>
@@ -433,10 +484,6 @@
                         <div class="signatures-layout">
                             <div class="signature-cell">
                                 <div class="signature-title">Le Proviseur</div>
-                                <div class="signature-line"></div>
-                            </div>
-                            <div class="signature-cell">
-                                <div class="signature-title">L'Étudiant(e)</div>
                                 <div class="signature-line"></div>
                             </div>
                         </div>
