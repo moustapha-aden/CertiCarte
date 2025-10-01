@@ -392,7 +392,7 @@
             <!-- RECTO -->
             <div class="card-wrapper">
                 <div class="recto">
-                    <div class="recto-content" style="position:relative; height:100%; border:1px solid black">
+                    <div class="recto-content" style="position:relative; height:100%;">
                         <!-- Logo -->
                         <div class="logo-section">
                             @if($logoUrl)
@@ -417,8 +417,8 @@
                         <!-- Photo et nom -->
                         <div style="position:absolute; top:20mm; left:7mm; display:flex; align-items:center;">
                             <img src="{{ $avatar }}" alt="Photo" class="student-photo" style="margin-right:7mm;">
-                            <div style="text-align:center;">
-                                <div class="student-name" style="font-size:8pt; font-weight:700; color:#1e293b; margin-bottom:2mm;">{{ $student->name }}</div>
+                            <div style=" width: auto; display: flex; justify-content: left;">
+                                <div class="student-name" style="font-size:8pt; font-weight:700; color:#1e293b; margin-bottom:2mm;">Nom :{{ $student->name }}</div>
                                 <div style="display:flex; gap:8px; justify-content:center; margin-top:2px;">
                                     <span style="color:#f59e00; font-size:9pt; font-weight:700;">Classe:</span>
                                     <span style="color:#2563eb; font-size:9pt; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
@@ -428,13 +428,12 @@
 
                         <!-- Badge D -->
                         <div class="badge-d">
-                            D
                         </div>
 
                         <!-- Année scolaire -->
-                        <div class="year-footer" style="right:7mm; bottom:7mm; text-align:right; font-size:12pt; color:#2563eb; font-weight:700;">
-                            <span class="year-label" style="font-size:8pt; color:#2563eb; text-transform:uppercase; letter-spacing:0.7px; display:block; margin-bottom:0.7mm;">Année Scolaire</span>
-                            <div class="year-value" style="font-size:13pt; font-weight:700; letter-spacing:1.2px; color:#2563eb;">{{ $student->classe->schoolYear->year ?? 'N/A'  }}</div>
+                        <div class="year-footer" style="right:7mm; bottom:7mm; text-align:right; font-size:8pt; color:#2563eb; font-weight:700;">
+                            <span class="year-label" style="font-size:5pt; color:#2563eb; text-transform:uppercase; letter-spacing:0.7px; display:block; margin-bottom:0.7mm;">Année Scolaire</span>
+                            <div class="year-value" style="font-size:8pt; font-weight:700; letter-spacing:1.2px; color:#2563eb;">{{ $student->classe->schoolYear->year ?? 'N/A'  }}</div>
                         </div>
                     </div>
                 </div>
@@ -443,8 +442,8 @@
             <!-- VERSO -->
             <div class="card-wrapper">
                 <div class="verso">
-                    <div class="verso-top-band"></div>
-                    <div class="security-badge">✓</div>
+                    {{-- <div class="verso-top-band"></div>
+                    <div class="security-badge">✓</div> --}}
 
                     <div class="verso-content">
                         <h3 class="verso-title">Informations Personnelles</h3>
