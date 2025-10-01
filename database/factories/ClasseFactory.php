@@ -16,20 +16,12 @@ class ClasseFactory extends Factory
      */
     public function definition(): array
     {
-        $classes = [
-            'Tle S1',
-            'Tle ES2',
-            'Tle SG3',
-            '1ère S4',
-            '1ère ES5',
-            '1ère SG6',
-            '2nde 7',
-            '2nde 8',
-            '2nde 9',
-        ];
+        $classTypes = ['Tle S', 'Tle ES', 'Tle SG', '1ère S', '1ère ES', '1ère SG', '2nde'];
+        $classType = fake()->randomElement($classTypes);
+        $classNumber = fake()->numberBetween(1, 10);
 
         return [
-            'label' => fake()->unique()->randomElement($classes),
+            'label' => $classType.' '.$classNumber,
             'year_id' => fake()->numberBetween(1, 3),
         ];
     }

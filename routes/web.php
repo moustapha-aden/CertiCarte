@@ -191,5 +191,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/students/{student}/id-card', [StudentController::class, 'idCard'])
         ->name('students.id_card');
 
-
 });

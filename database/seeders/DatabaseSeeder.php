@@ -30,8 +30,20 @@ class DatabaseSeeder extends Seeder
             'role' => 'secretary',
         ]);
 
-        SchoolYear::factory(3)->create();
-        Classe::factory(9)->create();
-        Student::factory(10)->create();
+        $schoolYears = SchoolYear::factory(3)->create();
+
+        foreach ($schoolYears as $schoolYear) {
+            Classe::factory(6)->create([
+                'year_id' => $schoolYear->id,
+            ]);
+        }
+
+        $classes = Classe::all();
+        foreach ($classes as $classe) {
+            Student::factory(3)->create([
+                'class_id' => $classe->id,
+                'school_year_id' => $classe->year_id,
+            ]);
+        }
     }
 }
