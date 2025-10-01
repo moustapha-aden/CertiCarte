@@ -114,6 +114,20 @@ Route::middleware('auth')->group(function () {
      */
     Route::get('/dashboard/students/{student}/certificate', [StudentController::class, 'generateCertificate'])->name('students.certificate');
 
+    /**
+     * Student import route
+     * Imports students from Excel/CSV file
+     *
+     * @route POST /dashboard/students/import
+     *
+     * @name students.import
+     *
+     * @uses StudentController@import
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    Route::post('/dashboard/students/import', [StudentController::class, 'import'])->name('students.import');
+
     // ========================================================================
     // CLASSE MANAGEMENT ROUTES
     // ========================================================================
@@ -190,5 +204,4 @@ Route::middleware('auth')->group(function () {
     // Route pour la carte d'étudiant
     Route::get('/students/{student}/id-card', [StudentController::class, 'idCard'])
         ->name('students.id_card');
-
 });

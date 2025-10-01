@@ -47,7 +47,5 @@
 
 {{-- Pagination --}}
 @if (isset($pagination) && $pagination)
-    <div class="mt-8">
-        {{ $pagination }}
-    </div>
+    <x-pagination :paginator="$pagination" :itemLabel="$itemLabel ?? 'éléments'" />
 @endif

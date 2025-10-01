@@ -88,7 +88,8 @@
                     'route' => 'classes.index',
                 ],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()">
+            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()"
+            :pagination="$classes" :itemLabel="'classes'">
 
                 @foreach ($classes as $classe)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
@@ -154,29 +155,6 @@
                     </tr>
                 @endforeach
             </x-table>
-
-            {{-- Enhanced Pagination --}}
-            @if ($classes->hasPages())
-                <div class="mt-8 bg-gray-50 rounded-lg p-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        {{-- Pagination Info --}}
-                        <div class="text-sm text-gray-700">
-                            Affichage de
-                            <span class="font-medium">{{ $classes->firstItem() }}</span>
-                            à
-                            <span class="font-medium">{{ $classes->lastItem() }}</span>
-                            sur
-                            <span class="font-medium">{{ $classes->total() }}</span>
-                            résultats
-                        </div>
-
-                        {{-- Pagination Links --}}
-                        <div class="flex justify-center sm:justify-end">
-                            {{ $classes->appends(request()->query())->links() }}
-                        </div>
-                    </div>
-                </div>
-            @endif
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">

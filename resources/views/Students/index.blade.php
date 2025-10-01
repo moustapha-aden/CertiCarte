@@ -19,10 +19,22 @@
                 <h1 class="text-2xl font-bold text-gray-800">Catalogue des Étudiants</h1>
             </div>
 
-            <x-button href="{{ route('students.create') }}" variant="primary" size="md"
-                icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
-                Nouvel Étudiant
-            </x-button>
+            <div class="flex flex-col sm:flex-row gap-3">
+                {{-- Import Students Button --}}
+                <button type="button" onclick="openImportModal()" 
+                    class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                    </svg>
+                    Importer des Étudiants
+                </button>
+
+                {{-- Add New Student Button --}}
+                <x-button href="{{ route('students.create') }}" variant="primary" size="md"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
+                    Nouvel Étudiant
+                </x-button>
+            </div>
         </div>
 
         {{-- Horizontal Divider --}}
@@ -46,13 +58,13 @@
 
                     {{-- Classe Filter --}}
                     <div class="flex items-center space-x-2">
-                        <label for="class_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Classe:</label>
-                        <select name="class_id" id="class_id" onchange="this.form.submit()"
+                        <label for="classe_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Classe:</label>
+                        <select name="classe_id" id="classe_id" onchange="this.form.submit()"
                             class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
                             <option value="">Toutes les classes</option>
                             @if (isset($allClasses) && is_iterable($allClasses))
                                 @foreach ($allClasses as $id => $label)
-                                    <option value="{{ $id }}" {{ request('class_id') == $id ? 'selected' : '' }}>
+                                    <option value="{{ $id }}" {{ request('classe_id') == $id ? 'selected' : '' }}>
                                         {{ $label }}
                                     </option>
                                 @endforeach
@@ -60,20 +72,10 @@
                         </select>
                     </div>
 
-                    {{-- Gender Filter --}}
-                    <div class="flex items-center space-x-2">
-                        <label for="gender" class="text-sm font-medium text-gray-700 whitespace-nowrap">Genre:</label>
-                        <select name="gender" id="gender" onchange="this.form.submit()"
-                            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[120px]">
-                            <option value="">Tous</option>
-                            <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Masculin</option>
-                            <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Féminin</option>
-                        </select>
-                    </div>
                 </div>
 
                 {{-- Reset Button --}}
-                @if (request()->hasAny(['search', 'class_id', 'gender']))
+                @if (request()->hasAny(['search', 'classe_id']))
                     <div class="flex justify-end">
                         <x-button type="button" variant="secondary" size="md"
                             onclick="window.location.href='{{ route('students.index') }}'"
@@ -101,7 +103,8 @@
                 ],
                 ['field' => 'gender', 'label' => 'Genre', 'sortable' => true, 'route' => 'students.index'],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()">
+            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()" 
+            :pagination="$students" :itemLabel="'étudiants'">
 
                 @foreach ($students as $student)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
@@ -137,8 +140,8 @@
                         {{-- Gender --}}
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $student->gender === 'male' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
-                                {{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $student->gender === 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
+                                {{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}
                             </span>
                         </td>
 
@@ -174,29 +177,6 @@
                     </tr>
                 @endforeach
             </x-table>
-
-            {{-- Enhanced Pagination --}}
-            @if ($students->hasPages())
-                <div class="mt-8 bg-gray-50 rounded-lg p-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        {{-- Pagination Info --}}
-                        <div class="text-sm text-gray-700">
-                            Affichage de
-                            <span class="font-medium">{{ $students->firstItem() }}</span>
-                            à
-                            <span class="font-medium">{{ $students->lastItem() }}</span>
-                            sur
-                            <span class="font-medium">{{ $students->total() }}</span>
-                            résultats
-                        </div>
-
-                        {{-- Pagination Links --}}
-                        <div class="flex justify-center sm:justify-end">
-                            {{ $students->appends(request()->query())->links() }}
-                        </div>
-                    </div>
-                </div>
-            @endif
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">
@@ -207,14 +187,14 @@
                     </path>
                 </svg>
                 <h3 class="text-lg font-semibold text-gray-700 mb-2">
-                    @if (request()->hasAny(['search', 'class_id', 'year']))
+                    @if (request()->hasAny(['search', 'classe_id', 'year']))
                         Aucun étudiant trouvé
                     @else
                         Aucun étudiant enregistré
                     @endif
                 </h3>
                 <p class="text-sm text-gray-600 mb-6">
-                    @if (request()->hasAny(['search', 'class_id', 'year']))
+                    @if (request()->hasAny(['search', 'classe_id', 'year']))
                         Aucun étudiant ne correspond aux critères de recherche.
                     @else
                         Commencez par ajouter votre premier étudiant.
@@ -227,4 +207,90 @@
             </div>
         @endif
     </x-card>
+
+    {{-- Import Modal --}}
+    <div id="importModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                {{-- Modal Header --}}
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Importer des Étudiants</h3>
+                    <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <form id="importForm" action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    
+                    {{-- File Input --}}
+                    <div>
+                        <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
+                            Sélectionner un fichier Excel/CSV
+                        </label>
+                        <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Formats acceptés: .xlsx, .xls, .csv (max 10MB)
+                        </p>
+                    </div>
+
+                    {{-- Instructions --}}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <h4 class="text-sm font-medium text-blue-800 mb-2">Format attendu:</h4>
+                        <ul class="text-xs text-blue-700 space-y-1">
+                            <li>• <strong>nom</strong> ou <strong>name</strong> (requis)</li>
+                            <li>• <strong>matricule</strong> (optionnel)</li>
+                            <li>• <strong>date_de_naissance</strong> ou <strong>date_of_birth</strong> (optionnel)</li>
+                            <li>• <strong>genre</strong> ou <strong>gender</strong> (masculin/féminin)</li>
+                            <li>• <strong>classe</strong> ou <strong>class</strong> (optionnel)</li>
+                            <li>• <strong>annee_scolaire</strong> ou <strong>school_year</strong> (optionnel)</li>
+                        </ul>
+                    </div>
+
+                    {{-- Modal Footer --}}
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeImportModal()"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                            Annuler
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
+                            Importer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- JavaScript for Modal --}}
+    <script>
+        function openImportModal() {
+            document.getElementById('importModal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+            document.getElementById('importForm').reset();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('importModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImportModal();
+            }
+        });
+
+        // Handle form submission with loading state
+        document.getElementById('importForm').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Import en cours...';
+            submitBtn.disabled = true;
+        });
+    </script>
 @endsection

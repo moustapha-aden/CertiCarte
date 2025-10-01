@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
         $classes = Classe::all();
         foreach ($classes as $classe) {
             Student::factory(2)->create([
-                'class_id' => $classe->id,
+                'classe_id' => $classe->id,
             ]);
         }
     }

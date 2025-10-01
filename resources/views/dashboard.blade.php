@@ -22,7 +22,7 @@
             {{-- Welcome Text --}}
             <div class="flex-grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">Bienvenue sur le Tableau de Bord</h1>
-                <p class="text-xl text-indigo-100 mb-4">Lycée de Balbala</p>
+                <p class="text-xl text-indigo-100 mb-4">Lycée Ahmed Farah Ali</p>
                 <p class="text-lg text-indigo-200">
                     Gérez efficacement vos classes et étudiants
                 </p>
@@ -175,25 +175,25 @@
                 </div>
             </div>
 
-            {{-- Reports --}}
+            {{-- Manage Users --}}
             <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
                 <div class="flex items-center space-x-3 mb-4">
                     <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
                             </path>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-purple-800">Rapports</h3>
+                    <h3 class="text-lg font-semibold text-purple-800">Gestion des Utilisateurs</h3>
                 </div>
-                <p class="text-sm text-purple-600 mb-4">Consultez les statistiques et rapports</p>
+                <p class="text-sm text-purple-600 mb-4">Gérez les comptes administrateurs et secrétaires</p>
                 <div class="flex space-x-2">
-                    <x-button href="#" variant="primary" size="sm">
-                        Statistiques
+                    <x-button href="{{ route('users.index') }}" variant="primary" size="sm">
+                        Voir tous
                     </x-button>
-                    <x-button href="#" variant="outline" size="sm">
-                        Exporter
+                    <x-button href="{{ route('users.create') }}" variant="outline" size="sm">
+                        Créer
                     </x-button>
                 </div>
             </div>

@@ -31,7 +31,7 @@ class StoreStudentRequest extends FormRequest
             'gender' => 'required|in:male,female',
             'pays' => 'nullable|string|max:255',
             'situation' => 'nullable|string|max:255',
-            'class_id' => 'required|exists:classes,id',
+            'classe_id' => 'required|exists:classes,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
@@ -56,8 +56,8 @@ class StoreStudentRequest extends FormRequest
             'situation.max' => 'La situation ne peut pas dépasser 255 caractères.',
             'gender.required' => 'Le genre est obligatoire.',
             'gender.in' => 'Le genre doit être masculin ou féminin.',
-            'class_id.required' => 'La classe est obligatoire.',
-            'class_id.exists' => 'La classe sélectionnée n\'existe pas.',
+            'classe_id.required' => 'La classe est obligatoire.',
+            'classe_id.exists' => 'La classe sélectionnée n\'existe pas.',
             'photo.image' => 'Le fichier doit être une image.',
             'photo.mimes' => 'L\'image doit être au format JPEG, PNG, JPG, GIF ou SVG.',
             'photo.max' => 'L\'image ne peut pas dépasser 2MB.',

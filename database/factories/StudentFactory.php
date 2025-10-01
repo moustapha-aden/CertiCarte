@@ -21,10 +21,10 @@ class StudentFactory extends Factory
             'situation' => fake()->randomElement(['NR', 'R']),
             'matricule' => strtoupper(fake()->lexify('??')).fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
-            'gender' => fake()->randomElement(['male', 'female']),
+            'gender' => fake()->randomElement(['M', 'F']),
             'pays' => fake()->country(),
             'photo' => null,
-            'class_id' => fake()->numberBetween(1, 9),
+            'classe_id' => fake()->numberBetween(1, 9),
         ];
     }
 }

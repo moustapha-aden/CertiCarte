@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Connexion - Lycée de Balbala')</title>
-    <meta name="description" content="@yield('description', 'Système de gestion scolaire du Lycée de Balbala')">
+    <title>@yield('title', 'Connexion - Lycée Ahmed Farah Ali')</title>
+    <meta name="description" content="@yield('description', 'Système de gestion scolaire du Lycée Ahmed Farah Ali')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Tailwind CSS --}}

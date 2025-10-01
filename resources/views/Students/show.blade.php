@@ -21,7 +21,7 @@
                 <h1 class="text-4xl font-extrabold mb-2">{{ $student->name }}</h1>
                 <p class="text-xl text-indigo-100 mb-2">Matricule: {{ $student->matricule ?? 'N/A' }}</p>
                 <p class="text-lg text-indigo-200">
-                    {{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }} •
+                    {{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }} •
                     {{ $student->situation === 'NR' ? 'Non Redoublant' : 'Redoublant' }}
                 </p>
             </div>
@@ -143,7 +143,7 @@
                     </div>
                     <h3 class="text-sm font-semibold text-pink-700 uppercase tracking-wide">Genre</h3>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}</p>
             </div>
         </div>
 

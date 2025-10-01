@@ -208,8 +208,8 @@
                         {{-- Gender --}}
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $student->gender === 'male' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
-                                {{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $student->gender === 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
+                                {{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}
                             </span>
                         </td>
 

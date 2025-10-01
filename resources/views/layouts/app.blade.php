@@ -4,15 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Lycée de Balbala')</title>
-    <meta name="description" content="@yield('description', 'Système de gestion scolaire du Lycée de Balbala')">
+    <title>@yield('title', 'Lycée Ahmed Farah Ali')</title>
+    <meta name="description" content="@yield('description', 'Système de gestion scolaire du Lycée Ahmed Farah Ali')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Tailwind CSS --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    {{-- Alpine.js --}}
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {{-- Vite Assets --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- Additional CSS --}}
     @stack('styles')

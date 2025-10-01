@@ -13,7 +13,7 @@ use Illuminate\View\View;
  * Handles CRUD operations for user accounts including creation,
  * modification, viewing, and deletion of user records.
  *
- * @author Lycée de Balbala
+ * @author Lycée Ahmed Farah Ali
  *
  * @version 1.0.0
  */

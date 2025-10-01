@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Imports\StudentsImport;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
@@ -17,6 +18,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class StudentController extends Controller
 {
@@ -43,13 +46,8 @@ class StudentController extends Controller
         $students = Student::with('classe');
 
         // Filter by specific class
-        if ($request->filled('class_id')) {
-            $students->where('class_id', $request->input('class_id'));
-        }
-
-        // Filter by gender
-        if ($request->filled('gender')) {
-            $students->where('gender', $request->input('gender'));
+        if ($request->filled('classe_id')) {
+            $students->where('classe_id', $request->input('classe_id'));
         }
 
         // Search by name or matricule
@@ -356,7 +354,7 @@ class StudentController extends Controller
 
             // Informations du lycée
             $lyceeInfo = [
-                'name' => 'Lycée de Balbala',
+                'name' => 'Lycée Ahmed Farah Ali',
                 'country' => 'République de Djibouti',
             ];
 
@@ -481,5 +479,82 @@ class StudentController extends Controller
         $base = $student->id.$student->matricule.$date->format('Ymd');
 
         return 'ID-'.strtoupper(substr(md5($base), 0, 8));
+    }
+
+    /**
+     * Import students from Excel/CSV file.
+     *
+     * Validates the uploaded file and processes it using the StudentsImport class.
+     * Handles both successful imports and errors gracefully.
+     *
+     * @param  Request  $request  The HTTP request containing the uploaded file
+     * @return RedirectResponse Redirect to students index with success/error message
+     *
+     * @throws \Exception If import process fails
+     */
+    public function import(Request $request): RedirectResponse
+    {
+        try {
+            // Validate the uploaded file
+            $request->validate([
+                'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+            ], [
+                'file.required' => 'Veuillez sélectionner un fichier à importer.',
+                'file.file' => 'Le fichier sélectionné n\'est pas valide.',
+                'file.mimes' => 'Le fichier doit être au format Excel (.xlsx, .xls) ou CSV.',
+                'file.max' => 'Le fichier ne doit pas dépasser 10MB.',
+            ]);
+
+            $file = $request->file('file');
+
+            // Log the import attempt
+            Log::info('Starting student import from file: '.$file->getClientOriginalName());
+
+            // Import the file using Laravel Excel
+            $import = new StudentsImport;
+            Excel::import($import, $file);
+
+            // Get import statistics
+            $importedCount = $import->getRowCount();
+            $errors = $import->errors();
+            $failures = $import->failures();
+
+            // Prepare success message
+            $message = 'Import terminé avec succès ! ';
+            $message .= "{$importedCount} étudiant(s) importé(s).";
+
+            if (! empty($errors)) {
+                $message .= ' '.count($errors).' erreur(s) rencontrée(s).';
+            }
+
+            if (! empty($failures)) {
+                $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
+            }
+
+            Log::info("Student import completed: {$importedCount} students imported");
+
+            return redirect()->route('students.index')
+                ->with('success', $message);
+        } catch (ValidationException $e) {
+            // Handle validation errors
+            $failures = $e->failures();
+            $errorMessage = "Erreurs de validation détectées :\n";
+
+            foreach ($failures as $failure) {
+                $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
+            }
+
+            Log::error('Student import validation errors: '.$errorMessage);
+
+            return redirect()->back()
+                ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
+                ->with('validation_errors', $failures);
+        } catch (Exception $e) {
+            Log::error('Student import failed: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
+
+            return redirect()->back()
+                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer.');
+        }
     }
 }

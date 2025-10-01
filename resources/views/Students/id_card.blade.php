@@ -408,7 +408,7 @@
                             <div class="info-line">
                                 <div class="info-line-content">
                                     <div class="info-label">Sexe</div>
-                                    <div class="info-value">{{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}</div>
+                                    <div class="info-value">{{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}</div>
                                 </div>
                             </div>
 

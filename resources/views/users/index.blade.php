@@ -81,7 +81,7 @@
                 ['label' => 'Rôle'],
                 ['label' => 'Date de création'],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]">
+            ]" :pagination="$users" :itemLabel="'utilisateurs'">
                 @foreach ($users as $user)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
                         {{-- Avatar --}}
@@ -139,13 +139,6 @@
                     </tr>
                 @endforeach
             </x-table>
-
-            {{-- Pagination --}}
-            @if ($users->hasPages())
-                <div class="mt-8">
-                    {{ $users->appends(request()->query())->links() }}
-                </div>
-            @endif
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">

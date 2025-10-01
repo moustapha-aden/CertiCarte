@@ -14,7 +14,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-xl font-extrabold text-gray-900 tracking-tight">Lycée de Balbala</h1>
+                        <h1 class="text-xl font-extrabold text-gray-900 tracking-tight">Lycée Ahmed Farah Ali</h1>
                         <p class="text-xs text-gray-500 font-medium">@yield('page-subtitle', 'Système de Gestion')</p>
                     </div>
                 </a>

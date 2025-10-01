@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Connexion - Lycée de Balbala')
+@section('title', 'Connexion - Lycée Ahmed Farah Ali')
 @section('description', 'Accédez à votre espace de gestion administrative')
 
 @section('content')
@@ -16,7 +16,7 @@
                 </svg>
             </div>
             <h1 class="text-2xl font-bold text-gray-900 mb-2">Connexion</h1>
-            <p class="text-gray-600">Lycée de Balbala</p>
+            <p class="text-gray-600">Lycée Ahmed Farah Ali</p>
         </div>
 
         {{-- Login Form --}}
@@ -92,7 +92,7 @@
 
         {{-- Footer --}}
         <div class="mt-8 pt-6 border-t border-gray-200 text-center">
-            <p class="text-xs text-gray-500">© 2025 Lycée de Balbala</p>
+            <p class="text-xs text-gray-500">© 2025 Lycée Ahmed Farah Ali</p>
         </div>
     </div>
 

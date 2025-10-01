@@ -29,7 +29,7 @@ class UpdateStudentRequest extends FormRequest
             'matricule' => 'required|string|max:10|unique:students,matricule,'.$this->route('student')->id,
             'date_of_birth' => 'required|date|before:today',
             'gender' => 'required|in:male,female',
-            'class_id' => 'required|exists:classes,id',
+            'classe_id' => 'required|exists:classes,id',
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
@@ -52,8 +52,8 @@ class UpdateStudentRequest extends FormRequest
             'date_of_birth.before' => 'La date de naissance doit être antérieure à aujourd\'hui.',
             'gender.required' => 'Le genre est obligatoire.',
             'gender.in' => 'Le genre doit être masculin ou féminin.',
-            'class_id.required' => 'La classe est obligatoire.',
-            'class_id.exists' => 'La classe sélectionnée n\'existe pas.',
+            'classe_id.required' => 'La classe est obligatoire.',
+            'classe_id.exists' => 'La classe sélectionnée n\'existe pas.',
             'photo.image' => 'Le fichier doit être une image.',
             'photo.mimes' => 'L\'image doit être au format JPEG, PNG, JPG, GIF ou SVG.',
             'photo.max' => 'L\'image ne peut pas dépasser 2MB.',

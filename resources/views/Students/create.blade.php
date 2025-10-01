@@ -49,7 +49,7 @@
                         placeholder="Sélectionner une année scolaire" required id="school_year_select" />
 
                     {{-- Class Dropdown --}}
-                    <x-input name="class_id" type="select" label="Classe" :options="$classes" :value="old('class_id')"
+                    <x-input name="classe_id" type="select" label="Classe" :options="$classes" :value="old('classe_id')"
                         placeholder="Sélectionner une classe" required id="class_select" />
                 </div>
             </div>

@@ -213,10 +213,10 @@ class ClasseController extends Controller
             }
 
             $classLabel = $classe->label;
-            $classId = $classe->id;
+            $classeId = $classe->id;
 
             $classe->delete();
-            Log::info('Classe supprimée: '.$classLabel.' (ID: '.$classId.')');
+            Log::info('Classe supprimée: '.$classLabel.' (ID: '.$classeId.')');
 
             return redirect()->route('classes.index')
                 ->with('success', 'La classe "'.$classLabel.'" a été supprimée avec succès.');

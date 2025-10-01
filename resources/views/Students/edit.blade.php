@@ -33,7 +33,7 @@
                         required />
                     <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule', $student->matricule)" />
                     <x-input name="date_of_birth" type="date" label="Date de naissance" :value="old('date_of_birth', $student->date_of_birth?->format('Y-m-d'))" required />
-                    <x-input name="gender" type="select" label="Genre" :options="['male' => 'Masculin', 'female' => 'Féminin']" :value="old('gender', $student->gender)" required />
+                    <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender', $student->gender)" required />
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
                         placeholder="Sélectionner une année scolaire" required id="school_year_select" />
 
                     {{-- Class Dropdown --}}
-                    <x-input name="class_id" type="select" label="Classe" :options="$classes" :value="old('class_id', $student->class_id)"
+                    <x-input name="classe_id" type="select" label="Classe" :options="$classes" :value="old('classe_id', $student->classe_id)"
                         placeholder="Sélectionner une classe" required id="class_select" />
                 </div>
             </div>
