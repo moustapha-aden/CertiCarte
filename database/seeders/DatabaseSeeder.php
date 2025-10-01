@@ -40,9 +40,8 @@ class DatabaseSeeder extends Seeder
 
         $classes = Classe::all();
         foreach ($classes as $classe) {
-            Student::factory(3)->create([
+            Student::factory(2)->create([
                 'class_id' => $classe->id,
-                'school_year_id' => $classe->year_id,
             ]);
         }
     }

@@ -32,7 +32,6 @@
             height: 54mm;
             border-radius: 3mm;
             overflow: hidden;
-            background-image: url('http://127.0.0.1:8000/images/photo_carte.jpg');
             margin: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             position: relative;
@@ -45,105 +44,74 @@
         .recto {
             width: 100%;
             height: 100%;
-            padding: 0;
+            padding: 5mm;
             position: relative;
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
-        }
-
-        /* Image de fond */
-        .recto-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            background-image: url('{{ $lyceePhotoUrl ?? "" }}');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.12;
-        }
-
-        /* Overlay pour contraste */
-        .recto-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(30, 64, 175, 0.85) 0%, rgba(59, 130, 246, 0.75) 100%);
-            z-index: 2;
-        }
-
-        /* Motifs décoratifs */
-        .recto-pattern-1 {
-            position: absolute;
-            top: -15mm;
-            right: -15mm;
-            width: 45mm;
-            height: 45mm;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 50%;
-            z-index: 3;
-        }
-
-        .recto-pattern-2 {
-            position: absolute;
-            bottom: -18mm;
-            left: -18mm;
-            width: 50mm;
-            height: 50mm;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 50%;
-            z-index: 3;
+            color: white;
         }
 
         /* Contenu principal */
         .recto-content {
-            position: relative;
-            z-index: 10;
             height: 100%;
-            padding: 5mm;
             color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Logo section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2mm;
+        }
+
+        .school-logo {
+            width: 12mm;
+            height: 12mm;
+            border-radius: 2mm;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: white;
+            padding: 1mm;
         }
 
         /* En-tête */
         .recto-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
             padding-bottom: 2.5mm;
             margin-bottom: 2mm;
+            text-align: center;
         }
 
         .recto-title {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
             line-height: 1.2;
             margin: 0 0 1mm 0;
             letter-spacing: 0.2px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
 
         .recto-subtitle {
-            font-size: 7pt;
-            color: rgba(255, 255, 255, 0.85);
+            font-size: 6.5pt;
+            color: rgba(255, 255, 255, 0.9);
             text-transform: uppercase;
             letter-spacing: 0.8px;
             margin: 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         /* Type de carte */
         .card-type-badge {
             text-align: center;
-            font-size: 7pt;
+            font-size: 6.5pt;
             color: white;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             font-weight: bold;
-            padding: 1.5mm 0;
-            margin: 2mm 0;
-            background: rgba(255, 255, 255, 0.15);
+            padding: 1.2mm 0;
+            margin: 1.5mm 0;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 2mm;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
         }
 
         /* Section étudiant */
@@ -169,33 +137,36 @@
         }
 
         .student-photo {
-            width: 19mm;
-            height: 19mm;
+            width: 18mm;
+            height: 18mm;
             border-radius: 2mm;
             border: 2px solid white;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            object-fit: cover;
         }
 
         .student-name {
-            font-size: 8pt;
+            font-size: 8.5pt;
             font-weight: bold;
             line-height: 1.2;
             margin: 0 0 1.5mm 0;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            color: white;
         }
 
         .student-detail {
-            font-size: 7.5pt;
-            line-height: 1.4;
-            margin: 0.5mm 0;
+            font-size: 7pt;
+            line-height: 1.3;
+            margin: 0.8mm 0;
             color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
         }
 
         .detail-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 6.5pt;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 6pt;
             text-transform: uppercase;
             letter-spacing: 0.3px;
+            font-weight: 600;
         }
 
         /* Footer année */
@@ -367,12 +338,18 @@
             <!-- RECTO -->
             <div class="card-wrapper">
                 <div class="recto">
-                    <div class="recto-background"></div>
-                    <div class="recto-overlay"></div>
-                    <div class="recto-pattern-1"></div>
-                    <div class="recto-pattern-2"></div>
-
                     <div class="recto-content">
+                        <!-- Logo -->
+                        <div class="logo-section">
+                            @if($logoUrl)
+                                <img src="{{ $logoUrl }}" alt="Logo" class="school-logo">
+                            @else
+                                <div class="school-logo" style="display: flex; align-items: center; justify-content: center; font-size: 8pt; font-weight: bold;">
+                                    LOGO
+                                </div>
+                            @endif
+                        </div>
+
                         <!-- En-tête -->
                         <div class="recto-header">
                             <div class="recto-title">{{ $lyceeInfo['name'] }}</div>
@@ -381,7 +358,7 @@
 
                         <!-- Type de carte -->
                         <div class="card-type-badge">
-                            CARTE D'IDENTITÉ SCOLAIRE
+                            Carte d'identité scolaire
                         </div>
 
                         <!-- Section étudiant -->
@@ -431,7 +408,7 @@
                             <div class="info-line">
                                 <div class="info-line-content">
                                     <div class="info-label">Sexe</div>
-                                    <div class="info-value">{{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}</div>
+                                    <div class="info-value">{{ $student->gender === 'male' ? 'Masculin' : 'Féminin' }}</div>
                                 </div>
                             </div>
 

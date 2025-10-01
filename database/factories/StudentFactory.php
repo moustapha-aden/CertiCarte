@@ -17,7 +17,7 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => fake()->firstName().' '.fake()->lastName(),
             'situation' => fake()->randomElement(['NR', 'R']),
             'matricule' => strtoupper(fake()->lexify('??')).fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),

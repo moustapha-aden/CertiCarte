@@ -320,9 +320,7 @@ class StudentController extends Controller
      * Returns the PDF as a stream for inline browser display.
      *
      * @param  Student  $student  The student model instance to generate certificate for
-     * @return \Illuminate\Http\Response PDF stream response for inline display
-     *
-     * @throws \Exception If PDF generation fails or GD extension is not available
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function generateCertificate(Student $student)
     {
@@ -350,57 +348,138 @@ class StudentController extends Controller
         }
     }
 
-    public function idCard(Student $student): Response
+    public function idCard(Student $student)
     {
-        // Charger les relations nécessaires
-        $student->load('classe.schoolYear');
-
-        // Image de fond du lycée (Base64)
         try {
-            $path = public_path('images/lycee_balbala.jpg');
+            // Charger les relations nécessaires
+            $student->load('classe.schoolYear');
+
+            // Informations du lycée
+            $lyceeInfo = [
+                'name' => 'Lycée de Balbala',
+                'country' => 'République de Djibouti',
+            ];
+
+            // Photo de l'étudiant
+            $avatar = $this->getStudentPhoto($student);
+
+            // Année scolaire
+            $school_year = optional($student->classe->schoolYear)->year ?? 'Année Inconnue';
+
+            // Date actuelle
+            $currentDate = Carbon::now();
+
+            // Image de fond du lycée (Base64)
+            $lyceePhotoUrl = null;
+            try {
+                $path = public_path('images/lycee_balbala.jpg');
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $lyceePhotoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to load school background: '.$e->getMessage());
+            }
+
+            // Logo de l'école (photo_carte.jpg)
+            $logoUrl = null;
+            try {
+                $logoPath = public_path('images/photo_carte.jpg');
+                if (file_exists($logoPath)) {
+                    $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+                    $data = file_get_contents($logoPath);
+                    $logoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to load school logo: '.$e->getMessage());
+            }
+
+            // Générer le PDF
+            $pdf = Pdf::loadView('students.id_card', compact(
+                'student',
+                'lyceeInfo',
+                'avatar',
+                'school_year',
+                'currentDate',
+                'lyceePhotoUrl',
+                'logoUrl'
+            ));
+
+            // Nom du fichier
+            $filename = 'Carte_Etudiant_'.$student->matricule.'_'.$currentDate->format('Ymd').'.pdf';
+
+            // Retourner le PDF
+            return $pdf->stream($filename);
+        } catch (\Exception $e) {
+            Log::error('ID Card generation failed for student '.$student->id.': '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
+
+            return redirect()->back()
+                ->with('error', 'Erreur lors de la génération de la carte d\'étudiant: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Get student photo with fallback to default avatar.
+     */
+    private function getStudentPhoto(Student $student): string
+    {
+        try {
+            if ($student->photo && Storage::disk('public')->exists($student->photo)) {
+                $path = storage_path('app/public/'.$student->photo);
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+
+                    return 'data:image/'.$type.';base64,'.base64_encode($data);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to load student photo: '.$e->getMessage());
+        }
+
+        // Fallback to default avatar or generated avatar
+        try {
+            $path = public_path('images/default-avatar.png');
             if (file_exists($path)) {
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
-                $lyceePhotoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
-            } else {
-                $lyceePhotoUrl = null;
+
+                return 'data:image/'.$type.';base64,'.base64_encode($data);
             }
         } catch (\Exception $e) {
-            $lyceePhotoUrl = null;
+            Log::warning('Failed to load default avatar: '.$e->getMessage());
         }
 
-        // Avatar de l’élève (Base64)
-        if ($student->photo && Storage::disk('public')->exists($student->photo)) {
-            $path = storage_path('app/public/'.$student->photo);
-        } else {
-            $path = public_path('images/default-avatar.png');
-        }
+        // Ultimate fallback - generate a simple colored square
+        return $this->generateFallbackAvatar($student);
+    }
 
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
-        $avatar = 'data:image/'.$type.';base64,'.base64_encode($data);
+    /**
+     * Generate a fallback avatar for the student.
+     */
+    private function generateFallbackAvatar(Student $student): string
+    {
+        $colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
+        $color = $colors[ord(substr($student->name, 0, 1)) % count($colors)];
 
-        // Année scolaire
-        $schoolYearObject = optional($student->classe)->schoolYear;
-        $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
+        $svg = '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" fill="'.$color.'"/>
+            <text x="50" y="50" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">'
+            .strtoupper(substr($student->name, 0, 1)).'</text>
+        </svg>';
 
-        // Infos lycée
-        $lyceeInfo = [
-            'name' => 'Lycée de Balbala',
-            'ministry' => 'Ministère de l\'Éducation Nationale',
-            'country' => 'République de Djibouti',
-            'city' => 'Balbala',
-            'proviseur' => 'Nom et Prénom du Proviseur',
-        ];
+        return 'data:image/svg+xml;base64,'.base64_encode($svg);
+    }
 
-        $currentDate = Carbon::now();
+    /**
+     * Generate a unique card number for the student.
+     */
+    private function generateCardNumber(Student $student, Carbon $date): string
+    {
+        $base = $student->id.$student->matricule.$date->format('Ymd');
 
-        // Génération du PDF
-        $pdf = Pdf::setOptions(['isRemoteEnabled' => true])
-            ->loadView('students.id_card', compact('student', 'school_year', 'currentDate', 'lyceeInfo', 'lyceePhotoUrl', 'avatar'));
-
-        $filename = 'Carte_Eleve_'.$student->matricule.'_'.$currentDate->format('Ymd').'.pdf';
-
-        return $pdf->stream($filename);
+        return 'ID-'.strtoupper(substr(md5($base), 0, 8));
     }
 }

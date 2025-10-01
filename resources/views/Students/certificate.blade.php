@@ -7,8 +7,8 @@
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
+            font-size: 16pt;
             margin: 50px 80px;
-            font-size: 14pt;
             line-height: 1.6;
         }
 
@@ -24,6 +24,8 @@
             font-weight: bold;
             margin: 40px 0;
             text-transform: uppercase;
+            border: 1px solid #000;
+            background-color: #f0f0f0;
         }
 
         .content {
@@ -66,27 +68,27 @@
     <!-- CONTENT -->
     <div class="content">
         <p>
-            Je soussigné, <span style="font-weight: bold;">Mr. MOHAMED HOUSSEIN DIRIEH</span>,
+            Je soussigné, <strong>Mr. MOHAMED HOUSSEIN DIRIEH</strong>,
             proviseur du Lycée Ahmed Farah Ali,
-            certifie que l’élève : <span style="font-weight: bold;">{{ $student->name }}</span>
+            certifie que l&apos;élève : <strong>{{ $student->name }}</strong>
         </p>
 
         <p style="margin-top: 40px;">
-            Né(e) le <span style="font-weight: bold;">
+            Né(e) le <strong>
                 {{ optional($student->date_of_birth)->format('d/m/Y') ?? 'Date Inconnue' }}
-            </span>
-            à <span style="font-weight: bold;">
+            </strong>
+            à <strong>
                 {{ $student->pays ?? 'Djibouti' }}
-            </span>
+            </strong>
 
             est inscrit(e) régulièrement en classe de
-            <span style="font-weight: bold;">
+            <strong>
                 {{ $student->classe->label ?? 'Classe Inconnue' }}
-            </span>
-            durant l’année scolaire
-            <span style="font-weight: bold;">
+            </strong>
+            durant l&apos;année scolaire
+            <strong>
                 {{ $school_year }}
-            </span>.
+            </strong>.
         </p>
 
         <p style="margin-top: 40px;">
