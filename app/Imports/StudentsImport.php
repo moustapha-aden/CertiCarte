@@ -65,10 +65,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                 $gender = $row['genre'] ?? $row['gender'] ?? $row['sexe'] ?? null;
                 if ($gender) {
                     $gender = strtolower(trim($gender));
-                    if (in_array($gender, ['m', 'masculin', 'male', 'homme'])) {
-                        $gender = 'male';
-                    } elseif (in_array($gender, ['f', 'feminin', 'female', 'femme'])) {
-                        $gender = 'female';
+                    if (in_array($gender, ['M', 'm', 'masculin', 'male', 'homme'])) {
+                        $gender = 'M';
+                    } elseif (in_array($gender, ['F', 'f', 'feminin', 'female', 'femme'])) {
+                        $gender = 'F';
                     } else {
                         $gender = null;
                     }
@@ -175,9 +175,9 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
             'date_de_naissance' => 'nullable|date',
             'date_of_birth' => 'nullable|date',
             'birth_date' => 'nullable|date',
-            'genre' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme',
-            'gender' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme',
-            'sexe' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme',
+            'genre' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
+            'gender' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
+            'sexe' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
             'classe' => 'nullable|string|max:255',
             'class' => 'nullable|string|max:255',
             'class_name' => 'nullable|string|max:255',
@@ -207,6 +207,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
             'birth_date.date' => 'La date de naissance doit être une date valide.',
             'genre.in' => 'Le genre doit être masculin ou féminin.',
             'gender.in' => 'Le genre doit être masculin ou féminin.',
+            'sexe.in' => 'Le genre doit être masculin ou féminin.',
             'sexe.in' => 'Le genre doit être masculin ou féminin.',
         ];
     }

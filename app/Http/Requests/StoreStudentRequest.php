@@ -28,7 +28,7 @@ class StoreStudentRequest extends FormRequest
             'name' => 'required|string|max:255',
             'matricule' => 'required|string|max:10|unique:students',
             'date_of_birth' => 'required|date|before:today',
-            'gender' => 'required|in:male,female',
+            'gender' => 'required|in:M,F',
             'pays' => 'nullable|string|max:255',
             'situation' => 'nullable|string|max:255',
             'classe_id' => 'required|exists:classes,id',

@@ -28,7 +28,7 @@ class UpdateStudentRequest extends FormRequest
             'name' => 'required|string|max:255',
             'matricule' => 'required|string|max:10|unique:students,matricule,'.$this->route('student')->id,
             'date_of_birth' => 'required|date|before:today',
-            'gender' => 'required|in:male,female',
+            'gender' => 'required|in:M,F',
             'classe_id' => 'required|exists:classes,id',
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
