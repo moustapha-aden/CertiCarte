@@ -1,61 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CertiCarte
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive school management system built with Laravel for educational institutions.
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+CertiCarte is a modern web application designed to streamline school administration and student management. The system provides administrators with tools to manage students, classes, school years, and users efficiently. Built with Laravel 12 and featuring a responsive design with Tailwind CSS, CertiCarte offers an intuitive interface for educational institutions to maintain accurate student records and academic data.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Student Management**: Complete CRUD operations for student records including personal information, photos, and academic details
+- **Class Management**: Organize students into classes with proper academic year associations
+- **School Year Management**: Track academic periods and organize classes by school years
+- **User Management**: Admin user system with authentication and role-based access
+- **Dashboard Analytics**: Overview of key metrics including student counts, class statistics, and recent activity
+- **Responsive Design**: Modern UI built with Tailwind CSS and Alpine.js for optimal user experience
+- **PDF Generation**: Built-in PDF generation capabilities for reports and certificates
+- **Photo Management**: Student photo upload and automatic avatar generation
+- **Dynamic Forms**: AJAX-powered forms for seamless user interactions
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend**: Laravel 12 (PHP 8.2+)
+- **Frontend**: Tailwind CSS, Alpine.js
+- **Database**: MySQL/SQLite (configurable)
+- **PDF Generation**: DomPDF
+- **Authentication**: Laravel's built-in authentication system
+- **Testing**: PHPUnit
+- **Code Quality**: Laravel Pint
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Prerequisites
 
-## Laravel Sponsors
+- PHP 8.2 or higher
+- Composer
+- Node.js and npm
+- MySQL or SQLite
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Setup Instructions
 
-### Premium Partners
+1. **Clone the repository**
+   ```bash
+   git clone [repository-url]
+   cd CertiCarte
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment configuration**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Database setup**
+   ```bash
+   # Configure your database in .env file
+   php artisan migrate
+   php artisan db:seed
+   ```
+
+6. **Storage setup**
+   ```bash
+   php artisan storage:link
+   ```
+
+7. **Build assets**
+   ```bash
+   npm run build
+   ```
+
+8. **Start the development server**
+   ```bash
+   php artisan serve
+   ```
+
+## Usage
+
+### Accessing the Application
+
+1. Navigate to `http://localhost:8000` in your browser
+2. Login with your admin credentials
+3. Access the dashboard to view system overview and statistics
+
+### Key Functionalities
+
+- **Dashboard**: View system statistics, recent activity, and quick access to all modules
+- **Student Management**: Add, edit, view, and delete student records
+- **Class Management**: Create and manage classes within school years
+- **User Management**: Admin user account management
+- **Reports**: Generate PDF reports and certificates
+
+### Default Credentials
+
+[Replace with actual default admin credentials or setup instructions]
+
+## Configuration
+
+### Environment Variables
+
+Key configuration options in `.env`:
+
+```env
+APP_NAME="CertiCarte"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=certicarte
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+```
+
+### File Storage
+
+- Student photos are stored in `storage/app/public/photos`
+- Ensure proper permissions are set for the storage directory
+- Run `php artisan storage:link` to create symbolic links
+
+### Database Configuration
+
+The application supports both MySQL and SQLite databases. Configure your preferred database in the `.env` file and run migrations accordingly.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+We welcome contributions to CertiCarte! Please follow these guidelines:
 
-## Code of Conduct
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Development Guidelines
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Follow PSR-12 coding standards
+- Write tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

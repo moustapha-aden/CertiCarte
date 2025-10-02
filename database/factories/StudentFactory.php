@@ -17,12 +17,13 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => fake()->firstName().' '.fake()->lastName(),
             'situation' => fake()->randomElement(['NR', 'R']),
-            'matricule' => strtoupper(fake()->lexify('??')) . fake()->unique()->numberBetween(1000, 9999),
+            'matricule' => strtoupper(fake()->lexify('??')).fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
-            'gender' => fake()->randomElement(['male', 'female']),
-            'photo' => fake()->imageUrl(),
+            'gender' => fake()->randomElement(['M', 'F']),
+            'pays' => fake()->country(),
+            'photo' => null,
             'classe_id' => fake()->numberBetween(1, 9),
         ];
     }

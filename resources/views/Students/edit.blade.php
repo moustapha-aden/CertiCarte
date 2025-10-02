@@ -1,141 +1,197 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modification Étudiant : {{ $student->name ?? 'Dossier' }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen">
+@extends('layouts.app')
 
-    {{-- HEADER (En-tête Simple et Unique) --}}
-    <header class="bg-white sticky top-0 z-10 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+@section('title', 'Modifier l\'Étudiant - ' . $student->name)
+@section('page-subtitle', 'Modification d\'Étudiant')
 
-                {{-- Titre / Logo --}}
-                <div class="flex items-center space-x-4">
-                    <div class="text-xl font-extrabold text-gray-900 tracking-tight">Lycée de Balbala 🎓</div>
-                    <p class="text-xs text-gray-500 font-medium hidden sm:block">Modification de Dossier Élève</p>
-                </div>
+@section('content')
+    <x-breadcrumb :items="[
+        ['label' => 'Étudiants', 'url' => route('students.index')],
+        ['label' => $student->name, 'url' => route('students.show', $student)],
+        ['label' => 'Modifier'],
+    ]" />
 
-                {{-- Actions / Profil (Simplifié) --}}
-                <div class="flex items-center space-x-4">
-                    {{-- Bouton Retour --}}
-                    <a href="{{ route('students.index') }}"
-                       class="px-3 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition duration-200 text-sm">
-                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        Retour Liste
-                    </a>
+    <x-card title="Modifier l'Étudiant" subtitle="Modification des informations de {{ $student->name }}"
+        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+        class="mb-8">
 
-                    {{-- Déconnexion --}}
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200">
-                            Déconnexion
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </header>
+        <form method="POST" action="{{ route('students.update', $student) }}" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+            @method('PUT')
 
-    {{-- MAIN CONTENT (Contenu du Formulaire) --}}
-    <main class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
-
-            {{-- Titre du Formulaire --}}
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-6 border-b pb-3 flex items-center">
-                <svg class="w-7 h-7 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                <span>Modification : {{ $student->name }}</span>
-            </h1>
-
-            <form action="{{ route('students.update', $student->id) }}" method="POST" class="space-y-6" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-
-                {{-- Nom Complet (name) --}}
-                <div>
-                    <label for="name" class="block text-sm font-semibold text-gray-700">Nom Complet</label>
-                    <input type="text" name="name" id="name"
-                            value="{{ old('name', $student->name) }}" required
-                            class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
-                    @error('name')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            {{-- Personal Information Section --}}
+            <div class="border-b border-gray-200 pb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span>Informations Personnelles</span>
+                </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Date de Naissance (date_of_birth) --}}
-                    <div>
-                        <label for="date_of_birth" class="block text-sm font-semibold text-gray-700">Date de Naissance</label>
-                        <input type="date" name="date_of_birth" id="date_of_birth"
-                                value="{{ old('date_of_birth', \Carbon\Carbon::parse($student->date_of_birth)->format('Y-m-d')) }}" required
-                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
-                        @error('date_of_birth')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Genre (gender) --}}
-                    <div>
-                        <label for="gender" class="block text-sm font-semibold text-gray-700">Genre</label>
-                        <select name="gender" id="gender" required
-                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
-                            <option value="">Sélectionnez le genre</option>
-                            <option value="male" {{ old('gender', $student->gender) == 'male' ? 'selected' : '' }}>Masculin (M)</option>
-                            <option value="female" {{ old('gender', $student->gender) == 'female' ? 'selected' : '' }}>Féminin (F)</option>
-                        </select>
-                        @error('gender')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name', $student->name)"
+                        required />
+                    <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule', $student->matricule)" />
+                    <x-input name="date_of_birth" type="date" label="Date de naissance" :value="old('date_of_birth', $student->date_of_birth?->format('Y-m-d'))" required />
+                    <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender', $student->gender)" required />
                 </div>
-
-                {{-- Classe (classe_id) --}}
-                <div>
-                    <label for="classe_id" class="block text-sm font-semibold text-gray-700">Classe</label>
-                    <select name="classe_id" id="classe_id" required
-                            class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
-                        <option value="">Sélectionnez une classe</option>
-
-                        {{-- LA CORRECTION CLÉ : Utilisation de la clé ($id) et de la valeur ($label) --}}
-                        @foreach ($classes as $id => $label)
-                            <option value="{{ $id }}" {{ old('classe_id', $student->classe_id) == $id ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('classe_id')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Champ pour l'upload de photo (Optionnel) --}}
-                <div>
-                    <label for="photo" class="block text-sm font-semibold text-gray-700">Mettre à jour la photo (Optionnel)</label>
-                    <input type="file" name="photo" id="photo" accept="image/*"
-                            class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white file:mr-4 file:py-3 file:px-4 file:rounded-r-none file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 focus:outline-none transition duration-150">
-                    <p class="text-xs text-gray-500 mt-1">La photo actuelle sera remplacée si un nouveau fichier est sélectionné.</p>
-                    @error('photo')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-
-                <div class="pt-4">
-                    <button type="submit" class="w-full px-4 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md flex items-center justify-center space-x-2 transform hover:scale-[1.005]">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span>Enregistrer les Modifications</span>
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-6 text-center text-sm text-gray-500 border-t pt-4">
-                <a href="{{ route('classes.students', $student->classe_id) }}" class="text-indigo-600 hover:text-indigo-800 transition duration-150">← Annuler et Retourner à la classe de l'élève</a>
             </div>
-        </div>
-    </main>
 
-</body>
-</html>
+            {{-- Academic Information Section --}}
+            <div class="border-b border-gray-200 pb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
+                    <span>Informations Académiques</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- School Year Dropdown --}}
+                    <x-input name="school_year_id" type="select" label="Année scolaire" :options="$schoolYears" :value="old('school_year_id', $selectedYearId)"
+                        placeholder="Sélectionner une année scolaire" required id="school_year_select" />
+
+                    {{-- Class Dropdown --}}
+                    <x-input name="classe_id" type="select" label="Classe" :options="$classes" :value="old('classe_id', $student->classe_id)"
+                        placeholder="Sélectionner une classe" required id="class_select" />
+                </div>
+            </div>
+
+            {{-- Contact Information Section --}}
+            {{-- <div class="border-b border-gray-200 pb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span>Informations de Contact</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-input name="email" type="email" label="Email" placeholder="exemple@email.com"
+                        :value="$student->email" />
+                    <x-input name="phone" label="Téléphone" placeholder="+253 XX XX XX XX" :value="$student->phone" />
+                    <x-input name="address" label="Adresse" placeholder="Adresse complète" :value="$student->address" />
+                    <x-input name="parent_name" label="Nom du parent/tuteur" placeholder="Nom du parent ou tuteur"
+                        :value="$student->parent_name" />
+                </div>
+            </div> --}}
+
+            {{-- Photo Section --}}
+            <div class="pb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span>Photo de Profil</span>
+                </h3>
+
+                <div class="flex items-center space-x-6">
+                    <div class="flex-shrink-0">
+                        <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                            <img id="preview" class="w-full h-full object-cover" src="{{ $student->avatar_url }}"
+                                alt="{{ $student->name }}">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <x-input name="photo" type="file" label="Choisir une nouvelle photo" accept="image/*"
+                            help="Formats acceptés: JPG, PNG, GIF. Taille max: 2MB" />
+                    </div>
+                </div>
+            </div>
+
+            {{-- Form Actions --}}
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <x-button href="{{ route('students.show', $student) }}" variant="secondary">
+                    Annuler
+                </x-button>
+                <x-button type="submit" variant="primary"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'>
+                    Mettre à jour
+                </x-button>
+            </div>
+        </form>
+    </x-card>
+
+    {{-- Photo Preview Script --}}
+    <script>
+        document.getElementById('photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview');
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+    {{-- Dynamic Dropdown Script --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const schoolYearSelect = document.getElementById('school_year_select');
+            const classSelect = document.getElementById('class_select');
+
+            if (schoolYearSelect && classSelect) {
+                // Store the original class value for restoration
+                const originalClassValue = classSelect.value;
+
+                schoolYearSelect.addEventListener('change', function() {
+                    const yearId = this.value;
+
+                    // Clear class dropdown
+                    classSelect.innerHTML = '<option value="">Sélectionner une classe</option>';
+                    classSelect.disabled = true;
+
+                    if (yearId) {
+                        // Show loading state
+                        classSelect.innerHTML = '<option value="">Chargement...</option>';
+
+                        // Fetch classes for selected year
+                        fetch(`/api/classes/by-year/${yearId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Clear and populate class dropdown
+                                    classSelect.innerHTML =
+                                        '<option value="">Sélectionner une classe</option>';
+
+                                    Object.entries(data.classes).forEach(([id, label]) => {
+                                        const option = document.createElement('option');
+                                        option.value = id;
+                                        option.textContent = label;
+                                        classSelect.appendChild(option);
+                                    });
+
+                                    // Try to restore the original class value if it exists in the new options
+                                    if (originalClassValue && data.classes[originalClassValue]) {
+                                        classSelect.value = originalClassValue;
+                                    }
+
+                                    classSelect.disabled = false;
+                                } else {
+                                    console.error('Error fetching classes:', data.message);
+                                    classSelect.innerHTML =
+                                        '<option value="">Erreur lors du chargement</option>';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                classSelect.innerHTML =
+                                    '<option value="">Erreur lors du chargement</option>';
+                            });
+                    } else {
+                        classSelect.disabled = true;
+                    }
+                });
+            }
+        });
+    </script>
+@endsection

@@ -1,193 +1,123 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Connexion Proviseur - Lycée de Balbala</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="font-sans bg-gradient-to-br from-blue-500 via-purple-200 to-indigo-900 min-h-screen flex justify-center items-center p-4">
+@extends('layouts.auth')
 
-    <div class="bg-white/95 backdrop-blur-sm p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-white/20">
+@section('title', 'Connexion - Lycée Ahmed Farah Ali')
+@section('description', 'Accédez à votre espace de gestion administrative')
 
-        <!-- En-tête avec logo -->
+@section('content')
+    {{-- Login Card --}}
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-100">
+        {{-- Logo and Title --}}
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-800 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
+            <div
+                class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 2.18L18.09 9L12 12.73L5.91 9L12 5.18z"/>
-                    <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 2.18L18.09 9L12 12.73L5.91 9L12 5.18z" />
+                    <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-800 to-purple-700 bg-clip-text text-transparent">Lycée de Balbala</h1>
-            <p class="text-gray-600 font-medium text-lg">Espace administrative</p>
-            <div class="w-20 h-1 bg-gradient-to-r from-blue-800 to-purple-600 mx-auto mt-4 rounded-full"></div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Connexion</h1>
+            <p class="text-gray-600">Lycée Ahmed Farah Ali</p>
         </div>
 
-        <!-- Message de bienvenue -->
-        <div class="bg-blue-50 border-l-4 border-blue-800 p-4 rounded-r-lg mb-6 transform hover:scale-105 transition-transform duration-200">
-            <p class="text-sm text-blue-800">
-                <span class="font-bold">Bienvenue M./Mme l'administrateur</span><br>
-                <span class="text-blue-700">Accédez à votre espace de gestion administrative</span>
-            </p>
-        </div>
-
-        <!-- Formulaire de Connexion -->
+        {{-- Login Form --}}
         <form method="POST" action="{{ route('authenticate') }}" class="space-y-6">
             @csrf
 
-            <!-- Champ Email -->
-            <div class="space-y-2">
-                <label for="email" class="block font-semibold text-gray-700 flex items-center text-sm">
-                    <svg class="w-4 h-4 mr-2 text-blue-800" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                    </svg>
-                    Adresse Email Professionnelle
+            {{-- Email Field --}}
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                    Adresse Email
                 </label>
-                <input id="email"
-                    type="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    required
-                    autofocus
-                    autocomplete="email"
-                    placeholder="proviseur@lycee-balbala.dj"
-                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-800 focus:ring-2 focus:ring-blue-200 transition-all duration-300 hover:border-blue-400 transform hover:-translate-y-1 focus:-translate-y-1 hover:shadow-lg focus:shadow-lg">
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                    autocomplete="email" placeholder="proviseur@lycee-balbala.dj"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
                 @error('email')
-                    <div class="flex items-center text-red-500 text-sm mt-2">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                        </svg>
-                        <strong>{{ $message }}</strong>
-                    </div>
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
-                        <!-- Champ Mot de Passe -->
-            <div class="space-y-2 relative">
-                <label for="password" class="block font-semibold text-gray-700 flex items-center text-sm">
-                    <svg class="w-4 h-4 mr-2 text-blue-800" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18,8h-1V6c0-2.76-2.24-5-5-5S7,3.24,7,6v2H6c-1.1,0-2,0.9-2,2v10c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V10C20,8.9,19.1,8,18,8z M12,17c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S13.1,17,12,17z M15.1,8H8.9V6c0-1.71,1.39-3.1,3.1-3.1s3.1,1.39,3.1,3.1V8z"/>
-                    </svg>
-                    Mot de Passe Sécurisé
+            {{-- Password Field --}}
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                    Mot de Passe
                 </label>
-
                 <div class="relative">
-                    <input id="password"
-                        type="password"
-                        name="password"
-                        required
-                        autocomplete="current-password"
+                    <input id="password" type="password" name="password" required autocomplete="current-password"
                         placeholder="••••••••"
-                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-800 focus:ring-2 focus:ring-blue-200 transition-all duration-300 hover:border-blue-400 transform hover:-translate-y-1 focus:-translate-y-1 hover:shadow-lg focus:shadow-lg pr-10">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors pr-10">
 
-                    <!-- Bouton œil -->
-                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-2 flex items-center px-2 text-gray-500 hover:text-gray-700">
+                    {{-- Password Toggle Button --}}
+                    <button type="button" id="togglePassword"
+                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600">
                         <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                     </button>
                 </div>
-
                 @error('password')
-                    <div class="flex items-center text-red-500 text-sm mt-2">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                        </svg>
-                        <strong>{{ $message }}</strong>
-                    </div>
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- JS pour afficher/masquer le mot de passe -->
-            <script>
-                const togglePassword = document.querySelector('#togglePassword');
-                const password = document.querySelector('#password');
-                const eyeIcon = document.querySelector('#eyeIcon');
-
-                togglePassword.addEventListener('click', () => {
-                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                    password.setAttribute('type', type);
-
-                    // Optionnel : changer l'icône
-                    eyeIcon.innerHTML = type === 'password'
-                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>'
-                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.255-3.452m3.518-2.518A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.955 9.955 0 01-1.186 2.044M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
-                });
-            </script>
-
-
-            <!-- Options -->
-            <div class="flex items-center justify-between pt-2">
+            {{-- Remember Me & Forgot Password --}}
+            {{-- <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <input type="checkbox"
                            name="remember"
                            id="remember"
                            {{ old('remember') ? 'checked' : '' }}
-                           class="w-4 h-4 text-blue-800 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all">
-                    <label for="remember" class="ml-2 text-sm font-medium text-gray-700 select-none cursor-pointer hover:text-blue-800 transition-colors">
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="remember" class="ml-2 block text-sm text-gray-700">
                         Rester connecté
                     </label>
                 </div>
 
                 @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}"
-                       class="text-sm text-blue-800 hover:text-blue-600 font-medium hover:underline transition-all duration-200 transform hover:scale-105">
+                       class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
                         Mot de passe oublié?
                     </a>
                 @endif
-            </div>
+            </div> --}}
 
-            <!-- Bouton de Connexion -->
+            {{-- Submit Button --}}
             <button type="submit"
-                    class="w-full py-4 bg-gradient-to-r from-blue-800 to-purple-700 hover:from-blue-900 hover:to-purple-800 text-white rounded-lg font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl active:scale-95 flex items-center justify-center space-x-2 group">
-                <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M10,17l5-5l-5-5v3H1v4h9V17z M20,2H8C6.9,2,6,2.9,6,4v4h2V4h12v16H8v-4H6v4c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z"/>
-                </svg>
-                <span>Accéder au Tableau de Bord</span>
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                Se connecter
             </button>
         </form>
 
-        <!-- Séparateur -->
-        <div class="my-6 flex items-center">
-            <div class="flex-grow border-t border-gray-300"></div>
-            <div class="mx-4 text-gray-500 text-sm font-medium">Informations</div>
-            <div class="flex-grow border-t border-gray-300"></div>
-        </div>
-
-        <!-- Informations supplémentaires -->
-        <div class="space-y-3 text-center">
-            <div class="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors cursor-pointer">
-                <div class="flex items-center justify-center space-x-2 text-gray-700">
-                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
-                    </svg>
-                    <span class="text-sm font-medium">Connexion sécurisée SSL</span>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-center space-x-4 text-xs text-gray-500">
-                <span>Assistance technique :</span>
-                <a href="tel:+253-77-12-34-56" class="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors">
-                    +253 77 12 34 56
-                </a>
-            </div>
-        </div>
-
-        <!-- Pied de page -->
-        <div class="mt-8 pt-6 border-t border-gray-200 text-center space-y-2">
-            <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Système de Gestion Éducative</p>
-            <p class="text-xs text-gray-400">© 2025 Lycée de Balbala - République de Djibouti</p>
-            <div class="flex justify-center space-x-1 mt-2">
-                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                <div class="w-2 h-2 bg-white border border-gray-300 rounded-full"></div>
-                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            </div>
+        {{-- Footer --}}
+        <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+            <p class="text-xs text-gray-500">© 2025 Lycée Ahmed Farah Ali</p>
         </div>
     </div>
 
-</body>
-</html>
+    {{-- Password Toggle Script --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            if (togglePassword && password && eyeIcon) {
+                togglePassword.addEventListener('click', function() {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+
+                    // Toggle eye icon
+                    if (type === 'password') {
+                        eyeIcon.innerHTML =
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+                    } else {
+                        eyeIcon.innerHTML =
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.255-3.452m3.518-2.518A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.955 9.955 0 01-1.186 2.044M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>';
+                    }
+                });
+            }
+        });
+    </script>
+@endsection

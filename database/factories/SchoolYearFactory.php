@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Classe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,11 +16,11 @@ class SchoolYearFactory extends Factory
      */
     public function definition(): array
     {
-        $year =$this->faker->year();
+        $year = $this->faker->year();
+
         return [
 
-            'year' => $year . '-' . ($year + 1),
+            'year' => $year.'-'.($year + 1),
         ];
     }
-
 }

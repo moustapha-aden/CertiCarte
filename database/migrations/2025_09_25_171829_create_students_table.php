@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('matricule')->unique();
             $table->string('name');
             $table->date('date_of_birth');
-            $table->enum('gender', ['male', 'female']);
-            $table->string('photo');
-            $table->string('situation')->nullable();
+            $table->enum('gender', ['M', 'F']);
+            $table->string('photo')->nullable()->default('https://cdn-icons-png.flaticon.com/512/5850/5850276.png');
+            $table->string('pays')->nullable();
+            $table->enum('situation', ['NR', 'R']);
             $table->foreignId('classe_id')->constrained('classes')->onDelete('cascade');
             $table->timestamps();
         });

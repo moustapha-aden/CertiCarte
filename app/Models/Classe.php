@@ -8,18 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Class model representing a school class.
+ * Class representing a school class.
  *
  * @property int $id
  * @property string $label
  * @property int $year_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- *
- * @property-read SchoolYear $schoolYear
- * @property-read \Illuminate\Database\Eloquent\Collection|Student[] $students
- *
- * @package App\Models
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\SchoolYear $schoolYear
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Student> $students
  */
 class Classe extends Model
 {
@@ -39,7 +36,7 @@ class Classe extends Model
     /**
      * Get the students belonging to this class.
      *
-     * @return HasMany
+     * @return HasMany<\App\Models\Student>
      */
     public function students(): HasMany
     {
@@ -49,7 +46,7 @@ class Classe extends Model
     /**
      * Get the school year that this class belongs to.
      *
-     * @return BelongsTo
+     * @return BelongsTo<\App\Models\SchoolYear, \App\Models\Classe>
      */
     public function schoolYear(): BelongsTo
     {

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\SchoolYear;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,23 +16,13 @@ class ClasseFactory extends Factory
      */
     public function definition(): array
     {
-        $classes = [
-            'Terminale A',
-            'Terminale B',
-            'Terminale C',
-            'Première A',
-            'Première B',
-            'Première C',
-            'Seconde A',
-            'Seconde B',
-            'Seconde C',
-        ];
+        $classTypes = ['Tle S', 'Tle ES', 'Tle L', 'Tle SG', '1ère S', '1ère ES', '1ère L', '1ère SG', '1ère SG', '2nde'];
+        $classType = fake()->randomElement($classTypes);
+        $classNumber = fake()->numberBetween(1, 10);
 
         return [
-            'label' => fake()->unique()->randomElement($classes),
-            'year_id' => fake()->numberBetween(1, 3), // Assuming you have 3 school years created in the seeder
+            'label' => $classType.$classNumber,
+            'year_id' => fake()->numberBetween(1, 3),
         ];
     }
-
-
 }

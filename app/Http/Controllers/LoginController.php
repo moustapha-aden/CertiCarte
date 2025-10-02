@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
     /**
-     * Gère la tentative d'authentification.
+     * Handle user authentication attempt.
+     *
+     * Validates user credentials and attempts to authenticate the user.
+     * Supports "remember me" functionality and provides role-based redirection.
+     * Regenerates session for security after successful login.
+     *
+     * @param  Request  $request  The HTTP request containing login credentials
+     * @return \Illuminate\Http\RedirectResponse Redirect to dashboard or back with errors
+     *
+     * @throws \Illuminate\Validation\ValidationException If validation fails
      */
     public function authenticate(Request $request)
     {
@@ -30,11 +38,11 @@ class LoginController extends Controller
             switch ($user->role) {
                 case 'admin':
                     return redirect()->intended('/dashboard');
-                case 'client':
-                    return redirect()->intended('/home');
+                case 'secretary':
+                    return redirect()->intended('/dashboard');
                 default:
                     // Redirection par défaut si le rôle n'est pas reconnu
-                    return redirect()->intended('/home');
+                    return redirect()->intended('/dashboard');
             }
         }
 
@@ -45,7 +53,13 @@ class LoginController extends Controller
     }
 
     /**
-     * Gère la déconnexion de l'utilisateur.
+     * Handle user logout.
+     *
+     * Logs out the authenticated user, invalidates the session,
+     * and regenerates the CSRF token for security.
+     *
+     * @param  Request  $request  The HTTP request containing session data
+     * @return \Illuminate\Http\RedirectResponse Redirect to home page
      */
     public function logout(Request $request)
     {

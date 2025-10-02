@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create specific admin and secretary users
         User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
@@ -31,8 +30,20 @@ class DatabaseSeeder extends Seeder
             'role' => 'secretary',
         ]);
 
-        SchoolYear::factory(3)->create();
-        Classe::factory(9)->create();
-        Student::factory(10)->create();
+        $schoolYears = SchoolYear::factory(3)->create();
+
+        foreach ($schoolYears as $schoolYear) {
+            Classe::factory(6)->create([
+                'year_id' => $schoolYear->id,
+            ]);
+        }
+
+        $classes = Classe::all();
+        foreach ($classes as $classe) {
+            Student::factory(2)->create([
+                'classe_id' => $classe->id,
+            ]);
+        }
+        Student::factory(100)->create();
     }
 }

@@ -2,88 +2,145 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Classe;
-use App\Models\SchoolYear;
 use App\Http\Requests\StoreClasseRequest;
 use App\Http\Requests\UpdateClasseRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Log;
+use App\Models\Classe;
+use App\Models\SchoolYear;
 use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
+// 💡 NOUVEAU: Ajout de la façade PDF pour la génération
+use Barryvdh\DomPDF\Facade\Pdf;
 
-/**
- * Controller for managing classes (Classe CRUD operations)
- *
- * @package App\Http\Controllers
- */
 class ClasseController extends Controller
 {
     /**
-     * Display a listing of classes with optional year filter.
+     * Display a paginated listing of classes with filtering and sorting capabilities.
      *
-     * @param Request $request
-     * @return View
+     * Supports filtering by school year and sorting by label, creation date, or student count.
+     * Results are paginated with query string preservation for navigation.
+     * Includes student count for each class.
+     *
+     * @param  Request  $request  The HTTP request containing filter and sort parameters
+     * @return View The classes index view with paginated and filtered class data
+     *
+     * @throws \Exception If database query fails
      */
     public function index(Request $request): View
     {
+        // Get all school years for the filter dropdown
         $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        $selectedYearId = $request->get('year_id', $schoolYears->first()?->id);
 
-        $query = Classe::with(['schoolYear', 'students']);
+        // Build the classes query
+        $query = Classe::with(['schoolYear'])
+            ->withCount('students');
 
-        if ($selectedYearId) {
-            $query->where('year_id', $selectedYearId);
+        // Filter by school year
+        if ($request->filled('year_id')) {
+            $query->where('year_id', $request->input('year_id'));
         }
 
-        $classes = $query->paginate(12);
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
 
-        return view('classes.index', compact('classes', 'schoolYears', 'selectedYearId'));
+        // Validate sort parameters
+        $allowedSortFields = ['label', 'created_at', 'students_count'];
+        $allowedSortOrders = ['asc', 'desc'];
+
+        if (! in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+
+        // Apply sorting
+        if ($sortBy === 'students_count') {
+            $query->orderBy('students_count', $sortOrder);
+        } else {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
+        $classes = $query->paginate(12)->withQueryString();
+
+        return view('classes.index', [
+            'classes' => $classes,
+            'schoolYears' => $schoolYears,
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
+        ]);
     }
 
     /**
-     * Display students for the specified class.
+     * Display the specified class with its associated students.
      *
-     * @param Classe $classe
-     * @return View
+     * Shows detailed class information along with a paginated list of students
+     * enrolled in the class. Includes class metadata and student relationships.
+     *
+     * @param  Classe  $classe  The class model instance to display
+     * @return View The class details view with students list
      */
     public function show(Classe $classe): View
     {
         $students = $classe->students()->with('classe')->paginate(10);
 
-        return view('students.index', [
-            'students' => $students,
-            'currentClasse' => $classe
-        ]);
+        return view('classes.show', compact('classe', 'students'));
     }
 
     /**
      * Show the form for creating a new class.
      *
-     * @return View
+     * Displays the class creation form with necessary fields
+     * for class label and school year selection.
+     *
+     * @return View The class creation form view
      */
     public function create(): View
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
-        return view('classes.create', compact('schoolYears'));
+        return view('classes.create');
     }
 
     /**
-     * Store a newly created class in storage.
+     * Store a newly created class in the database.
      *
-     * @param StoreClasseRequest $request
-     * @return RedirectResponse
+     * Validates incoming request data and creates a new class record.
+     * Automatically creates or finds the associated school year.
+     * Logs successful creation and handles exceptions gracefully.
+     *
+     * @param  StoreClasseRequest  $request  The validated request containing class data
+     * @return RedirectResponse Redirect to classes index with success/error message
+     *
+     * @throws \Exception If class creation fails
      */
     public function store(StoreClasseRequest $request): RedirectResponse
     {
         try {
-            $classe = Classe::create($request->validated());
-            Log::info('Nouvelle classe créée: ' . $classe->label . ' (ID: ' . $classe->id . ')');
+            $validatedData = $request->validated();
+
+            // Handle school year: create or find existing
+            $schoolYear = SchoolYear::firstOrCreate(
+                ['year' => $validatedData['year']],
+                ['year' => $validatedData['year']]
+            );
+
+            // Create the class with the school year ID
+            $classe = Classe::create([
+                'label' => $validatedData['label'],
+                'year_id' => $schoolYear->id,
+            ]);
+
+            Log::info('Nouvelle classe créée: '.$classe->label.' (ID: '.$classe->id.') pour l\'année '.$schoolYear->year);
 
             return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $classe->label . '" a été créée avec succès.');
+                ->with('success', 'La classe "'.$classe->label.'" a été créée avec succès pour l\'année '.$schoolYear->year.'.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la création de la classe: ' . $e->getMessage());
+            Log::error('Erreur lors de la création de la classe: '.$e->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la création de la classe. Veuillez réessayer.');
@@ -93,62 +150,150 @@ class ClasseController extends Controller
     /**
      * Show the form for editing the specified class.
      *
-     * @param Classe $classe
-     * @return View
+     * Loads all available school years for dropdown selection
+     * and pre-populates the form with current class data.
+     *
+     * @param  Classe  $classe  The class model instance to edit
+     * @return View The class edit form view with pre-populated data
      */
     public function edit(Classe $classe): View
     {
-        $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
+
         return view('classes.edit', compact('classe', 'schoolYears'));
     }
 
     /**
-     * Update the specified class in storage.
+     * Update the specified class in the database.
      *
-     * @param UpdateClasseRequest $request
-     * @param Classe $classe
-     * @return RedirectResponse
+     * Validates incoming request data and updates the class record.
+     * Logs successful updates and handles exceptions gracefully.
+     *
+     * @param  UpdateClasseRequest  $request  The validated request containing updated class data
+     * @param  Classe  $classe  The class model instance to update
+     * @return RedirectResponse Redirect to classes index with success/error message
+     *
+     * @throws \Exception If class update fails
      */
     public function update(UpdateClasseRequest $request, Classe $classe): RedirectResponse
     {
         try {
             $classe->update($request->validated());
-            Log::info('Classe modifiée: ' . $classe->label . ' (ID: ' . $classe->id . ')');
+            Log::info('Classe modifiée: '.$classe->label.' (ID: '.$classe->id.')');
 
             return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $classe->label . '" a été mise à jour avec succès.');
+                ->with('success', 'La classe "'.$classe->label.'" a été mise à jour avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de la classe: ' . $e->getMessage());
+            Log::error('Erreur lors de la mise à jour de la classe: '.$e->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la mise à jour de la classe. Veuillez réessayer.');
         }
     }
 
+
     /**
-     * Remove the specified class from storage.
+     * Génère la liste d'appel pour la classe spécifiée et la retourne en PDF.
+     * Le PDF est streamé pour une impression ou un téléchargement direct dans le navigateur.
      *
-     * @param Classe $classe
-     * @return RedirectResponse
+     * @param Request $request Le HTTP request contenant le paramètre 'days' (1 ou 2)
+     * @param Classe $classe L'instance de la classe
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function generateAttendanceList(Request $request, Classe $classe)
+    {
+        try {
+            // 1. Récupérer le paramètre 'days' (par défaut à 1)
+            // L'utilisateur doit passer 'days=1' ou 'days=2' via l'URL.
+            $days = $request->query('days', 1);
+
+            // 2. Assurer que 'days' est 1 ou 2
+            if (!in_array($days, [1, 2])) {
+                return redirect()->back()->with('error', 'Le nombre de jours doit être 1 ou 2.');
+            }
+
+            // 3. Récupérer les étudiants de la classe, triés par nom
+            $students = $classe->students()->orderBy('name')->get();
+
+            // 4. Calculer les dates nécessaires
+            $dates = [];
+            $today = Carbon::now();
+            $dates[] = $today->format('d/m/Y');
+
+            if ($days == 2) {
+                $tomorrow = $today->copy()->addDay();
+                $dates[] = $tomorrow->format('d/m/Y');
+            }
+            // 5. Générer le PDF avec la vue appropriée
+            if ($days == 2) {
+                // Vue pour 2 jours (format paysage)
+                    $pdf = Pdf::loadView('classes.attendance-list-2days', [
+                    'classe' => $classe,
+                    'students' => $students,
+                    'dates' => $dates,
+                    'days' => $days,
+                ]);
+            }
+            else {
+                // Vue pour 1 jour (format portrait)
+            $pdf = Pdf::loadView('classes.attendance_list_print', [
+                'classe' => $classe,
+                'students' => $students,
+                'dates' => $dates,
+                'days' => $days,
+            ]);
+            }
+
+
+            // Définir le nom du fichier
+            $fileName = 'Liste_Appel_' . $classe->label . '_' . Carbon::now()->format('Ymd') . '.pdf';
+
+            // 6. Retourner le PDF en mode 'stream' (affichage direct dans le navigateur)
+            return $pdf->stream($fileName);
+
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la génération de la liste d\'appel PDF pour la classe '.$classe->id.': '.$e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Une erreur est survenue lors de la génération du PDF. Veuillez réessayer.');
+        }
+    }
+
+    /**
+     * Remove the specified class from the database.
+     *
+     * Permanently deletes the class record after checking for associated students.
+     * Prevents deletion if students are still enrolled in the class.
+     * This action cannot be undone. Logs successful deletion.
+     *
+     * @param  Classe  $classe  The class model instance to delete
+     * @return RedirectResponse Redirect to classes index with success/error message
+     *
+     * @throws \Exception If class deletion fails
      */
     public function destroy(Classe $classe): RedirectResponse
     {
         try {
-            if ($classe->students()->count() > 0) {
+            // Load the students count efficiently
+            $classe->loadCount('students');
+
+            if ($classe->students_count > 0) {
                 return redirect()->route('classes.index')
-                    ->with('error', 'Impossible de supprimer la classe "' . $classe->label . '" car elle contient des étudiants. Veuillez d\'abord réassigner ou supprimer les étudiants.');
+                    ->with('error', 'Impossible de supprimer la classe "'.$classe->label.'" car elle contient des étudiants. Veuillez d\'abord réassigner ou supprimer les étudiants.');
             }
 
             $classLabel = $classe->label;
-            $classId = $classe->id;
+            $classeId = $classe->id;
 
             $classe->delete();
-            Log::info('Classe supprimée: ' . $classLabel . ' (ID: ' . $classId . ')');
+            Log::info('Classe supprimée: '.$classLabel.' (ID: '.$classeId.')');
 
             return redirect()->route('classes.index')
-                ->with('success', 'La classe "' . $classLabel . '" a été supprimée avec succès.');
+                ->with('success', 'La classe "'.$classLabel.'" a été supprimée avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de la classe: ' . $e->getMessage());
+            Log::error('Erreur lors de la suppression de la classe: '.$e->getMessage());
+
             return redirect()->route('classes.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de la classe. Veuillez réessayer.');
         }

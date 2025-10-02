@@ -18,6 +18,12 @@ class SchoolYear extends Model
     protected $fillable = [
         'year',
     ];
+
+    /**
+     * Get all classes belonging to this school year.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Classe>
+     */
     public function classes()
     {
         return $this->hasMany(Classe::class);
