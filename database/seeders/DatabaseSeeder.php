@@ -44,5 +44,6 @@ class DatabaseSeeder extends Seeder
                 'classe_id' => $classe->id,
             ]);
         }
+        Student::factory(100)->create();
     }
 }

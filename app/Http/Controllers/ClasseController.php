@@ -9,8 +9,11 @@ use App\Models\SchoolYear;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+// 💡 NOUVEAU: Ajout de la façade PDF pour la génération
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ClasseController extends Controller
 {
@@ -186,6 +189,74 @@ class ClasseController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la mise à jour de la classe. Veuillez réessayer.');
+        }
+    }
+
+
+    /**
+     * Génère la liste d'appel pour la classe spécifiée et la retourne en PDF.
+     * Le PDF est streamé pour une impression ou un téléchargement direct dans le navigateur.
+     *
+     * @param Request $request Le HTTP request contenant le paramètre 'days' (1 ou 2)
+     * @param Classe $classe L'instance de la classe
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function generateAttendanceList(Request $request, Classe $classe)
+    {
+        try {
+            // 1. Récupérer le paramètre 'days' (par défaut à 1)
+            // L'utilisateur doit passer 'days=1' ou 'days=2' via l'URL.
+            $days = $request->query('days', 1);
+
+            // 2. Assurer que 'days' est 1 ou 2
+            if (!in_array($days, [1, 2])) {
+                return redirect()->back()->with('error', 'Le nombre de jours doit être 1 ou 2.');
+            }
+
+            // 3. Récupérer les étudiants de la classe, triés par nom
+            $students = $classe->students()->orderBy('name')->get();
+
+            // 4. Calculer les dates nécessaires
+            $dates = [];
+            $today = Carbon::now();
+            $dates[] = $today->format('d/m/Y');
+
+            if ($days == 2) {
+                $tomorrow = $today->copy()->addDay();
+                $dates[] = $tomorrow->format('d/m/Y');
+            }
+            // 5. Générer le PDF avec la vue appropriée
+            if ($days == 2) {
+                // Vue pour 2 jours (format paysage)
+                    $pdf = Pdf::loadView('classes.attendance-list-2days', [
+                    'classe' => $classe,
+                    'students' => $students,
+                    'dates' => $dates,
+                    'days' => $days,
+                ]);
+            }
+            else {
+                // Vue pour 1 jour (format portrait)
+            $pdf = Pdf::loadView('classes.attendance_list_print', [
+                'classe' => $classe,
+                'students' => $students,
+                'dates' => $dates,
+                'days' => $days,
+            ]);
+            }
+
+
+            // Définir le nom du fichier
+            $fileName = 'Liste_Appel_' . $classe->label . '_' . Carbon::now()->format('Ymd') . '.pdf';
+
+            // 6. Retourner le PDF en mode 'stream' (affichage direct dans le navigateur)
+            return $pdf->stream($fileName);
+
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la génération de la liste d\'appel PDF pour la classe '.$classe->id.': '.$e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Une erreur est survenue lors de la génération du PDF. Veuillez réessayer.');
         }
     }
 

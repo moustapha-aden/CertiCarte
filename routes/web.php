@@ -199,6 +199,8 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
+    Route::get('/classes/{classe}/liste-appel', [ClasseController::class, 'generateAttendanceList'])
+    ->name('classes.attendance_list');
     // ... (autres routes)
 
     // Route pour la carte d'étudiant
