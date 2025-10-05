@@ -15,16 +15,13 @@ use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
+use Carbon\Carbon;
 
-class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, WithHeadingRow, WithValidation
+class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, WithHeadingRow, WithValidation, WithCustomCsvSettings
 {
     use Importable, SkipsErrors, SkipsFailures;
 
-    /**
-     * Track the number of successfully imported rows.
-     *
-     * @var int
-     */
     private $rowCount = 0;
 
     /**
@@ -42,46 +39,35 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     {
         foreach ($rows as $row) {
             try {
-                // Skip empty rows
-                if (empty($row['nom']) && empty($row['name'])) {
-                    continue;
-                }
+                // --- Nom de l'étudiant ---
+                $name = trim($row['name'] ?? $row['nom'] ?? '');
+                if (empty($name)) continue;
 
-                // Get student name (support both French and English headers)
-                $name = $row['nom'] ?? $row['name'] ?? null;
-                if (! $name) {
-                    continue;
-                }
+                // --- Matricule ---
+                $matricule = trim($row['matricule'] ?? $row['student_id'] ?? '');
+                if (empty($matricule)) continue;
 
-                // Get matricule
-                $matricule = $row['matricule'] ?? $row['student_id'] ?? null;
-
-                // Get date of birth
-                $dateOfBirth = $row['date_de_naissance'] ?? $row['date_of_birth'] ?? $row['birth_date'] ?? null;
+                // --- Date de naissance ---
+                $dateOfBirth = $row['date_of_birth'] ?? $row['date_de_naissance'] ?? $row['birth_date'] ?? null;
                 if ($dateOfBirth) {
                     try {
-                        $dateOfBirth = \Carbon\Carbon::parse($dateOfBirth)->format('Y-m-d');
+                        $dateOfBirth = Carbon::parse(trim($dateOfBirth))->format('Y-m-d');
                     } catch (\Exception $e) {
                         Log::warning('Invalid date format in import data: '.$e->getMessage());
                         $dateOfBirth = null;
                     }
                 }
 
-                // Get gender
-                $gender = $row['genre'] ?? $row['gender'] ?? $row['sexe'] ?? null;
-                if ($gender) {
-                    $gender = strtolower(trim($gender));
-                    if (in_array($gender, ['M', 'm', 'masculin', 'male', 'homme'])) {
-                        $gender = 'M';
-                    } elseif (in_array($gender, ['F', 'f', 'feminin', 'female', 'femme'])) {
-                        $gender = 'F';
-                    } else {
-                        $gender = null;
-                    }
-                }
+                // --- Genre ---
+                $gender = strtolower(trim($row['gender'] ?? $row['genre'] ?? $row['sexe'] ?? ''));
+                if (in_array($gender, ['m','masculin','male','homme'])) $gender = 'M';
+                elseif (in_array($gender, ['f','feminin','female','femme'])) $gender = 'F';
+                else $gender = null;
 
-                // Get classe name
-                $classeName = $row['classe'] ?? $row['class'] ?? $row['class_name'] ?? null;
+                // --- Situation ---
+                $situation = trim($row['situation'] ?? $row['status'] ?? 'R');
+
+                // --- Classe ---
                 $classeId = null;
 
                 if ($classeName) {
@@ -117,19 +103,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                     'matricule' => $matricule ? trim($matricule) : null,
                     'date_of_birth' => $dateOfBirth,
                     'gender' => $gender,
-                    'situation' => $situation ? trim($situation) : null,
+                    'situation' => $situation,
                     'classe_id' => $classeId,
-                    'year' => $year ? trim($year) : null,
-                    'school_year_id' => $schoolYearId,
-                ];
+                ]);
 
-                // Remove null values
-                $studentData = array_filter($studentData, function ($value) {
-                    return $value !== null && $value !== '';
-                });
-
-                // Create the student
-                Student::create($studentData);
                 $this->rowCount++;
             } catch (\Exception $e) {
                 Log::warning('Error processing import row: '.$e->getMessage());
@@ -148,20 +125,17 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
      */
     private function getSchoolYearId($row)
     {
-        // Try to get school year from various possible column names
         $schoolYearValue = $row['annee_scolaire'] ?? $row['school_year'] ?? $row['year'] ?? null;
-
         if ($schoolYearValue) {
-            // Try to find existing school year
-            $schoolYear = SchoolYear::where('year', $schoolYearValue)->first();
-            if ($schoolYear) {
-                return $schoolYear->id;
-            }
+             $schoolYearValue = trim(str_replace('"', '', $schoolYearValue));
         }
 
-        // Fallback: use the most recent school year
-        $latestSchoolYear = SchoolYear::orderBy('year', 'desc')->first();
+        if ($schoolYearValue) {
+            $schoolYear = SchoolYear::where('year', $schoolYearValue)->first();
+            if ($schoolYear) return $schoolYear->id;
+        }
 
+        $latestSchoolYear = SchoolYear::orderBy('year', 'desc')->first();
         return $latestSchoolYear ? $latestSchoolYear->id : null;
     }
 
@@ -176,15 +150,15 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     public function rules(): array
     {
         return [
-            'nom' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
+            'nom' => 'nullable|string|max:255',
             'matricule' => 'nullable|string|max:50|unique:students,matricule',
-            'student_id' => 'nullable|string|max:50|unique:students,matricule',
-            'date_de_naissance' => 'nullable|date',
+            'student_id' => 'nullable|string|max:50',
             'date_of_birth' => 'nullable|date',
+            'date_de_naissance' => 'nullable|date',
             'birth_date' => 'nullable|date',
-            'genre' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
             'gender' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
+            'genre' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
             'sexe' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
             'classe' => 'nullable|string|max:255',
             'class' => 'nullable|string|max:255',
@@ -209,17 +183,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     public function customValidationMessages()
     {
         return [
-            'nom.required' => 'Le nom de l\'étudiant est requis.',
             'name.required' => 'Le nom de l\'étudiant est requis.',
             'matricule.unique' => 'Le matricule :input existe déjà.',
-            'student_id.unique' => 'Le matricule :input existe déjà.',
-            'date_de_naissance.date' => 'La date de naissance doit être une date valide.',
             'date_of_birth.date' => 'La date de naissance doit être une date valide.',
-            'birth_date.date' => 'La date de naissance doit être une date valide.',
-            'genre.in' => 'Le genre doit être masculin ou féminin.',
             'gender.in' => 'Le genre doit être masculin ou féminin.',
-            'sexe.in' => 'Le genre doit être masculin ou féminin.',
-            'sexe.in' => 'Le genre doit être masculin ou féminin.',
         ];
     }
 
