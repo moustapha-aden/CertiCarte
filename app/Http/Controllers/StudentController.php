@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Maatwebsite\Excel\Concerns\Importable;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Imports\StudentsImport;
@@ -492,69 +493,73 @@ class StudentController extends Controller
      *
      * @throws \Exception If import process fails
      */
-    public function import(Request $request): RedirectResponse
-    {
-        try {
-            // Validate the uploaded file
-            $request->validate([
-                'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
-            ], [
-                'file.required' => 'Veuillez sélectionner un fichier à importer.',
-                'file.file' => 'Le fichier sélectionné n\'est pas valide.',
-                'file.mimes' => 'Le fichier doit être au format Excel (.xlsx, .xls) ou CSV.',
-                'file.max' => 'Le fichier ne doit pas dépasser 10MB.',
-            ]);
 
-            $file = $request->file('file');
+public function import(Request $request): RedirectResponse
+{
+    try {
+        // Validate the uploaded file
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv,txt|max:10240',
+        ], [
+            'file.required' => 'Veuillez sélectionner un fichier à importer.',
+            'file.mimes' => 'Le fichier doit être au format Excel (.xlsx, .xls) ou CSV.',
+            'file.max' => 'Le fichier ne doit pas dépasser 10MB.',
+        ]);
 
-            // Log the import attempt
-            Log::info('Starting student import from file: '.$file->getClientOriginalName());
+        $file = $request->file('file');
 
-            // Import the file using Laravel Excel
-            $import = new StudentsImport;
-            Excel::import($import, $file);
+        // Log the import attempt
+        Log::info('Starting student import from file: '.$file->getClientOriginalName());
 
-            // Get import statistics
-            $importedCount = $import->getRowCount();
-            $errors = $import->errors();
-            $failures = $import->failures();
+        // Import the file using Laravel Excel
+        $import = new StudentsImport;
+        Excel::import($import, $file);
 
-            // Prepare success message
-            $message = 'Import terminé avec succès ! ';
-            $message .= "{$importedCount} étudiant(s) importé(s).";
+        // Get import statistics
+        $importedCount = $import->getRowCount();
+        $errors = $import->errors();
+        $failures = $import->failures();
 
-            if (! empty($errors)) {
-                $message .= ' '.count($errors).' erreur(s) rencontrée(s).';
-            }
+        // Prepare success message
+        $message = 'Import terminé avec succès ! ';
+        $message .= "{$importedCount} étudiant(s) importé(s).";
 
-            if (! empty($failures)) {
-                $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
-            }
-
-            Log::info("Student import completed: {$importedCount} students imported");
-
-            return redirect()->route('students.index')
-                ->with('success', $message);
-        } catch (ValidationException $e) {
-            // Handle validation errors
-            $failures = $e->failures();
-            $errorMessage = "Erreurs de validation détectées :\n";
-
-            foreach ($failures as $failure) {
-                $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
-            }
-
-            Log::error('Student import validation errors: '.$errorMessage);
-
-            return redirect()->back()
-                ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
-                ->with('validation_errors', $failures);
-        } catch (Exception $e) {
-            Log::error('Student import failed: '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
-
-            return redirect()->back()
-                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer.');
+        if (! empty($errors)) {
+            $message .= ' '.count($errors).' erreur(s) rencontrée(s).';
         }
+
+        if (! empty($failures)) {
+            $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
+        }
+
+        Log::info("Student import completed: {$importedCount} students imported");
+
+        return redirect()->route('students.index')
+            ->with('success', $message);
+
+    } catch (ValidationException $e) {
+        // Handle validation errors (Maatwebsite specific)
+        $failures = $e->failures();
+        $errorMessage = "Erreurs de validation détectées :\n";
+
+        foreach ($failures as $failure) {
+            $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
+        }
+
+        Log::error('Student import validation errors: '.$errorMessage);
+
+        return redirect()->back()
+            ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
+            ->with('validation_errors', $failures);
+
+    } catch (\Throwable $e) {
+        // CATCH TOUJOURS EN DERNIER RESSORT : Gère toutes les autres erreurs fatales (y compris TypeErrors)
+        // La gestion des erreurs doit TOUJOURS se terminer par un return pour le type hint.
+        Log::error('Student import failed: '.$e->getMessage());
+        Log::error('Stack trace: '.$e->getTraceAsString());
+
+        return redirect()->back()
+            ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer. Détail : '.$e->getMessage());
     }
+}
 }
