@@ -231,7 +231,7 @@
             {{-- Pagination --}}
             @if ($students->hasPages())
                 <div class="mt-8">
-                    {{ $students->links() }}
+                    <x-pagination :paginator="$students" :itemLabel="'étudiants'" />
                 </div>
             @endif
         @else
@@ -252,152 +252,198 @@
             </div>
         @endif
     </x-card>
-    @push('scripts')
-        {{-- Ajoutez ce code dans votre vue show.blade.php --}}
+    {{-- Modern Modal for Attendance List Generation --}}
+    <x-modal id="attendanceModal" title="Génération de Liste d'Appel" size="md">
+        <div class="space-y-5">
+            {{-- Description --}}
+            <div class="text-center">
+                <p class="text-gray-700 text-lg mb-2">Choisissez la durée de votre liste d'appel</p>
+                <p class="text-sm text-gray-500">Sélectionnez le nombre de jours pour générer votre liste d'appel
+                    personnalisée</p>
+            </div>
 
-        {{-- Modal pour choisir le nombre de jours --}}
-        <div id="attendanceModal"
-            class="hidden fixed inset-0 bg-black bg-opacity-40 overflow-y-auto h-full w-full z-50
-            backdrop-blur-sm shadow-inner">
-
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-2xl bg-white">
-                {{-- Header du Modal --}}
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-                    <h3 class="text-2xl font-bold text-gray-900 flex items-center">
-                        <svg class="w-7 h-7 text-indigo-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+            {{-- Options Cards --}}
+            <div class="space-y-4">
+                {{-- Option 1 Jour --}}
+                <div class="modal-card-attendance rounded-xl border-2 bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200 p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    data-days="1">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div
+                            class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">1
+                                Jour</h3>
+                            <p class="text-sm text-gray-600 mt-1">Liste pour une seule journée</p>
+                        </div>
+                        <svg class="w-6 h-6 text-indigo-500 group-hover:translate-x-1 transition-transform duration-200"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                             </path>
                         </svg>
-                        Liste d'Appel
-                    </h3>
-                    <button onclick="closeAttendanceModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                            </path>
-                        </svg>
-                    </button>
-                </div>
-
-                {{-- Contenu du Modal --}}
-                <div class="mb-6">
-                    <p class="text-gray-700 mb-6 text-center">
-                        Pour combien de jours souhaitez-vous générer la liste d'appel ?
-                    </p>
-
-                    {{-- Options de choix --}}
+                    </div>
                     <div class="space-y-3">
-                        {{-- Option 1 Jour --}}
-                        <button onclick="generateAttendanceList(1)"
-                            class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-200 group">
-                            <div class="flex items-center space-x-4">
-                                <div
-                                    class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-blue-600 font-bold text-sm">1</span>
                                 </div>
-                                <div class="text-left">
-                                    <p class="text-lg font-bold text-gray-900">1 Jour</p>
-                                    <p class="text-sm text-gray-600">Liste pour une seule journée</p>
-                                </div>
+                                <span class="text-sm text-gray-600">Génération rapide</span>
                             </div>
-                            <svg class="w-6 h-6 text-blue-500 group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </button>
-
-                        {{-- Option 2 Jours --}}
-                        <button onclick="generateAttendanceList(2)"
-                            class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-200 group">
-                            <div class="flex items-center space-x-4">
-                                <div
-                                    class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="text-left">
-                                    <p class="text-lg font-bold text-gray-900">2 Jours</p>
-                                    <p class="text-sm text-gray-600">Liste pour deux journées consécutives</p>
-                                </div>
+                            <div class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                Recommandé
                             </div>
-                            <svg class="w-6 h-6 text-purple-500 group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </button>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Footer du Modal --}}
-                <div class="flex justify-end pt-4 border-t border-gray-200">
-                    <button onclick="closeAttendanceModal()"
-                        class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
-                        Annuler
-                    </button>
+                {{-- Option 2 Jours --}}
+                <div class="modal-card-attendance rounded-xl border-2 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    data-days="2">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div
+                            class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">2
+                                Jours</h3>
+                            <p class="text-sm text-gray-600 mt-1">Liste pour deux journées consécutives</p>
+                        </div>
+                        <svg class="w-6 h-6 text-indigo-500 group-hover:translate-x-1 transition-transform duration-200"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-green-600 font-bold text-sm">2</span>
+                                </div>
+                                <span class="text-sm text-gray-600">Planification étendue</span>
+                            </div>
+                            <div class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                Flexible
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Additional Info --}}
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h4 class="text-sm font-medium text-blue-800 mb-1">Information</h4>
+                        <p class="text-xs text-blue-700">La liste d'appel sera générée au format PDF et s'ouvrira dans un
+                            nouvel onglet pour impression.</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        @push('scripts')
-            <script>
-                let currentClasseId = null;
+        {{-- Modal Footer --}}
+        <x-slot name="footer">
+            <div class="flex justify-end space-x-3">
+                <x-button variant="secondary" onclick="closeModal()">
+                    Annuler
+                </x-button>
+            </div>
+        </x-slot>
+    </x-modal>
 
-                // Ouvrir le modal
-                function openAttendanceModal(classeId) {
-                    currentClasseId = classeId;
-                    document.getElementById('attendanceModal').classList.remove('hidden');
-                    document.body.style.overflow = 'hidden'; // Empêcher le scroll
+    @push('scripts')
+        <script>
+            let currentClasseId = null;
+
+            // Ouvrir le modal d'appel
+            function openAttendanceModal(classeId) {
+                currentClasseId = classeId;
+                openModal();
+
+                // Set up click handlers after modal is opened
+                setTimeout(() => {
+                    setupModalCardHandlers();
+                }, 400);
+            }
+
+            // Générer la liste d'appel
+            function generateAttendanceList(days) {
+                if (currentClasseId && (days === 1 || days === 2)) {
+                    const url = `{{ url('classes') }}/${currentClasseId}/liste-appel?days=${days}`;
+
+                    // Fermer le modal
+                    closeModal();
+
+                    // Ouvrir dans un nouvel onglet
+                    window.open(url, '_blank');
+                }
+            }
+
+            // Set up modal card click handlers
+            function setupModalCardHandlers() {
+                // Try multiple selectors to find the cards
+                const selectors = [
+                    '.modal-card-attendance',
+                    '[data-days]',
+                    '.rounded-xl.border-2',
+                    '#attendanceModal .rounded-xl'
+                ];
+
+                let cards = [];
+                for (let selector of selectors) {
+                    cards = document.querySelectorAll(selector);
+                    if (cards.length > 0) break;
                 }
 
-                // Fermer le modal
-                function closeAttendanceModal() {
-                    document.getElementById('attendanceModal').classList.add('hidden');
-                    document.body.style.overflow = 'auto'; // Réactiver le scroll
-                    currentClasseId = null;
+                if (cards.length === 0) {
+                    setTimeout(setupModalCardHandlers, 200);
+                    return;
                 }
 
-                // Générer la liste d'appel
-                function generateAttendanceList(days) {
-                    if (currentClasseId && (days === 1 || days === 2)) {
-                        const url = `{{ url('classes') }}/${currentClasseId}/liste-appel?days=${days}`;
-
-                        // Fermer le modal
-                        closeAttendanceModal();
-
-                        // Rediriger vers la génération de la liste
-                        // window.location.href = url;
-                        window.open(url, '_blank');
-
-                        // Alternative : Ouvrir dans un nouvel onglet
-                        // window.open(url, '_blank');
-                    }
-                }
-
-                // Fermer le modal en cliquant à l'extérieur
-                document.getElementById('attendanceModal')?.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        closeAttendanceModal();
-                    }
+                // Remove any existing handlers first
+                cards.forEach(card => {
+                    card.removeEventListener('click', handleCardClick);
                 });
 
-                // Fermer le modal avec la touche Escape
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && !document.getElementById('attendanceModal').classList.contains('hidden')) {
-                        closeAttendanceModal();
-                    }
+                // Add new handlers
+                cards.forEach(card => {
+                    card.addEventListener('click', handleCardClick);
                 });
-            </script>
-        @endpush
+            }
+
+            // Handle card clicks
+            function handleCardClick(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const days = this.getAttribute('data-days');
+
+                if (days) {
+                    generateAttendanceList(parseInt(days));
+                }
+            }
+
+            // Make functions globally available
+            window.openAttendanceModal = openAttendanceModal;
+            window.generateAttendanceList = generateAttendanceList;
+            window.setupModalCardHandlers = setupModalCardHandlers;
+        </script>
     @endpush
 @endsection
