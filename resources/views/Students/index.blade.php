@@ -21,10 +21,11 @@
 
             <div class="flex flex-col sm:flex-row gap-3">
                 {{-- Import Students Button --}}
-                <button type="button" onclick="openImportModal()" 
+                <button type="button" onclick="openImportModal()"
                     class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
                     </svg>
                     Importer des Étudiants
                 </button>
@@ -103,8 +104,8 @@
                 ],
                 ['field' => 'gender', 'label' => 'Genre', 'sortable' => true, 'route' => 'students.index'],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()" 
-            :pagination="$students" :itemLabel="'étudiants'">
+            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()" :pagination="$students"
+                :itemLabel="'étudiants'">
 
                 @foreach ($students as $student)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
@@ -217,15 +218,17 @@
                     <h3 class="text-lg font-medium text-gray-900">Importer des Étudiants</h3>
                     <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
 
                 {{-- Modal Body --}}
-                <form id="importForm" action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form id="importForm" action="{{ route('students.import') }}" method="POST"
+                    enctype="multipart/form-data" class="space-y-4">
                     @csrf
-                    
+
                     {{-- File Input --}}
                     <div>
                         <label for="file" class="block text-sm font-medium text-gray-700 mb-2">

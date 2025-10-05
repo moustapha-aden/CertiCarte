@@ -88,8 +88,8 @@
                     'route' => 'classes.index',
                 ],
                 ['label' => 'Actions', 'class' => 'text-center'],
-            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()"
-            :pagination="$classes" :itemLabel="'classes'">
+            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()" :pagination="$classes"
+                :itemLabel="'classes'">
 
                 @foreach ($classes as $classe)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
