@@ -180,9 +180,9 @@
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-semibold text-purple-800">Gestion des Secrétaires</h3>
+                        <h3 class="text-lg font-semibold text-purple-800">Gestion des Personnels</h3>
                     </div>
-                    <p class="text-sm text-purple-600 mb-4">Gérez les comptes secrétaires et leurs permissions</p>
+                    <p class="text-sm text-purple-600 mb-4">Gérez les comptes personnels et leurs permissions</p>
                     <div class="flex space-x-2">
                         <x-button href="{{ route('users.index') }}" variant="primary" size="sm">
                             Voir tous

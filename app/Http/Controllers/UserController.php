@@ -34,7 +34,7 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         // Only show secretary users
-        $query = User::role('secretary')->with('permissions');
+        $query = User::role('secretary')->with(['permissions', 'roles']);
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -87,7 +87,7 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
-        $user->load('permissions');
+        $user->load(['permissions', 'roles']);
 
         return view('users.show', compact('user'));
     }
