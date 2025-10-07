@@ -32,8 +32,8 @@ class UpdateClasseRequest extends FormRequest
                 'max:255',
                 Rule::unique('classes', 'label')->ignore($this->route('classe')),
             ],
-            'pays' => 'nullable|string|max:255',
             'situation' => 'nullable|string|max:255',
+            'place_of_birth' => 'nullable|string|max:255',
             'year_id' => ['required', 'integer', 'exists:school_years,id'],
         ];
     }
@@ -50,8 +50,8 @@ class UpdateClasseRequest extends FormRequest
             'label.string' => 'Le nom de la classe doit être une chaîne de caractères.',
             'label.max' => 'Le nom de la classe ne peut pas dépasser 255 caractères.',
             'label.unique' => 'Une classe avec ce nom existe déjà.',
-            'pays.max' => 'Le pays ne peut pas dépasser 255 caractères.',
             'situation.max' => 'La situation ne peut pas dépasser 255 caractères.',
+            'place_of_birth.max' => 'Le pays ne peut pas dépasser 255 caractères.',
             'year_id.required' => 'L\'année scolaire est obligatoire.',
             'year_id.integer' => 'L\'année scolaire doit être un nombre entier.',
             'year_id.exists' => 'L\'année scolaire sélectionnée n\'existe pas.',

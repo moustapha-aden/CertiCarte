@@ -117,7 +117,7 @@
                     <h3 class="text-sm font-semibold text-green-700 uppercase tracking-wide">Pays de naissance</h3>
                 </div>
                 <p class="text-2xl font-bold text-gray-900">
-                    {{ $student->pays ?? 'N/A' }}</p>
+                    {{ $student->place_of_birth ?? 'N/A' }}</p>
             </div>
 
             {{-- Birth Date --}}

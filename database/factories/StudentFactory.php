@@ -18,13 +18,13 @@ class StudentFactory extends Factory
     {
         return [
             'name' => fake()->firstName().' '.fake()->lastName(),
-            'situation' => fake()->randomElement(['NR', 'R']),
             'matricule' => strtoupper(fake()->lexify('??')).fake()->unique()->numberBetween(1000, 9999),
             'date_of_birth' => fake()->date(),
+            'place_of_birth' => fake()->country(),
+            'situation' => fake()->randomElement(['NR', 'R']),
             'gender' => fake()->randomElement(['M', 'F']),
-            'pays' => fake()->country(),
             'photo' => null,
-            'classe_id' => fake()->numberBetween(1, 9),
+            'classe_id' => fake()->numberBetween(1, 20),
         ];
     }
 }
