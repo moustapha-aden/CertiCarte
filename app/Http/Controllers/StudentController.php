@@ -128,7 +128,7 @@ class StudentController extends Controller
     public function store(StoreStudentRequest $request): RedirectResponse
     {
         try {
-            $validatedData = $request->validated();
+            $validatedData = $request->validated($request->rules(), $request->messages());
 
             // Handle photo upload
             if ($request->hasFile('photo')) {
@@ -137,13 +137,10 @@ class StudentController extends Controller
             }
 
             $student = Student::create($validatedData);
-            Log::info('Nouvel étudiant créé: '.$student->name.' (ID: '.$student->id.')');
 
             return redirect()->route('students.index')
                 ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la création de l\'étudiant: '.$e->getMessage());
-
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la création de l\'étudiant. Veuillez réessayer.');
@@ -213,7 +210,7 @@ class StudentController extends Controller
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
         try {
-            $validatedData = $request->validated();
+            $validatedData = $request->validated($request->rules(), $request->messages());
 
             // Handle photo update
             if ($request->hasFile('photo')) {
@@ -227,13 +224,10 @@ class StudentController extends Controller
             }
 
             $student->update($validatedData);
-            Log::info('Étudiant modifié: '.$student->name.' (ID: '.$student->id.')');
 
             return redirect()->route('students.index')
                 ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de l\'étudiant: '.$e->getMessage());
-
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la mise à jour de l\'étudiant. Veuillez réessayer.');
@@ -262,13 +256,10 @@ class StudentController extends Controller
             $studentName = $student->name;
             $studentId = $student->id;
             $student->delete();
-            Log::info('Étudiant supprimé: '.$studentName.' (ID: '.$studentId.')');
 
             return redirect()->route('students.index')
                 ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de l\'étudiant: '.$e->getMessage());
-
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
         }
@@ -299,8 +290,6 @@ class StudentController extends Controller
                 'count' => $classes->count(),
             ]);
         } catch (Exception $e) {
-            Log::error('Erreur lors de la récupération des classes par année: '.$e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des classes',
@@ -316,9 +305,12 @@ class StudentController extends Controller
      * Creates a school enrollment certificate using DomPDF library.
      * Includes student information, school details, and current date.
      * Returns the PDF as a stream for inline browser display.
+     * Handles missing school year information gracefully.
      *
      * @param  Student  $student  The student model instance to generate certificate for
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse PDF stream or redirect with error
+     *
+     * @throws \Exception If PDF generation fails
      */
     public function generateCertificate(Student $student)
     {
@@ -338,36 +330,46 @@ class StudentController extends Controller
             // Stream the PDF for inline display
             return $pdf->stream($filename);
         } catch (\Exception $e) {
-            Log::error('Certificate generation failed for student '.$student->id.': '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
-
             return redirect()->back()
                 ->with('error', 'Erreur lors de la génération du certificat: '.$e->getMessage());
         }
     }
 
+    /**
+     * Generate a student ID card as PDF.
+     *
+     * Creates a professional student ID card using DomPDF library.
+     * Includes student photo, personal information, school details, and security features.
+     * Handles missing photos with fallback avatars and missing school images gracefully.
+     * Returns the PDF as a stream for inline browser display.
+     *
+     * @param  Student  $student  The student model instance to generate ID card for
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse PDF stream or redirect with error
+     *
+     * @throws \Exception If PDF generation fails
+     */
     public function idCard(Student $student)
     {
         try {
-            // Charger les relations nécessaires
+            // Load necessary relationships
             $student->load('classe.schoolYear');
 
-            // Informations du lycée
+            // School information
             $lyceeInfo = [
                 'name' => 'Lycée Ahmed Farah Ali',
                 'country' => 'République de Djibouti',
             ];
 
-            // Photo de l'étudiant
+            // Student photo
             $avatar = $this->getStudentPhoto($student);
 
-            // Année scolaire
+            // School year
             $school_year = optional($student->classe->schoolYear)->year ?? 'Année Inconnue';
 
-            // Date actuelle
+            // Current date
             $currentDate = Carbon::now();
 
-            // Image de fond du lycée (Base64)
+            // School background image (Base64)
             $lyceePhotoUrl = null;
             try {
                 $path = public_path('images/lycee_balbala.jpg');
@@ -377,10 +379,10 @@ class StudentController extends Controller
                     $lyceePhotoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
                 }
             } catch (\Exception $e) {
-                Log::warning('Failed to load school background: '.$e->getMessage());
+                Log::warning('Optional background image not found: '.$e->getMessage());
             }
 
-            // Logo de l'école (photo_carte.jpg)
+            // School logo (photo_carte.jpg)
             $logoUrl = null;
             try {
                 $logoPath = public_path('images/photo_carte.jpg');
@@ -390,10 +392,10 @@ class StudentController extends Controller
                     $logoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
                 }
             } catch (\Exception $e) {
-                Log::warning('Failed to load school logo: '.$e->getMessage());
+                Log::warning('Optional school logo not found: '.$e->getMessage());
             }
 
-            // Générer le PDF
+            // Generate PDF
             $pdf = Pdf::loadView('students.id_card', compact(
                 'student',
                 'lyceeInfo',
@@ -404,15 +406,12 @@ class StudentController extends Controller
                 'logoUrl'
             ));
 
-            // Nom du fichier
+            // Filename
             $filename = 'Carte_Etudiant_'.$student->matricule.'_'.$currentDate->format('Ymd').'.pdf';
 
-            // Retourner le PDF
+            // Return PDF
             return $pdf->stream($filename);
         } catch (\Exception $e) {
-            Log::error('ID Card generation failed for student '.$student->id.': '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
-
             return redirect()->back()
                 ->with('error', 'Erreur lors de la génération de la carte d\'étudiant: '.$e->getMessage());
         }
@@ -420,6 +419,13 @@ class StudentController extends Controller
 
     /**
      * Get student photo with fallback to default avatar.
+     *
+     * Attempts to load the student's uploaded photo from storage.
+     * If no photo exists or loading fails, falls back to default avatar.
+     * If default avatar is also missing, generates a colored SVG avatar.
+     *
+     * @param  Student  $student  The student to get photo for
+     * @return string Base64 encoded image data
      */
     private function getStudentPhoto(Student $student): string
     {
@@ -434,7 +440,7 @@ class StudentController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            Log::warning('Failed to load student photo: '.$e->getMessage());
+            Log::warning('Optional student photo not found: '.$e->getMessage());
         }
 
         // Fallback to default avatar or generated avatar
@@ -447,7 +453,7 @@ class StudentController extends Controller
                 return 'data:image/'.$type.';base64,'.base64_encode($data);
             }
         } catch (\Exception $e) {
-            Log::warning('Failed to load default avatar: '.$e->getMessage());
+            Log::warning('Optional default avatar not found: '.$e->getMessage());
         }
 
         // Ultimate fallback - generate a simple colored square
@@ -456,6 +462,12 @@ class StudentController extends Controller
 
     /**
      * Generate a fallback avatar for the student.
+     *
+     * Creates a colored SVG avatar using the first letter of the student's name.
+     * Uses a predefined color palette for consistent appearance.
+     *
+     * @param  Student  $student  The student to generate avatar for
+     * @return string Base64 encoded SVG data
      */
     private function generateFallbackAvatar(Student $student): string
     {
@@ -473,6 +485,13 @@ class StudentController extends Controller
 
     /**
      * Generate a unique card number for the student.
+     *
+     * Creates a unique identifier combining student ID, matricule, and current date.
+     * Uses MD5 hash for security and consistency.
+     *
+     * @param  Student  $student  The student to generate card number for
+     * @param  Carbon  $date  The current date for uniqueness
+     * @return string Unique card number with 'ID-' prefix
      */
     private function generateCardNumber(Student $student, Carbon $date): string
     {
@@ -507,9 +526,6 @@ class StudentController extends Controller
 
             $file = $request->file('file');
 
-            // Log the import attempt
-            Log::info('Starting student import from file: '.$file->getClientOriginalName());
-
             // Import the file using Laravel Excel
             $import = new StudentsImport;
             Excel::import($import, $file);
@@ -531,8 +547,6 @@ class StudentController extends Controller
                 $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
             }
 
-            Log::info("Student import completed: {$importedCount} students imported");
-
             return redirect()->route('students.index')
                 ->with('success', $message);
         } catch (ValidationException $e) {
@@ -544,15 +558,10 @@ class StudentController extends Controller
                 $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
             }
 
-            Log::error('Student import validation errors: '.$errorMessage);
-
             return redirect()->back()
                 ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
                 ->with('validation_errors', $failures);
         } catch (Exception $e) {
-            Log::error('Student import failed: '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
-
             return redirect()->back()
                 ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer.');
         }

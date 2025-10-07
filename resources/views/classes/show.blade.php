@@ -32,11 +32,13 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                <x-button onclick="openAttendanceModal({{ $classe->id }})" variant="outline" size="lg"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>'
-                    class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
-                    Générer Liste d'Appel
-                </x-button>
+                @can('generate_attendance_list')
+                    <x-button onclick="openAttendanceModal({{ $classe->id }})" variant="outline" size="lg"
+                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>'
+                        class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
+                        Générer Liste d'Appel
+                    </x-button>
+                @endcan
                 <x-button href="{{ route('classes.index') }}" variant="secondary" size="lg"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
                     Retour
@@ -152,17 +154,21 @@
                     <p>Dernière mise à jour : {{ $classe->updated_at->format('d/m/Y à H:i') }}</p>
                 </div>
                 <div class="flex space-x-3">
-                    <x-button href="{{ route('classes.edit', $classe) }}" variant="primary">
-                        Modifier la classe
-                    </x-button>
-                    <form method="POST" action="{{ route('classes.destroy', $classe) }}" class="inline-block"
-                        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette classe ?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-button type="submit" variant="danger">
-                            Supprimer
+                    @can('edit_classes')
+                        <x-button href="{{ route('classes.edit', $classe) }}" variant="primary">
+                            Modifier la classe
                         </x-button>
-                    </form>
+                    @endcan
+                    @can('delete_classes')
+                        <form method="POST" action="{{ route('classes.destroy', $classe) }}" class="inline-block"
+                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette classe ?')">
+                            @csrf
+                            @method('DELETE')
+                            <x-button type="submit" variant="danger">
+                                Supprimer
+                            </x-button>
+                        </form>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -216,12 +222,16 @@
                         {{-- Actions --}}
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex items-center justify-center space-x-2">
-                                <x-button href="{{ route('students.show', $student) }}" variant="ghost" size="sm"
-                                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
-                                    title="Voir les détails" />
-                                <x-button href="{{ route('students.edit', $student) }}" variant="ghost" size="sm"
-                                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
-                                    title="Modifier" />
+                                @can('view_students')
+                                    <x-button href="{{ route('students.show', $student) }}" variant="ghost" size="sm"
+                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
+                                        title="Voir les détails" />
+                                @endcan
+                                @can('edit_students')
+                                    <x-button href="{{ route('students.edit', $student) }}" variant="ghost" size="sm"
+                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                                        title="Modifier" />
+                                @endcan
                             </div>
                         </td>
                     </tr>
@@ -245,10 +255,12 @@
                 </svg>
                 <h3 class="text-lg font-semibold text-gray-700 mb-2">Aucun étudiant dans cette classe</h3>
                 <p class="text-sm text-gray-600 mb-6">Cette classe ne contient aucun étudiant pour le moment.</p>
-                <x-button href="{{ route('students.create') }}" variant="primary" size="lg"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
-                    Ajouter un étudiant
-                </x-button>
+                @can('create_students')
+                    <x-button href="{{ route('students.create') }}" variant="primary" size="lg"
+                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
+                        Ajouter un étudiant
+                    </x-button>
+                @endcan
             </div>
         @endif
     </x-card>

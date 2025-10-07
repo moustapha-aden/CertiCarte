@@ -30,6 +30,12 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     /**
      * Import students from Excel/CSV file.
      *
+     * Processes each row of the uploaded file and creates student records.
+     * Handles various column name formats (French/English) for flexibility.
+     * Automatically creates classes if they don't exist.
+     * Skips empty rows and handles validation errors gracefully.
+     *
+     * @param  Collection  $rows  Collection of rows from the Excel/CSV file
      * @return void
      */
     public function collection(Collection $rows)
@@ -56,7 +62,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                     try {
                         $dateOfBirth = \Carbon\Carbon::parse($dateOfBirth)->format('Y-m-d');
                     } catch (\Exception $e) {
-                        Log::warning("Invalid date format for student {$name}: {$dateOfBirth}");
+                        Log::warning('Invalid date format in import data: '.$e->getMessage());
                         $dateOfBirth = null;
                     }
                 }
@@ -91,8 +97,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                             'label' => $classeName,
                             'year_id' => $schoolYearId,
                         ]);
-
-                        Log::info("Created new classe: {$classeName} (ID: {$classe->id})");
                     }
 
                     $classeId = $classe->id;
@@ -127,12 +131,8 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                 // Create the student
                 Student::create($studentData);
                 $this->rowCount++;
-
-                Log::info("Imported student: {$name} (Matricule: {$matricule})");
             } catch (\Exception $e) {
-                Log::error('Error importing student row: '.$e->getMessage());
-                Log::error('Row data: '.json_encode($row->toArray()));
-                // Continue with next row
+                Log::warning('Error processing import row: '.$e->getMessage());
             }
         }
     }
@@ -140,8 +140,11 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     /**
      * Get school year ID from row data or use current year.
      *
-     * @param  Collection  $row
-     * @return int|null
+     * Attempts to extract school year from various possible column names.
+     * Falls back to the most recent school year if none found.
+     *
+     * @param  Collection  $row  The row data from the Excel/CSV file
+     * @return int|null School year ID or null if none available
      */
     private function getSchoolYearId($row)
     {
@@ -164,6 +167,11 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
 
     /**
      * Define validation rules for the import.
+     *
+     * Provides comprehensive validation rules for all possible column formats.
+     * Supports both French and English column names for maximum flexibility.
+     *
+     * @return array Validation rules array
      */
     public function rules(): array
     {
@@ -193,7 +201,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     /**
      * Custom validation messages.
      *
-     * @return array
+     * Provides localized French error messages for validation failures.
+     * Covers all possible column formats and validation scenarios.
+     *
+     * @return array Custom validation messages
      */
     public function customValidationMessages()
     {
@@ -214,6 +225,11 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
 
     /**
      * Get the number of successfully imported rows.
+     *
+     * Returns the count of students that were successfully processed
+     * and saved to the database during the import operation.
+     *
+     * @return int Number of successfully imported students
      */
     public function getRowCount(): int
     {

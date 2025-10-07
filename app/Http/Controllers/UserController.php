@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,8 +23,9 @@ class UserController extends Controller
 {
     /**
      * Display a paginated list of users with search functionality.
+     * Only shows secretary users for role management.
      *
-     * Supports filtering by name, email, or role through the 'q' parameter.
+     * Supports filtering by name, email through the 'q' parameter.
      * Results are ordered by creation date (newest first) and paginated.
      *
      * @param  Request  $request  The HTTP request containing search parameters
@@ -30,17 +33,13 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = User::query();
+        // Only show secretary users
+        $query = User::role('secretary')->with('permissions');
 
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where('name', 'like', "%{$q}%")
-                ->orWhere('email', 'like', "%{$q}%")
-                ->orWhere('role', 'like', "%{$q}%");
-        }
-
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
+                ->orWhere('email', 'like', "%{$q}%");
         }
 
         $users = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
@@ -63,29 +62,21 @@ class UserController extends Controller
      *
      * Validates the incoming request data and creates a new user record.
      * Password is automatically hashed by the User model's mutator.
+     * Automatically assigns the 'secretary' role to the new user.
      *
-     * @param  Request  $request  The HTTP request containing user data
+     * @param  StoreUserRequest  $request  The validated request containing user data
      * @return RedirectResponse Redirect to users index with success message
      *
      * @throws \Illuminate\Validation\ValidationException If validation fails
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:admin,secretary',
-        ]);
+        $validatedData = $request->validated($request->rules(), $request->messages());
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'password' => $request->password,
-        ]);
+        $user = User::create($validatedData);
+        $user->assignRole('secretary');
 
-        return redirect()->route('users.index')->with('success', 'Utilisateur créé avec succès.');
+        return redirect()->route('users.index')->with('success', 'Membre du personnel '.$user->name.' créé avec succès.');
     }
 
     /**
@@ -96,6 +87,8 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
+        $user->load('permissions');
+
         return view('users.show', compact('user'));
     }
 
@@ -116,32 +109,26 @@ class UserController extends Controller
      * Validates the incoming request data and updates the user record.
      * Password is only updated if provided in the request.
      *
-     * @param  Request  $request  The HTTP request containing updated user data
+     * @param  UpdateUserRequest  $request  The validated request containing updated user data
      * @param  User  $user  The user model instance to update
      * @return RedirectResponse Redirect to users index with success message
      *
      * @throws \Illuminate\Validation\ValidationException If validation fails
      */
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            'password' => 'nullable|string|min:6|confirmed',
-            'role' => 'required|in:admin,secretary',
-        ]);
+        $validatedData = $request->validated($request->rules(), $request->messages());
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->role = $request->role;
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
 
         if ($request->filled('password')) {
-            $user->password = $request->password;
+            $user->password = $validatedData['password'];
         }
 
         $user->save();
 
-        return redirect()->route('users.index')->with('success', 'Utilisateur mis à jour avec succès.');
+        return redirect()->route('users.index')->with('success', 'Membre du personnel '.$user->name.' mis à jour avec succès.');
     }
 
     /**
@@ -156,6 +143,6 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès.');
+        return redirect()->route('users.index')->with('success', 'Membre du personnel supprimé avec succès.');
     }
 }

@@ -6,14 +6,12 @@ use App\Http\Requests\StoreClasseRequest;
 use App\Http\Requests\UpdateClasseRequest;
 use App\Models\Classe;
 use App\Models\SchoolYear;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-// 💡 NOUVEAU: Ajout de la façade PDF pour la génération
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ClasseController extends Controller
 {
@@ -120,7 +118,7 @@ class ClasseController extends Controller
     public function store(StoreClasseRequest $request): RedirectResponse
     {
         try {
-            $validatedData = $request->validated();
+            $validatedData = $request->validated($request->rules(), $request->messages());
 
             // Handle school year: create or find existing
             $schoolYear = SchoolYear::firstOrCreate(
@@ -134,13 +132,9 @@ class ClasseController extends Controller
                 'year_id' => $schoolYear->id,
             ]);
 
-            Log::info('Nouvelle classe créée: '.$classe->label.' (ID: '.$classe->id.') pour l\'année '.$schoolYear->year);
-
             return redirect()->route('classes.index')
                 ->with('success', 'La classe "'.$classe->label.'" a été créée avec succès pour l\'année '.$schoolYear->year.'.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la création de la classe: '.$e->getMessage());
-
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la création de la classe. Veuillez réessayer.');
@@ -178,45 +172,47 @@ class ClasseController extends Controller
     public function update(UpdateClasseRequest $request, Classe $classe): RedirectResponse
     {
         try {
-            $classe->update($request->validated());
-            Log::info('Classe modifiée: '.$classe->label.' (ID: '.$classe->id.')');
+            $classe->update($request->validated($request->rules(), $request->messages()));
 
             return redirect()->route('classes.index')
                 ->with('success', 'La classe "'.$classe->label.'" a été mise à jour avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la mise à jour de la classe: '.$e->getMessage());
-
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la mise à jour de la classe. Veuillez réessayer.');
         }
     }
 
-
     /**
-     * Génère la liste d'appel pour la classe spécifiée et la retourne en PDF.
-     * Le PDF est streamé pour une impression ou un téléchargement direct dans le navigateur.
+     * Generate attendance list for the specified class and return as PDF.
      *
-     * @param Request $request Le HTTP request contenant le paramètre 'days' (1 ou 2)
-     * @param Classe $classe L'instance de la classe
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * Creates a printable attendance list using DomPDF library.
+     * Supports both single-day and two-day formats based on the 'days' parameter.
+     * Includes student names, dates, and class information.
+     * Returns the PDF as a stream for inline browser display.
+     *
+     * @param  Request  $request  The HTTP request containing the 'days' parameter (1 or 2)
+     * @param  Classe  $classe  The class model instance to generate list for
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse PDF stream or redirect with error
+     *
+     * @throws \Exception If PDF generation fails
      */
     public function generateAttendanceList(Request $request, Classe $classe)
     {
         try {
-            // 1. Récupérer le paramètre 'days' (par défaut à 1)
-            // L'utilisateur doit passer 'days=1' ou 'days=2' via l'URL.
+            // Get the 'days' parameter (default to 1)
+            // User must pass 'days=1' or 'days=2' via URL
             $days = $request->query('days', 1);
 
-            // 2. Assurer que 'days' est 1 ou 2
-            if (!in_array($days, [1, 2])) {
+            // Ensure 'days' is 1 or 2
+            if (! in_array($days, [1, 2])) {
                 return redirect()->back()->with('error', 'Le nombre de jours doit être 1 ou 2.');
             }
 
-            // 3. Récupérer les étudiants de la classe, triés par nom
+            // Get students from the class, sorted by name
             $students = $classe->students()->orderBy('name')->get();
 
-            // 4. Calculer les dates nécessaires
+            // Calculate necessary dates
             $dates = [];
             $today = Carbon::now();
             $dates[] = $today->format('d/m/Y');
@@ -225,36 +221,31 @@ class ClasseController extends Controller
                 $tomorrow = $today->copy()->addDay();
                 $dates[] = $tomorrow->format('d/m/Y');
             }
-            // 5. Générer le PDF avec la vue appropriée
+            // Generate PDF with appropriate view
             if ($days == 2) {
-                // Vue pour 2 jours (format paysage)
-                    $pdf = Pdf::loadView('classes.attendance-list-2days', [
+                // View for 2 days (landscape format)
+                $pdf = Pdf::loadView('classes.attendance-list-2days', [
+                    'classe' => $classe,
+                    'students' => $students,
+                    'dates' => $dates,
+                    'days' => $days,
+                ]);
+            } else {
+                // View for 1 day (portrait format)
+                $pdf = Pdf::loadView('classes.attendance_list_print', [
                     'classe' => $classe,
                     'students' => $students,
                     'dates' => $dates,
                     'days' => $days,
                 ]);
             }
-            else {
-                // Vue pour 1 jour (format portrait)
-            $pdf = Pdf::loadView('classes.attendance_list_print', [
-                'classe' => $classe,
-                'students' => $students,
-                'dates' => $dates,
-                'days' => $days,
-            ]);
-            }
 
+            // Define filename
+            $fileName = 'Liste_Appel_'.$classe->label.'_'.Carbon::now()->format('Ymd').'.pdf';
 
-            // Définir le nom du fichier
-            $fileName = 'Liste_Appel_' . $classe->label . '_' . Carbon::now()->format('Ymd') . '.pdf';
-
-            // 6. Retourner le PDF en mode 'stream' (affichage direct dans le navigateur)
+            // Return PDF in 'stream' mode (direct display in browser)
             return $pdf->stream($fileName);
-
         } catch (Exception $e) {
-            Log::error('Erreur lors de la génération de la liste d\'appel PDF pour la classe '.$classe->id.': '.$e->getMessage());
-
             return redirect()->back()
                 ->with('error', 'Une erreur est survenue lors de la génération du PDF. Veuillez réessayer.');
         }
@@ -287,13 +278,10 @@ class ClasseController extends Controller
             $classeId = $classe->id;
 
             $classe->delete();
-            Log::info('Classe supprimée: '.$classLabel.' (ID: '.$classeId.')');
 
             return redirect()->route('classes.index')
                 ->with('success', 'La classe "'.$classLabel.'" a été supprimée avec succès.');
         } catch (Exception $e) {
-            Log::error('Erreur lors de la suppression de la classe: '.$e->getMessage());
-
             return redirect()->route('classes.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de la classe. Veuillez réessayer.');
         }

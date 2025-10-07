@@ -28,18 +28,22 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                <x-button href="{{ route('students.certificate', $student->id) }}" variant="outline" size="lg"
-                    target="_blank"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
-                    class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
-                    Générer Certificat
-                </x-button>
-                <x-button href="{{ route('students.id_card', $student->id) }}" variant="outline" size="lg"
-                    target="_blank"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>'
-                    class="bg-white text-indigo-600 hover:bg-gray-100">
-                    Générer Carte d'Étudiant
-                </x-button>
+                @can('generate_certificate')
+                    <x-button href="{{ route('students.certificate', $student->id) }}" variant="outline" size="lg"
+                        target="_blank"
+                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
+                        class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
+                        Générer Certificat
+                    </x-button>
+                @endcan
+                @can('generate_id_card')
+                    <x-button href="{{ route('students.id_card', $student->id) }}" variant="outline" size="lg"
+                        target="_blank"
+                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>'
+                        class="bg-white text-indigo-600 hover:bg-gray-100">
+                        Générer Carte d'Étudiant
+                    </x-button>
+                @endcan
                 <x-button href="{{ route('students.index') }}" variant="secondary" size="lg"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
                     Retour
@@ -201,17 +205,21 @@
                     <p>Dernière mise à jour : {{ $student->updated_at->format('d/m/Y à H:i') }}</p>
                 </div>
                 <div class="flex space-x-3">
-                    <x-button href="{{ route('students.edit', $student) }}" variant="primary">
-                        Modifier l'étudiant
-                    </x-button>
-                    <form method="POST" action="{{ route('students.destroy', $student) }}" class="inline-block"
-                        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-button type="submit" variant="danger">
-                            Supprimer
+                    @can('edit_students')
+                        <x-button href="{{ route('students.edit', $student) }}" variant="primary">
+                            Modifier l'étudiant
                         </x-button>
-                    </form>
+                    @endcan
+                    @can('delete_students')
+                        <form method="POST" action="{{ route('students.destroy', $student) }}" class="inline-block"
+                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')">
+                            @csrf
+                            @method('DELETE')
+                            <x-button type="submit" variant="danger">
+                                Supprimer
+                            </x-button>
+                        </form>
+                    @endcan
                 </div>
             </div>
         </div>

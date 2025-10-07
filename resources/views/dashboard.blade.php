@@ -27,20 +27,6 @@
                     Gérez efficacement vos classes et étudiants
                 </p>
             </div>
-
-            {{-- Quick Actions --}}
-            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                <x-button href="{{ route('classes.create') }}" variant="outline" size="lg"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'
-                    class="bg-white text-indigo-600 hover:bg-gray-100">
-                    Nouvelle Classe
-                </x-button>
-                <x-button href="{{ route('students.create') }}" variant="outline" size="lg"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'
-                    class="bg-white text-indigo-600 hover:bg-gray-100">
-                    Nouvel Étudiant
-                </x-button>
-            </div>
         </div>
     </div>
 
@@ -59,49 +45,53 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Total Utilisateurs</p>
+                    <p class="text-sm font-medium text-gray-500">Total Personnel</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalUsers ?? 0 }}</p>
                 </div>
             </div>
         </x-card>
 
         {{-- Total Classes --}}
-        <x-card class="hover:shadow-xl transition-shadow duration-300">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                            </path>
-                        </svg>
+        @can('view_classes')
+            <x-card class="hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Classes</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ $totalClasses ?? 0 }}</p>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Total Classes</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $totalClasses ?? 0 }}</p>
-                </div>
-            </div>
-        </x-card>
+            </x-card>
+        @endcan
 
         {{-- Total Students --}}
-        <x-card class="hover:shadow-xl transition-shadow duration-300">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                            </path>
-                        </svg>
+        @can('view_students')
+            <x-card class="hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Étudiants</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ $totalStudents ?? 0 }}</p>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Total Étudiants</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $totalStudents ?? 0 }}</p>
-                </div>
-            </div>
-        </x-card>
+            </x-card>
+        @endcan
 
         {{-- Current School Year --}}
         <x-card class="hover:shadow-xl transition-shadow duration-300">
@@ -130,73 +120,79 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {{-- Manage Classes --}}
-            <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-4">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                            </path>
-                        </svg>
+            @can('view_classes')
+                <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-blue-800">Gestion des Classes</h3>
                     </div>
-                    <h3 class="text-lg font-semibold text-blue-800">Gestion des Classes</h3>
+                    <p class="text-sm text-blue-600 mb-4">Créez et gérez les classes de votre établissement</p>
+                    <div class="flex space-x-2">
+                        <x-button href="{{ route('classes.index') }}" variant="primary" size="sm">
+                            Voir toutes
+                        </x-button>
+                        <x-button href="{{ route('classes.create') }}" variant="outline" size="sm">
+                            Créer
+                        </x-button>
+                    </div>
                 </div>
-                <p class="text-sm text-blue-600 mb-4">Créez et gérez les classes de votre établissement</p>
-                <div class="flex space-x-2">
-                    <x-button href="{{ route('classes.index') }}" variant="primary" size="sm">
-                        Voir toutes
-                    </x-button>
-                    <x-button href="{{ route('classes.create') }}" variant="outline" size="sm">
-                        Créer
-                    </x-button>
-                </div>
-            </div>
+            @endcan
 
             {{-- Manage Students --}}
-            <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-4">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                            </path>
-                        </svg>
+            @can('view_students')
+                <div class="p-6 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-green-800">Gestion des Étudiants</h3>
                     </div>
-                    <h3 class="text-lg font-semibold text-green-800">Gestion des Étudiants</h3>
+                    <p class="text-sm text-green-600 mb-4">Inscrivez et suivez vos étudiants</p>
+                    <div class="flex space-x-2">
+                        <x-button href="{{ route('students.index') }}" variant="primary" size="sm">
+                            Voir tous
+                        </x-button>
+                        <x-button href="{{ route('students.create') }}" variant="outline" size="sm">
+                            Inscrire
+                        </x-button>
+                    </div>
                 </div>
-                <p class="text-sm text-green-600 mb-4">Inscrivez et suivez vos étudiants</p>
-                <div class="flex space-x-2">
-                    <x-button href="{{ route('students.index') }}" variant="primary" size="sm">
-                        Voir tous
-                    </x-button>
-                    <x-button href="{{ route('students.create') }}" variant="outline" size="sm">
-                        Inscrire
-                    </x-button>
-                </div>
-            </div>
+            @endcan
 
             {{-- Manage Users --}}
-            <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-4">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                            </path>
-                        </svg>
+            @can('create_users')
+                <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-purple-800">Gestion des Secrétaires</h3>
                     </div>
-                    <h3 class="text-lg font-semibold text-purple-800">Gestion des Utilisateurs</h3>
+                    <p class="text-sm text-purple-600 mb-4">Gérez les comptes secrétaires et leurs permissions</p>
+                    <div class="flex space-x-2">
+                        <x-button href="{{ route('users.index') }}" variant="primary" size="sm">
+                            Voir tous
+                        </x-button>
+                        <x-button href="{{ route('users.create') }}" variant="outline" size="sm">
+                            Créer
+                        </x-button>
+                    </div>
                 </div>
-                <p class="text-sm text-purple-600 mb-4">Gérez les comptes administrateurs et secrétaires</p>
-                <div class="flex space-x-2">
-                    <x-button href="{{ route('users.index') }}" variant="primary" size="sm">
-                        Voir tous
-                    </x-button>
-                    <x-button href="{{ route('users.create') }}" variant="outline" size="sm">
-                        Créer
-                    </x-button>
-                </div>
-            </div>
+            @endcan
         </div>
     </x-card>
 
