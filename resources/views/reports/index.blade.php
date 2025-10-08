@@ -179,10 +179,11 @@
                             <div x-show="reportType === 'certificate' || reportType === 'id_card'" x-transition
                                 class="md:col-span-2">
                                 <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Étudiant <span class="text-red-500">*</span>
+                                    Étudiant <span x-show="reportType === 'certificate' || reportType === 'id_card'" class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
-                                    <select id="student_id" name="student_id" x-model="studentId" required
+                                    <select id="student_id" name="student_id" x-model="studentId" 
+                                        :required="reportType === 'certificate' || reportType === 'id_card'"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                                         :disabled="!classeId">
                                         <option value="">Sélectionner un étudiant</option>
@@ -415,7 +416,7 @@
                                 route = `/reports/id-card/${this.studentId}`;
                                 break;
                             case 'attendance_list':
-                                route = `/reports/attendance-list/${this.classeId}`;
+                                route = `{{ url('reports') }}/attendance-list/${this.classeId}`;
                                 params = `?days=${this.days}`;
                                 break;
                         }

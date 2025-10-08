@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,6 +159,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- En-tête -->
@@ -201,7 +203,9 @@
                     <td class="col-numero">{{ $index + 1 }}</td>
                     <td class="col-matricule">{{ $student->matricule ?? '' }}</td>
                     <td class="col-nom">{{ strtoupper($student->name) }}</td>
-                    <td class="col-naiss">{{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') : '' }}</td>
+                    <td class="col-naiss">
+                        {{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') : '' }}
+                    </td>
                     <td class="col-genre">{{ $student->gender ?? '' }}</td>
                     <td class="col-red">{{ $student->redoublant ? 'R' : '' }}</td>
                     <td class="col-heure"></td>
@@ -277,4 +281,5 @@
     </div>
 
 </body>
+
 </html>
