@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -13,39 +14,43 @@ use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
-use Carbon\Carbon;
 
-class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, WithHeadingRow, WithValidation, WithCustomCsvSettings
+class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, WithCustomCsvSettings, WithHeadingRow, WithValidation
 {
     use Importable, SkipsErrors, SkipsFailures;
 
     private $rowCount = 0;
 
     /**
-     * Import students from Excel/CSV file.
-     *
-     * Processes each row of the uploaded file and creates student records.
-     * Handles various column name formats (French/English) for flexibility.
-     * Automatically creates classes if they don't exist.
-     * Skips empty rows and handles validation errors gracefully.
-     *
-     * @param  Collection  $rows  Collection of rows from the Excel/CSV file
-     * @return void
+     * Paramètres pour CSV (utile si tu importes aussi des CSV)
      */
+    public function getCsvSettings(): array
+    {
+        return [
+            'delimiter' => ',',
+            'enclosure' => "\0",
+            'input_encoding' => 'UTF-8',
+        ];
+    }
+
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
             try {
                 // --- Nom de l'étudiant ---
                 $name = trim($row['name'] ?? $row['nom'] ?? '');
-                if (empty($name)) continue;
+                if (empty($name)) {
+                    continue;
+                }
 
                 // --- Matricule ---
                 $matricule = trim($row['matricule'] ?? $row['student_id'] ?? '');
-                if (empty($matricule)) continue;
+                if (empty($matricule)) {
+                    continue;
+                }
 
                 // --- Date de naissance ---
                 $dateOfBirth = $row['date_of_birth'] ?? $row['date_de_naissance'] ?? $row['birth_date'] ?? null;
@@ -53,16 +58,19 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                     try {
                         $dateOfBirth = Carbon::parse(trim($dateOfBirth))->format('Y-m-d');
                     } catch (\Exception $e) {
-                        Log::warning('Invalid date format in import data: '.$e->getMessage());
                         $dateOfBirth = null;
                     }
                 }
 
                 // --- Genre ---
                 $gender = strtolower(trim($row['gender'] ?? $row['genre'] ?? $row['sexe'] ?? ''));
-                if (in_array($gender, ['m','masculin','male','homme'])) $gender = 'M';
-                elseif (in_array($gender, ['f','feminin','female','femme'])) $gender = 'F';
-                else $gender = null;
+                if (in_array($gender, ['m', 'masculin', 'male', 'homme'])) {
+                    $gender = 'M';
+                } elseif (in_array($gender, ['f', 'feminin', 'female', 'femme'])) {
+                    $gender = 'F';
+                } else {
+                    $gender = null;
+                }
 
                 // --- Situation ---
                 $situation = trim($row['situation'] ?? $row['status'] ?? 'R');
@@ -70,37 +78,33 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                 // --- Classe ---
                 $classeId = null;
 
-                if ($classeName) {
-                    // Find or create the classe
-                    $classe = Classe::where('label', $classeName)->first();
-
-                    if (! $classe) {
-                        // Create new classe if it doesn't exist
-                        // We need a school year ID for the classe
-                        $schoolYearId = $this->getSchoolYearId($row);
-
-                        $classe = Classe::create([
-                            'label' => $classeName,
-                            'year_id' => $schoolYearId,
-                        ]);
+                // Priorité 1 : utiliser classe_id du fichier Excel si existant
+                if (! empty($row['classe_id'])) {
+                    $classeId = intval($row['classe_id']);
+                    if (! Classe::find($classeId)) {
+                        Log::warning("Classe ID {$classeId} non trouvée. L'étudiant sera assigné via nom de classe.");
+                        $classeId = null;
                     }
-
-                    $classeId = $classe->id;
                 }
 
-                // Get school year ID
-                $schoolYearId = $this->getSchoolYearId($row);
+                // Priorité 2 : si pas de classe_id valide, utiliser le nom de la classe
+                if (empty($classeId)) {
+                    $classeName = trim($row['classe'] ?? $row['class'] ?? $row['class_name'] ?? '');
+                    if (! empty($classeName)) {
+                        $classe = Classe::firstOrCreate(['label' => $classeName]);
+                        $classeId = $classe->id;
+                    }
+                }
 
-                // Get situation
-                $situation = $row['situation'] ?? $row['status'] ?? null;
+                // Vérification finale avant insertion
+                if (empty($classeId)) {
+                    throw new \Exception("Impossible d'importer l'étudiant {$name} : classe_id manquant !");
+                }
 
-                // Get year (for backward compatibility)
-                $year = $row['annee'] ?? $row['year'] ?? null;
-
-                // Create student data array
-                $studentData = [
-                    'name' => trim($name),
-                    'matricule' => $matricule ? trim($matricule) : null,
+                // --- Création de l'étudiant ---
+                Student::create([
+                    'name' => $name,
+                    'matricule' => $matricule,
                     'date_of_birth' => $dateOfBirth,
                     'gender' => $gender,
                     'situation' => $situation,
@@ -108,44 +112,38 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                 ]);
 
                 $this->rowCount++;
+                Log::info("Imported student: {$name} (Matricule: {$matricule})");
             } catch (\Exception $e) {
-                Log::warning('Error processing import row: '.$e->getMessage());
+                Log::error('Error importing student row: '.$e->getMessage());
+                Log::error('Row data: '.json_encode($row->toArray()));
             }
         }
     }
 
     /**
-     * Get school year ID from row data or use current year.
-     *
-     * Attempts to extract school year from various possible column names.
-     * Falls back to the most recent school year if none found.
-     *
-     * @param  Collection  $row  The row data from the Excel/CSV file
-     * @return int|null School year ID or null if none available
+     * Récupération de l'année scolaire (inchangé)
      */
     private function getSchoolYearId($row)
     {
         $schoolYearValue = $row['annee_scolaire'] ?? $row['school_year'] ?? $row['year'] ?? null;
         if ($schoolYearValue) {
-             $schoolYearValue = trim(str_replace('"', '', $schoolYearValue));
+            $schoolYearValue = trim(str_replace('"', '', $schoolYearValue));
         }
 
         if ($schoolYearValue) {
             $schoolYear = SchoolYear::where('year', $schoolYearValue)->first();
-            if ($schoolYear) return $schoolYear->id;
+            if ($schoolYear) {
+                return $schoolYear->id;
+            }
         }
 
         $latestSchoolYear = SchoolYear::orderBy('year', 'desc')->first();
+
         return $latestSchoolYear ? $latestSchoolYear->id : null;
     }
 
     /**
-     * Define validation rules for the import.
-     *
-     * Provides comprehensive validation rules for all possible column formats.
-     * Supports both French and English column names for maximum flexibility.
-     *
-     * @return array Validation rules array
+     * Validation des colonnes
      */
     public function rules(): array
     {
@@ -172,14 +170,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
         ];
     }
 
-    /**
-     * Custom validation messages.
-     *
-     * Provides localized French error messages for validation failures.
-     * Covers all possible column formats and validation scenarios.
-     *
-     * @return array Custom validation messages
-     */
     public function customValidationMessages()
     {
         return [
@@ -190,14 +180,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
         ];
     }
 
-    /**
-     * Get the number of successfully imported rows.
-     *
-     * Returns the count of students that were successfully processed
-     * and saved to the database during the import operation.
-     *
-     * @return int Number of successfully imported students
-     */
     public function getRowCount(): int
     {
         return $this->rowCount;
