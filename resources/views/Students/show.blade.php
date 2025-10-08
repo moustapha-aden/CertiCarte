@@ -29,7 +29,7 @@
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 @can('generate_certificates')
-                    <x-button href="{{ route('students.certificate', $student->id) }}" variant="outline" size="lg"
+                    <x-button href="{{ route('reports.certificate', $student->id) }}" variant="outline" size="lg"
                         target="_blank"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
                         class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
@@ -37,7 +37,7 @@
                     </x-button>
                 @endcan
                 @can('generate_cards')
-                    <x-button href="{{ route('students.id_card', $student->id) }}" variant="outline" size="lg"
+                    <x-button href="{{ route('reports.id_card', $student->id) }}" variant="outline" size="lg"
                         target="_blank"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>'
                         class="bg-white text-indigo-600 hover:bg-gray-100">

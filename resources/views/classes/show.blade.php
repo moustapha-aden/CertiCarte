@@ -402,7 +402,7 @@
             // Générer la liste d'appel
             function generateAttendanceList(days) {
                 if (currentClasseId && (days === 1 || days === 2)) {
-                    const url = `{{ url('classes') }}/${currentClasseId}/liste-appel?days=${days}`;
+                    const url = `{{ url('reports') }}/attendance-list/${currentClasseId}?days=${days}`;
 
                     // Fermer le modal
                     closeModal();

@@ -222,8 +222,8 @@
                     {{-- Step 3: Generate Button --}}
                     <div x-show="reportType" class="flex justify-center" x-transition>
                         <button type="submit" :disabled="!canGenerate"
-                            class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold rounded-xl 
-                                   hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                            class="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-xl 
+                                   hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
                                    focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl
                                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg">
                             <span x-show="!isGenerating" class="flex items-center">
@@ -405,68 +405,23 @@
                     try {
                         // Determine the correct route based on report type
                         let route = '';
+                        let params = '';
+
                         switch (this.reportType) {
                             case 'certificate':
-                                route = '/reports/certificate';
+                                route = `/reports/certificate/${this.studentId}`;
                                 break;
                             case 'id_card':
-                                route = '/reports/id-card';
+                                route = `/reports/id-card/${this.studentId}`;
                                 break;
                             case 'attendance_list':
-                                route = '/reports/attendance-list';
+                                route = `/reports/attendance-list/${this.classeId}`;
+                                params = `?days=${this.days}`;
                                 break;
                         }
 
-                        // Create a form and submit it to trigger file download
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = route;
-                        form.style.display = 'none';
-
-                        // Add CSRF token
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                        const csrfInput = document.createElement('input');
-                        csrfInput.type = 'hidden';
-                        csrfInput.name = '_token';
-                        csrfInput.value = csrfToken;
-                        form.appendChild(csrfInput);
-
-                        // Add form data
-                        const formData = [{
-                                name: 'school_year_id',
-                                value: this.schoolYearId
-                            },
-                            {
-                                name: 'classe_id',
-                                value: this.classeId
-                            }
-                        ];
-
-                        if (this.studentId) {
-                            formData.push({
-                                name: 'student_id',
-                                value: this.studentId
-                            });
-                        }
-
-                        if (this.reportType === 'attendance_list') {
-                            formData.push({
-                                name: 'days',
-                                value: this.days
-                            });
-                        }
-
-                        formData.forEach(item => {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = item.name;
-                            input.value = item.value;
-                            form.appendChild(input);
-                        });
-
-                        document.body.appendChild(form);
-                        form.submit();
-                        document.body.removeChild(form);
+                        // Open report in new tab
+                        window.open(route + params, '_blank');
 
                     } catch (error) {
                         console.error('Error generating report:', error);

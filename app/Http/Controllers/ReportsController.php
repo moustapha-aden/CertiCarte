@@ -58,23 +58,9 @@ class ReportsController extends Controller
      *
      * @throws Exception If PDF generation fails
      */
-    public function generateCertificate(Request $request)
+    public function generateCertificate(Student $student)
     {
         try {
-            $request->validate([
-                'school_year_id' => 'required|exists:school_years,id',
-                'classe_id' => 'required|exists:classes,id',
-                'student_id' => 'required|exists:students,id',
-            ]);
-
-            $student = Student::with('classe.schoolYear')->findOrFail($request->student_id);
-
-            // Verify student belongs to selected class
-            if ($student->classe_id != $request->classe_id) {
-                return redirect()->back()
-                    ->with('error', 'L\'étudiant sélectionné n\'appartient pas à la classe choisie.');
-            }
-
             // Get school year information
             $schoolYearObject = optional($student->classe)->schoolYear;
             $school_year = $schoolYearObject ? $schoolYearObject->year : 'Année Inconnue';
@@ -82,7 +68,7 @@ class ReportsController extends Controller
             $currentDate = Carbon::now();
 
             // Load the certificate view with data
-            $pdf = Pdf::loadView('students.certificate', compact('student', 'school_year', 'currentDate'));
+            $pdf = Pdf::loadView('reports.certificate', compact('student', 'school_year', 'currentDate'));
 
             // Define filename for download
             $filename = 'Certificat_Scolarite_'.$student->matricule.'_'.$currentDate->format('Ymd').'.pdf';
@@ -109,22 +95,9 @@ class ReportsController extends Controller
      *
      * @throws Exception If PDF generation fails
      */
-    public function generateIdCard(Request $request)
+    public function generateIdCard(Student $student)
     {
         try {
-            $request->validate([
-                'school_year_id' => 'required|exists:school_years,id',
-                'classe_id' => 'required|exists:classes,id',
-                'student_id' => 'required|exists:students,id',
-            ]);
-
-            $student = Student::with('classe.schoolYear')->findOrFail($request->student_id);
-
-            // Verify student belongs to selected class
-            if ($student->classe_id != $request->classe_id) {
-                return redirect()->back()
-                    ->with('error', 'L\'étudiant sélectionné n\'appartient pas à la classe choisie.');
-            }
 
             // Load necessary relationships
             $student->load('classe.schoolYear');
@@ -171,7 +144,7 @@ class ReportsController extends Controller
             }
 
             // Generate PDF
-            $pdf = Pdf::loadView('students.id_card', compact(
+            $pdf = Pdf::loadView('reports.id-card', compact(
                 'student',
                 'lyceeInfo',
                 'avatar',
@@ -206,25 +179,12 @@ class ReportsController extends Controller
      *
      * @throws Exception If PDF generation fails
      */
-    public function generateAttendanceList(Request $request)
+    public function generateAttendanceList(Classe $classe)
     {
         try {
-            $request->validate([
-                'school_year_id' => 'required|exists:school_years,id',
-                'classe_id' => 'required|exists:classes,id',
-                'days' => 'integer|min:1|max:2',
-            ]);
 
-            $classe = Classe::with('schoolYear')->findOrFail($request->classe_id);
-
-            // Verify class belongs to selected school year
-            if ($classe->year_id != $request->school_year_id) {
-                return redirect()->back()
-                    ->with('error', 'La classe sélectionnée n\'appartient pas à l\'année scolaire choisie.');
-            }
-
-            // Get the 'days' parameter (default to 1)
-            $days = $request->input('days', 1);
+            // Get the 'days' parameter from query string (default to 1)
+            $days = request()->query('days', 1);
 
             // Ensure 'days' is 1 or 2
             if (! in_array($days, [1, 2])) {
@@ -246,9 +206,9 @@ class ReportsController extends Controller
 
             // Generate PDF with appropriate view
             if ($days == 2) {
-                $pdf = Pdf::loadView('classes.attendance-list-2days', compact('classe', 'students', 'dates'));
+                $pdf = Pdf::loadView('reports.attendance-list-2days', compact('classe', 'students', 'dates'));
             } else {
-                $pdf = Pdf::loadView('classes.attendance_list_print', compact('classe', 'students', 'dates'));
+                $pdf = Pdf::loadView('reports.attendance-list', compact('classe', 'students', 'dates'));
             }
 
             // Define filename
@@ -347,5 +307,22 @@ class ReportsController extends Controller
         </svg>';
 
         return 'data:image/svg+xml;base64,'.base64_encode($svg);
+    }
+
+    /**
+     * Generate a unique card number for the student.
+     *
+     * Creates a unique identifier combining student ID, matricule, and current date.
+     * Uses MD5 hash for security and consistency.
+     *
+     * @param  Student  $student  The student to generate card number for
+     * @param  Carbon  $date  The current date for uniqueness
+     * @return string Unique card number with 'ID-' prefix
+     */
+    private function generateCardNumber(Student $student, Carbon $date): string
+    {
+        $base = $student->id.$student->matricule.$date->format('Ymd');
+
+        return 'ID-'.strtoupper(substr(md5($base), 0, 8));
     }
 }
