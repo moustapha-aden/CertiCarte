@@ -20,14 +20,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),
-            'role' => 'admin',
         ]);
 
         User::create([
             'name' => 'Secretary User',
             'email' => 'secretary@example.com',
             'password' => bcrypt('password'),
-            'role' => 'secretary',
         ]);
 
         $schoolYears = SchoolYear::factory(4)->create();
@@ -50,5 +48,9 @@ class DatabaseSeeder extends Seeder
 
         // Optionally create some additional students without specific classes
         Student::factory(50)->create();
+
+        $this->call([
+            RolePermissionSeeder::class,
+        ]);
     }
 }

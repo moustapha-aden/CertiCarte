@@ -78,7 +78,7 @@
                 {{ optional($student->date_of_birth)->format('d/m/Y') ?? 'Date Inconnue' }}
             </strong>
             à <strong>
-                {{ $student->pays ?? 'Djibouti' }}
+                {{ $student->place_of_birth ?? 'Djibouti' }}
             </strong>
 
             est inscrit(e) régulièrement en classe de

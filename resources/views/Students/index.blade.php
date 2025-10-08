@@ -21,20 +21,24 @@
 
             <div class="flex flex-col sm:flex-row gap-3">
                 {{-- Import Students Button --}}
-                <button type="button" onclick="openImportModal()"
-                    class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
-                    </svg>
-                    Importer des Étudiants
-                </button>
+                @can('import_students')
+                    <button type="button" onclick="openImportModal()"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                        </svg>
+                        Importer des Étudiants
+                    </button>
+                @endcan
 
                 {{-- Add New Student Button --}}
-                <x-button href="{{ route('students.create') }}" variant="primary" size="md"
-                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
-                    Nouvel Étudiant
-                </x-button>
+                @can('create_students')
+                    <x-button href="{{ route('students.create') }}" variant="primary" size="md"
+                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
+                        Nouvel Étudiant
+                    </x-button>
+                @endcan
             </div>
         </div>
 
@@ -150,29 +154,35 @@
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex items-center justify-center space-x-1">
                                 {{-- View Button --}}
-                                <x-button href="{{ route('students.show', $student) }}" variant="ghost" size="sm"
-                                    title="Voir les détails"
-                                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
-                                    title="Voir les détails"
-                                    class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 border-blue-200 hover:border-blue-300" />
+                                @can('view_students')
+                                    <x-button href="{{ route('students.show', $student) }}" variant="ghost" size="sm"
+                                        title="Voir les détails"
+                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
+                                        title="Voir les détails"
+                                        class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 border-blue-200 hover:border-blue-300" />
+                                @endcan
 
                                 {{-- Edit Button --}}
-                                <x-button href="{{ route('students.edit', $student) }}" variant="ghost" size="sm"
-                                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
-                                    title="Modifier"
-                                    class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border-indigo-200 hover:border-indigo-300" />
+                                @can('edit_students')
+                                    <x-button href="{{ route('students.edit', $student) }}" variant="ghost" size="sm"
+                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                                        title="Modifier"
+                                        class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border-indigo-200 hover:border-indigo-300" />
+                                @endcan
 
                                 {{-- Delete Button --}}
-                                <form method="POST" action="{{ route('students.destroy', $student) }}"
-                                    class="inline-block"
-                                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer l\'étudiant {{ $student->name }} ?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-button type="submit" variant="ghost" size="sm"
-                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>'
-                                        title="Supprimer"
-                                        class="text-red-600 hover:text-red-800 hover:bg-red-50 border-red-200 hover:border-red-300" />
-                                </form>
+                                @can('delete_students')
+                                    <form method="POST" action="{{ route('students.destroy', $student) }}"
+                                        class="inline-block"
+                                        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer l\'étudiant {{ $student->name }} ?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <x-button type="submit" variant="ghost" size="sm"
+                                            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>'
+                                            title="Supprimer"
+                                            class="text-red-600 hover:text-red-800 hover:bg-red-50 border-red-200 hover:border-red-300" />
+                                    </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>

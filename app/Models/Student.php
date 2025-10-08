@@ -19,12 +19,11 @@ class Student extends Model
         'name',
         'matricule',
         'date_of_birth',
+        'place_of_birth',
+        'situation',
         'gender',
         'photo',
-        'situation',
         'classe_id',
-        'year',
-        'school_year_id',
     ];
 
     /**

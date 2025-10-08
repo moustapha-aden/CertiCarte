@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier l\'Utilisateur - ' . $user->name)
-@section('page-subtitle', 'Modification d\'Utilisateur')
+@section('title', 'Modifier le Membre du Personnel - ' . $user->name)
+@section('page-subtitle', 'Modification de Personnel')
 
 @section('content')
     <x-breadcrumb :items="[
-        ['label' => 'Utilisateurs', 'url' => route('users.index')],
+        ['label' => 'Personnel', 'url' => route('users.index')],
         ['label' => $user->name, 'url' => route('users.show', $user)],
         ['label' => 'Modifier'],
     ]" />
 
-    <x-card title="Modifier l'Utilisateur" subtitle="Modification des informations de {{ $user->name }}"
+    <x-card title="Modifier le Membre du Personnel" subtitle="Modification des informations de {{ $user->name }}"
         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
         class="mb-8">
 
@@ -48,12 +48,8 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="role" type="select" label="Rôle" :options="['admin' => 'Administrateur', 'secretary' => 'Secrétaire']" :value="old('role', $user->role)" required />
                     <x-input name="password" type="password" label="Nouveau mot de passe"
                         placeholder="Laisser vide pour conserver le mot de passe actuel" />
-                </div>
-
-                <div class="mt-6">
                     <x-input name="password_confirmation" type="password" label="Confirmer le nouveau mot de passe"
                         placeholder="Répétez le nouveau mot de passe" />
                 </div>
@@ -80,10 +76,11 @@
                         <div>
                             <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la modification</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• <strong>Administrateur:</strong> Accès complet au système</li>
-                                <li>• <strong>Secrétaire:</strong> Accès limité aux fonctionnalités de gestion</li>
+                                <li>• <strong>Personnel:</strong> Accès limité aux fonctionnalités selon les permissions
+                                    assignées</li>
                                 <li>• Le mot de passe doit contenir au moins 6 caractères</li>
                                 <li>• Laissez le champ mot de passe vide pour conserver le mot de passe actuel</li>
+                                <li>• Les permissions peuvent être modifiées via la page de gestion des rôles</li>
                             </ul>
                         </div>
                     </div>

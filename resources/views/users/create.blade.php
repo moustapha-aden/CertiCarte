@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Créer un Nouvel Utilisateur')
-@section('page-subtitle', 'Création d\'Utilisateur')
+@section('title', 'Créer un Nouveau Membre du Personnel')
+@section('page-subtitle', 'Création de Personnel')
 
 @section('content')
-    <x-breadcrumb :items="[['label' => 'Utilisateurs', 'url' => route('users.index')], ['label' => 'Créer un utilisateur']]" />
+    <x-breadcrumb :items="[['label' => 'Personnel', 'url' => route('users.index')], ['label' => 'Créer un membre du personnel']]" />
 
-    <x-card title="Créer un Nouvel Utilisateur"
+    <x-card title="Créer un Nouveau Membre du Personnel"
         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'
         class="mb-8">
 
@@ -43,12 +43,8 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="role" type="select" label="Rôle" :options="['admin' => 'Administrateur', 'secretary' => 'Secrétaire']" :value="old('role')" required />
                     <x-input name="password" type="password" label="Mot de passe" placeholder="Mot de passe sécurisé"
                         required />
-                </div>
-
-                <div class="mt-6">
                     <x-input name="password_confirmation" type="password" label="Confirmer le mot de passe"
                         placeholder="Répétez le mot de passe" required />
                 </div>
@@ -73,12 +69,15 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                         <div>
-                            <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la création d'utilisateur</h4>
+                            <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la création de membre du
+                                personnel</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• <strong>Administrateur:</strong> Accès complet au système</li>
-                                <li>• <strong>Secrétaire:</strong> Accès limité aux fonctionnalités de gestion</li>
+                                <li>• <strong>Personnel:</strong> Accès limité aux fonctionnalités selon les permissions
+                                    assignées</li>
                                 <li>• Le mot de passe doit contenir au moins 6 caractères</li>
                                 <li>• L'adresse email doit être unique dans le système</li>
+                                <li>• Les permissions seront assignées après la création via la page de gestion des rôles
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -92,7 +91,7 @@
                 </x-button>
                 <x-button type="submit" variant="primary"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'>
-                    Créer l'Utilisateur
+                    Créer le Membre du Personnel
                 </x-button>
             </div>
         </form>
