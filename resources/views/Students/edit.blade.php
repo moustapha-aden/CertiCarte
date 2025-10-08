@@ -34,6 +34,10 @@
                     <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule', $student->matricule)" />
                     <x-input name="date_of_birth" type="date" label="Date de naissance" :value="old('date_of_birth', $student->date_of_birth?->format('Y-m-d'))" required />
                     <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender', $student->gender)" required />
+                    <x-input name="place_of_birth" label="Lieu de naissance" placeholder="Entrez le lieu de naissance"
+                        :value="old('place_of_birth', $student->place_of_birth)" required />
+                    <x-input name="situation" type="select" label="Situation" :options="['R' => 'Redoublant', 'NR' => 'Non Redoublant']" :value="old('situation', $student->situation)"
+                        required />
                 </div>
             </div>
 
@@ -50,35 +54,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {{-- School Year Dropdown --}}
-                    <x-input name="school_year_id" type="select" label="Année scolaire" :options="$schoolYears" :value="old('school_year_id', $selectedYearId)"
-                        placeholder="Sélectionner une année scolaire" required id="school_year_select" />
+                    <x-input name="school_year_id" type="select" label="Année scolaire" :options="$schoolYears"
+                        :value="old('school_year_id', $selectedYearId)" placeholder="Sélectionner une année scolaire" required id="school_year_select" />
 
                     {{-- Class Dropdown --}}
                     <x-input name="classe_id" type="select" label="Classe" :options="$classes" :value="old('classe_id', $student->classe_id)"
                         placeholder="Sélectionner une classe" required id="class_select" />
                 </div>
             </div>
-
-            {{-- Contact Information Section --}}
-            {{-- <div class="border-b border-gray-200 pb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                        </path>
-                    </svg>
-                    <span>Informations de Contact</span>
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="email" type="email" label="Email" placeholder="exemple@email.com"
-                        :value="$student->email" />
-                    <x-input name="phone" label="Téléphone" placeholder="+253 XX XX XX XX" :value="$student->phone" />
-                    <x-input name="address" label="Adresse" placeholder="Adresse complète" :value="$student->address" />
-                    <x-input name="parent_name" label="Nom du parent/tuteur" placeholder="Nom du parent ou tuteur"
-                        :value="$student->parent_name" />
-                </div>
-            </div> --}}
 
             {{-- Photo Section --}}
             <div class="pb-6">

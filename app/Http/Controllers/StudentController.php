@@ -12,7 +12,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -125,7 +125,7 @@ class StudentController extends Controller
     public function store(StoreStudentRequest $request): RedirectResponse
     {
         try {
-            $validatedData = $request->validated($request->rules(), $request->messages());
+            $validatedData = $request->validated();
 
             // Handle photo upload
             if ($request->hasFile('photo')) {
@@ -207,7 +207,7 @@ class StudentController extends Controller
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
         try {
-            $validatedData = $request->validated($request->rules(), $request->messages());
+            $validatedData = $request->validated();
 
             // Handle photo update
             if ($request->hasFile('photo')) {

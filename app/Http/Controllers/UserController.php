@@ -71,7 +71,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $validatedData = $request->validated($request->rules(), $request->messages());
+        $validatedData = $request->validated();
 
         $user = User::create($validatedData);
         $user->assignRole('secretary');
@@ -117,7 +117,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $validatedData = $request->validated($request->rules(), $request->messages());
+        $validatedData = $request->validated();
 
         $user->name = $validatedData['name'];
         $user->email = $validatedData['email'];
