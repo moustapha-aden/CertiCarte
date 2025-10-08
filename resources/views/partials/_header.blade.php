@@ -42,6 +42,13 @@
                         Personnel
                     </a>
                 @endcan
+
+                @canany(['generate_certificates', 'generate_cards', 'generate_attendance_lists'])
+                    <a href="{{ route('reports.index') }}"
+                        class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('reports.*') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
+                        Rapports
+                    </a>
+                @endcanany
             </nav>
 
             {{-- Mobile Menu Button --}}
@@ -125,6 +132,13 @@
                         Personnel
                     </a>
                 @endcan
+
+                @canany(['generate_certificates', 'generate_cards', 'generate_attendance_lists'])
+                    <a href="{{ route('reports.index') }}"
+                        class="block px-4 py-3 text-base font-semibold text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('reports.*') ? 'text-indigo-600 bg-indigo-50' : '' }}">
+                        Rapports
+                    </a>
+                @endcanany
 
                 {{-- Mobile Action Button --}}
                 @hasSection('header-action')

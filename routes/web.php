@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleManagementController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
@@ -289,6 +290,74 @@ Route::middleware('auth')->group(function () {
     });
 
     // ========================================================================
+    // REPORTS ROUTES
+    // ========================================================================
+
+    /**
+     * Reports page route
+     * Displays the reports generation interface
+     *
+     * @route GET /dashboard/reports
+     *
+     * @name reports.index
+     *
+     * @uses ReportsController@index
+     *
+     * @return \Illuminate\View\View
+     */
+    Route::get('/dashboard/reports', [ReportsController::class, 'index'])
+        ->name('reports.index')
+        ->middleware('permission:generate_certificates|generate_cards|generate_attendance_lists');
+
+    /**
+     * Certificate generation route
+     * Generates a PDF certificate for a specific student
+     *
+     * @route POST /reports/certificate
+     *
+     * @name reports.certificate
+     *
+     * @uses ReportsController@generateCertificate
+     *
+     * @return \Illuminate\Http\Response PDF stream response
+     */
+    Route::post('/reports/certificate', [ReportsController::class, 'generateCertificate'])
+        ->name('reports.certificate')
+        ->middleware('permission:generate_certificates');
+
+    /**
+     * ID card generation route
+     * Generates a PDF ID card for a specific student
+     *
+     * @route POST /reports/id-card
+     *
+     * @name reports.id_card
+     *
+     * @uses ReportsController@generateIdCard
+     *
+     * @return \Illuminate\Http\Response PDF stream response
+     */
+    Route::post('/reports/id-card', [ReportsController::class, 'generateIdCard'])
+        ->name('reports.id_card')
+        ->middleware('permission:generate_cards');
+
+    /**
+     * Attendance list generation route
+     * Generates a PDF attendance list for a class
+     *
+     * @route POST /reports/attendance-list
+     *
+     * @name reports.attendance_list
+     *
+     * @uses ReportsController@generateAttendanceList
+     *
+     * @return \Illuminate\Http\Response PDF stream response
+     */
+    Route::post('/reports/attendance-list', [ReportsController::class, 'generateAttendanceList'])
+        ->name('reports.attendance_list')
+        ->middleware('permission:generate_attendance_lists');
+
+    // ========================================================================
     // API ROUTES
     // ========================================================================
 
@@ -307,9 +376,26 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
+
+    /**
+     * API route to fetch students by class
+     * Used for dynamic dropdown population via AJAX
+     *
+     * @route GET /api/students/by-class/{classe_id}
+     *
+     * @name api.students.by-class
+     *
+     * @param  int  $classeId  The class ID
+     *
+     * @uses ReportsController@getStudentsByClass
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    Route::get('/api/students/by-class/{classeId}', [ReportsController::class, 'getStudentsByClass'])->name('api.students.by-class');
+
+    // Legacy routes for backward compatibility
     Route::get('/classes/{classe}/liste-appel', [ClasseController::class, 'generateAttendanceList'])
         ->name('classes.attendance_list');
-    // ... (autres routes)
 
     // Route pour la carte d'étudiant
     Route::get('/students/{student}/id-card', [StudentController::class, 'idCard'])
