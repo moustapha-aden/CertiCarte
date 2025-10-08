@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Carte d'Étudiant - {{ $student->name }}</title>
     <style>
         @page {
@@ -34,7 +35,7 @@
             border-radius: 8mm;
             overflow: hidden;
             margin: 12px;
-            box-shadow: 0 2px 8px rgba(30,64,175,0.10);
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.10);
             position: relative;
             display: inline-block;
             vertical-align: top;
@@ -55,6 +56,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         .recto::before {
             content: "";
             position: absolute;
@@ -62,10 +64,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255,255,255,0.75);
+            background: rgba(255, 255, 255, 0.75);
             z-index: 1;
         }
-        .recto-content, .logo-section, .badge-d, .year-footer {
+
+        .recto-content,
+        .logo-section,
+        .badge-d,
+        .year-footer {
             position: relative;
             z-index: 2;
         }
@@ -101,7 +107,7 @@
 
         /* En-tête */
         .recto-header {
-            border-bottom: 1.5px solid rgba(255,255,255,0.25);
+            border-bottom: 1.5px solid rgba(255, 255, 255, 0.25);
             padding-bottom: 2mm;
             margin-bottom: 2mm;
             text-align: left;
@@ -136,10 +142,10 @@
             font-weight: 700;
             padding: 1.2mm 0 1.2mm 2mm;
             margin: 1.5mm 0;
-            background: rgba(255,255,255,0.18);
+            background: rgba(255, 255, 255, 0.18);
             border-radius: 2mm;
-            border: 1px solid rgba(255,255,255,0.22);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
         }
 
         /* Section étudiant */
@@ -177,7 +183,7 @@
             border-radius: 50%;
             border: 2px solid #fff;
             object-fit: cover;
-            box-shadow: 0 2px 8px rgba(30,64,175,0.12);
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.12);
             background: #e0e7ff;
         }
 
@@ -265,7 +271,7 @@
             right: 5mm;
             width: 8mm;
             height: 8mm;
-            background: rgba(59,130,246,0.08);
+            background: rgba(59, 130, 246, 0.08);
             border: 2px solid #2563eb;
             border-radius: 50%;
             text-align: center;
@@ -273,7 +279,7 @@
             font-size: 10pt;
             color: #2563eb;
             font-weight: bold;
-            box-shadow: 0 2px 8px rgba(30,64,175,0.10);
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.10);
         }
 
         /* Contenu verso */
@@ -385,6 +391,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="page">
         <div class="cards-container">
@@ -392,52 +399,86 @@
             <!-- RECTO -->
             <div class="card-wrapper">
                 <div class="recto">
-                    <div class="recto-content" style="position:relative; height:100%;">
+                    <div class="recto-content" style="position:relative; height:100%; font-family:'Poppins', sans-serif;">
+
                         <!-- Logo -->
                         <div class="logo-section">
-                            @if($logoUrl)
+                            @if ($logoUrl)
                                 <img src="{{ $logoUrl }}" alt="Logo" class="school-logo">
                             @else
-                                <div class="school-logo" style="display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: bold;">
+                                <div class="school-logo"
+                                    style="display:flex; align-items:center; justify-content:center; font-size:3pt; font-weight:bold;">
                                     LOGO
                                 </div>
                             @endif
                         </div>
 
-                        <!-- Lycée -->
-                        <div style="position:absolute; top:7mm; left:30mm; right:7mm; text-align:left; color:#2563eb; font-size:9pt; font-weight:600; opacity:0.85; letter-spacing:1px;">
+                        <!-- Nom du lycée (complet, bien visible et ajusté) -->
+                        <div
+                            style="
+                position:absolute;
+                top:5mm;
+                left:50%;
+                transform:translateX(-50%);
+                width:90%;
+                text-align:center;
+                font-size:8pt;
+                font-weight:800;
+                color:#1d4ed8;
+                text-transform:uppercase;
+                letter-spacing:0.6px;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;">
                             Lycée Ahmed Farah Ali
                         </div>
 
-                        <!-- Titre carte -->
-                        <div style="position:absolute; top:15mm; left:0; width:100%; text-align:center;">
-                            <span style="font-size:5pt; font-weight:700; color:#2563eb; background:#fff; padding:2px 12px; border-radius:12px; box-shadow:0 1px 4px #e0e7ff; letter-spacing:1.2px;">CARTE D'IDENTITÉ SCOLAIRE</span>
+                        <!-- Photo en haut à droite -->
+                        <div style="position:absolute; top:7mm; right:6mm;">
+                            <img src="{{ $avatar }}" alt="Photo" class="student-photo"
+                                style="width:18mm; height:18mm; border-radius:50%; border:1.5px solid #fff; object-fit:cover; box-shadow:0 2px 6px rgba(30,64,175,0.15); background:#e0e7ff;">
                         </div>
 
-                        <!-- Photo et nom -->
-                        <div style="position:absolute; top:20mm; left:7mm; display:flex; align-items:center;">
-                            <img src="{{ $avatar }}" alt="Photo" class="student-photo" style="margin-right:7mm;">
-                            <div style=" width: auto; display: flex; justify-content: left;">
-                                <div class="student-name" style="font-size:8pt; font-weight:700; color:#1e293b; margin-bottom:2mm;">Nom :{{ $student->name }}</div>
-                                <div style="display:flex; gap:8px; justify-content:center; margin-top:2px;">
-                                    <span style="color:#f59e00; font-size:9pt; font-weight:700;">Classe:</span>
-                                    <span style="color:#2563eb; font-size:9pt; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
-                                </div>
+                        <!-- Titre de la carte -->
+                        <div style="position:absolute; top:15mm; left:0; width:100%; text-align:center;">
+                            <span
+                                style="font-size:5pt; font-weight:700; color:#2563eb; background:#fff; padding:1.2px 9px; border-radius:8px; box-shadow:0 1px 3px #e0e7ff; letter-spacing:0.8px;">
+                                CARTE D'IDENTITÉ SCOLAIRE
+                            </span>
+                        </div>
+
+                        <!-- Informations à gauche -->
+                        <div
+                            style="position:absolute; top:28mm; left:8mm; right:8mm; width:auto; text-align:left; line-height:1.5;">
+                            <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
+                                Nom : <span style="color:#2563eb; font-weight:700;">{{ $student->name }}</span>
+                            </div>
+                            <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
+                                Matricule : <span
+                                    style="color:#2563eb; font-weight:700;">{{ $student->matricule }}</span>
+                            </div>
+                            <div style="font-size:8pt; font-weight:600; color:#1e293b;">
+                                Classe : <span
+                                    style="color:#2563eb; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
                             </div>
                         </div>
 
-                        <!-- Badge D -->
-                        <div class="badge-d">
+                        <!-- Année scolaire -->
+                        <div class="year-footer"
+                            style="position:absolute; right:7mm; bottom:7mm; text-align:right; font-size:7pt; color:#2563eb; font-weight:700;">
+                            <span
+                                style="font-size:5pt; color:#2563eb; text-transform:uppercase; letter-spacing:0.6px; display:block; margin-bottom:0.5mm;">
+                                Année scolaire
+                            </span>
+                            <div style="font-size:7pt; font-weight:700; letter-spacing:0.8px; color:#2563eb;">
+                                {{ $student->classe->schoolYear->year ?? 'N/A' }}
+                            </div>
                         </div>
 
-                        <!-- Année scolaire -->
-                        <div class="year-footer" style="right:7mm; bottom:7mm; text-align:right; font-size:8pt; color:#2563eb; font-weight:700;">
-                            <span class="year-label" style="font-size:5pt; color:#2563eb; text-transform:uppercase; letter-spacing:0.7px; display:block; margin-bottom:0.7mm;">Année Scolaire</span>
-                            <div class="year-value" style="font-size:8pt; font-weight:700; letter-spacing:1.2px; color:#2563eb;">{{ $student->classe->schoolYear->year ?? 'N/A'  }}</div>
-                        </div>
                     </div>
                 </div>
             </div>
+
 
             <!-- VERSO -->
             <div class="card-wrapper">
@@ -459,7 +500,8 @@
                             <div class="info-line">
                                 <div class="info-line-content">
                                     <div class="info-label">Sexe</div>
-                                    <div class="info-value">{{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}</div>
+                                    <div class="info-value">{{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}
+                                    </div>
                                 </div>
                             </div>
 
@@ -494,4 +536,5 @@
         </div>
     </div>
 </body>
+
 </html>
