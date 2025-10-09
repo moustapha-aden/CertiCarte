@@ -271,6 +271,7 @@
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
+                <td class="col-heure"></td>
             </tr>
             <tr class="footer-row">
                 <td class="col-numero"></td>
@@ -288,6 +289,7 @@
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
+                <td class="col-heure"></td>
             </tr>
             <tr class="footer-row">
                 <td class="col-numero"></td>
@@ -296,6 +298,7 @@
                 <td class="col-naiss"></td>
                 <td class="col-genre"></td>
                 <td class="col-red"></td>
+                <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
