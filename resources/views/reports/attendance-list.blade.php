@@ -116,6 +116,12 @@
             color: #c00;
         }
 
+         .col-separe {
+            /* 10 colonnes restantes pour les heures */
+            width: 1px; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
+            background-color: #fafafa;
+        }
+
         .col-heure {
             /* 10 colonnes restantes pour les heures */
             width: 5.2%; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
@@ -190,6 +196,7 @@
                 <th class="col-heure">8H</th>
                 <th class="col-heure">9H</th>
                 <th class="col-heure">10H</th>
+                <th class="col-separe"></th>
                 <th class="col-heure">11H</th>
                 <th class="col-heure">14H</th>
                 <th class="col-heure">15H</th>
@@ -213,11 +220,12 @@
                         {{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') : '' }}
                     </td>
                     <td class="col-genre">{{ $student->gender ?? '' }}</td>
-                    <td class="col-red">{{ $student->redoublant ? 'R' : '' }}</td>
+                    <td class="col-red">{{ $student->situation==='R' ? 'R' : '' }}</td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
+                    <td class="col-separe"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
