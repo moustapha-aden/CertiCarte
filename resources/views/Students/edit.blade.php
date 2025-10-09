@@ -31,13 +31,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-input name="name" label="Nom complet" placeholder="Entrez le nom complet" :value="old('name', $student->name)"
                         required />
-                    <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule', $student->matricule)" />
+                    <x-input name="matricule" label="Matricule" placeholder="Entrez le matricule" :value="old('matricule', $student->matricule)"
+                        required />
                     <x-input name="date_of_birth" type="date" label="Date de naissance" :value="old('date_of_birth', $student->date_of_birth?->format('Y-m-d'))" required />
-                    <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender', $student->gender)" required />
+                    <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender', $student->gender)"
+                        placeholder="Sélectionner le genre" required />
                     <x-input name="place_of_birth" label="Lieu de naissance" placeholder="Entrez le lieu de naissance"
                         :value="old('place_of_birth', $student->place_of_birth)" required />
                     <x-input name="situation" type="select" label="Situation" :options="['R' => 'Redoublant', 'NR' => 'Non Redoublant']" :value="old('situation', $student->situation)"
-                        required />
+                        placeholder="Sélectionner la situation" required />
                 </div>
             </div>
 
