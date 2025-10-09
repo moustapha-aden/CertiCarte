@@ -206,7 +206,8 @@
         </thead>
         <tbody>
             @php
-                $max_rows = 60; // Nombre total de lignes souhaité
+                $student_count = count($students);
+                $max_rows = $student_count; // Nombre total de lignes souhaité
                 $student_count = count($students);
                 $empty_rows_needed = $max_rows - $student_count;
             @endphp

@@ -211,6 +211,7 @@ class ClasseController extends Controller
 
             // Get students from the class, sorted by name
             $students = $classe->students()->orderBy('name')->get();
+            $nbrLigne = $classe->students()->count();
 
             // Calculate necessary dates
             $dates = [];
