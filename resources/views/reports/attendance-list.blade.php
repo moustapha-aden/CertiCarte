@@ -7,14 +7,15 @@
     <title>Liste d'Appel - {{ $classe->label }}</title>
 
     <style>
+        /* Réduction des marges et taille A4 */
         @page {
-            margin: 0.8cm 0.6cm;
+            margin: 0.5cm 0.4cm; /* Marges réduites */
             size: A4 portrait;
         }
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 9pt;
+            font-size: 7.5pt; /* Taille de police globale réduite */
             color: #000;
             margin: 0;
             padding: 0;
@@ -25,12 +26,12 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* Marge réduite */
         }
 
         .header-left {
             text-align: left;
-            font-size: 10pt;
+            font-size: 8pt; /* Police de l'en-tête réduite */
         }
 
         .header-center {
@@ -39,73 +40,73 @@
         }
 
         .header-center .main-title {
-            font-size: 11pt;
+            font-size: 9pt; /* Police réduite */
             margin: 0;
             font-weight: normal;
         }
 
         .header-center .school-name {
-            font-size: 11pt;
+            font-size: 9pt; /* Police réduite */
             font-weight: bold;
             margin: 0;
         }
 
         .header-right {
             text-align: right;
-            font-size: 10pt;
+            font-size: 8pt; /* Police de l'en-tête réduite */
         }
 
         /* Tableau */
         .attendance-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 5px;
+            margin-top: 3px; /* Marge réduite */
         }
 
         .attendance-table th,
         .attendance-table td {
             border: 1px solid #000;
-            padding: 3px 4px;
+            padding: 1px 2px; /* Padding réduit */
             text-align: center;
             vertical-align: middle;
-            font-size: 8.5pt;
+            font-size: 7pt; /* Taille de police du tableau très réduite */
         }
 
         .attendance-table thead th {
             background-color: #d0d0d0;
             font-weight: bold;
-            height: 22px;
+            height: 14px; /* Hauteur d'en-tête réduite */
         }
 
         .attendance-table tbody td {
-            height: 20px;
+            height: 12px; /* Hauteur de ligne très réduite */
         }
 
-        /* Colonnes spécifiques */
+        /* Colonnes spécifiques (ajustement des largeurs pour garder le nom lisible) */
         .col-numero {
             width: 3%;
             font-weight: bold;
         }
 
         .col-matricule {
-            width: 9%;
-            font-size: 7.5pt;
+            width: 8%; /* Légèrement réduite */
+            font-size: 6.5pt;
         }
 
         .col-nom {
-            width: 22%;
+            width: 25%; /* Augmentée pour les noms */
             text-align: left;
-            padding-left: 5px;
+            padding-left: 3px;
             font-weight: 500;
         }
 
         .col-naiss {
-            width: 7%;
-            font-size: 7.5pt;
+            width: 6%; /* Réduite */
+            font-size: 6.5pt;
         }
 
         .col-genre {
-            width: 4%;
+            width: 3%;
             font-weight: bold;
         }
 
@@ -116,7 +117,8 @@
         }
 
         .col-heure {
-            width: 4.3%;
+            /* 10 colonnes restantes pour les heures */
+            width: 5.2%; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
             background-color: #fafafa;
         }
 
@@ -128,15 +130,15 @@
 
         .footer-row .col-nom {
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 8pt; /* Police légèrement augmentée pour les pieds de tableau */
         }
 
         /* Watermark style */
         .watermark {
             position: fixed;
-            bottom: 8px;
-            right: 10px;
-            font-size: 8pt;
+            bottom: 3px; /* Position ajustée */
+            right: 5px; /* Position ajustée */
+            font-size: 7pt; /* Taille réduite */
             color: #888;
             font-style: italic;
         }
@@ -162,7 +164,6 @@
 
 <body>
 
-    <!-- En-tête -->
     <div class="page-header">
         <div class="header-left">
             Date : ____________
@@ -176,7 +177,6 @@
         </div>
     </div>
 
-    <!-- Tableau des étudiants -->
     <table class="attendance-table">
         <thead>
             <tr>
@@ -198,6 +198,12 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $max_rows = 60; // Nombre total de lignes souhaité
+                $student_count = count($students);
+                $empty_rows_needed = $max_rows - $student_count;
+            @endphp
+
             @foreach ($students as $index => $student)
                 <tr>
                     <td class="col-numero">{{ $index + 1 }}</td>
@@ -220,7 +226,26 @@
                 </tr>
             @endforeach
 
-            <!-- Lignes de pied de tableau -->
+            @for ($i = 0; $i < $empty_rows_needed; $i++)
+                <tr>
+                    <td class="col-numero">{{ $student_count + $i + 1 }}</td>
+                    <td class="col-matricule"></td>
+                    <td class="col-nom"></td>
+                    <td class="col-naiss"></td>
+                    <td class="col-genre"></td>
+                    <td class="col-red"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                    <td class="col-heure"></td>
+                </tr>
+            @endfor
+
             <tr class="footer-row">
                 <td class="col-numero"></td>
                 <td class="col-matricule"></td>
@@ -275,7 +300,6 @@
         </tbody>
     </table>
 
-    <!-- Watermark -->
     <div class="watermark">
         Imprimer le {{ date('d-m-Y') }}
     </div>

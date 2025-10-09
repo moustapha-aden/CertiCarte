@@ -118,7 +118,7 @@ class ClasseController extends Controller
     public function store(StoreClasseRequest $request): RedirectResponse
     {
         try {
-            $validatedData = $request->validated($request->rules(), $request->messages());
+            $validatedData = $request->validated();
 
             // Handle school year: create or find existing
             $schoolYear = SchoolYear::firstOrCreate(
@@ -172,7 +172,7 @@ class ClasseController extends Controller
     public function update(UpdateClasseRequest $request, Classe $classe): RedirectResponse
     {
         try {
-            $classe->update($request->validated($request->rules(), $request->messages()));
+            $classe->update($request->validated());
 
             return redirect()->route('classes.index')
                 ->with('success', 'La classe "'.$classe->label.'" a été mise à jour avec succès.');

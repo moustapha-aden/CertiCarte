@@ -61,80 +61,11 @@
                         <div>
                             <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour le nom de la classe</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• Utilisez des formats cohérents (ex: "1ère A", "Terminale C")</li>
+                                <li>• <strong>Nom de classe:</strong> Utilisez des formats cohérents (ex:"2nde A" "1ère B2",
+                                    "Tle C3")</li>
                                 <li>• Évitez les caractères spéciaux et les espaces multiples</li>
                                 <li>• Le nom doit être unique pour chaque année scolaire</li>
                             </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Class Statistics Section --}}
-            <div class="pb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                        </path>
-                    </svg>
-                    <span>Statistiques de la Classe</span>
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {{-- Student Count --}}
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">Nombre d'élèves</p>
-                                <p class="text-2xl font-bold text-gray-900">
-                                    {{ $classe->students_count ?? $classe->students->count() }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- School Year --}}
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">Année scolaire</p>
-                                <p class="text-lg font-semibold text-gray-900">{{ $classe->schoolYear->year ?? 'N/A' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Creation Date --}}
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">Créée le</p>
-                                <p class="text-lg font-semibold text-gray-900">{{ $classe->created_at->format('d/m/Y') }}
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>

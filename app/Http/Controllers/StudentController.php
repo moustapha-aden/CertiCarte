@@ -12,7 +12,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -49,7 +49,7 @@ class StudentController extends Controller
 
         // Search by name or matricule
         if ($request->filled('search')) {
-            $searchTerm = '%'.$request->input('search').'%';
+            $searchTerm = '%' . $request->input('search') . '%';
             $students->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', $searchTerm)
                     ->orWhere('matricule', 'like', $searchTerm);
@@ -125,7 +125,7 @@ class StudentController extends Controller
     public function store(StoreStudentRequest $request): RedirectResponse
     {
         try {
-            $validatedData = $request->validated($request->rules(), $request->messages());
+            $validatedData = $request->validated();
 
             // Handle photo upload
             if ($request->hasFile('photo')) {
@@ -136,7 +136,7 @@ class StudentController extends Controller
             $student = Student::create($validatedData);
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
+                ->with('success', 'L\'étudiant "' . $student->name . '" a été ajouté avec succès.');
         } catch (Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -207,7 +207,7 @@ class StudentController extends Controller
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
         try {
-            $validatedData = $request->validated($request->rules(), $request->messages());
+            $validatedData = $request->validated();
 
             // Handle photo update
             if ($request->hasFile('photo')) {
@@ -223,7 +223,7 @@ class StudentController extends Controller
             $student->update($validatedData);
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
+                ->with('success', 'L\'étudiant "' . $student->name . '" a été mis à jour avec succès.');
         } catch (Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -255,7 +255,7 @@ class StudentController extends Controller
             $student->delete();
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
+                ->with('success', 'L\'étudiant "' . $studentName . '" a été supprimé avec succès.');
         } catch (Exception $e) {
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
@@ -312,15 +312,17 @@ class StudentController extends Controller
         try {
             // Validate the uploaded file
             $request->validate([
-                'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+                'file' => 'required|mimes:xlsx,xls,csv,txt|max:10240',
             ], [
                 'file.required' => 'Veuillez sélectionner un fichier à importer.',
-                'file.file' => 'Le fichier sélectionné n\'est pas valide.',
                 'file.mimes' => 'Le fichier doit être au format Excel (.xlsx, .xls) ou CSV.',
                 'file.max' => 'Le fichier ne doit pas dépasser 10MB.',
             ]);
 
             $file = $request->file('file');
+
+            // Log the import attempt
+            Log::info('Starting student import from file: ' . $file->getClientOriginalName());
 
             // Import the file using Laravel Excel
             $import = new StudentsImport;
@@ -336,30 +338,39 @@ class StudentController extends Controller
             $message .= "{$importedCount} étudiant(s) importé(s).";
 
             if (! empty($errors)) {
-                $message .= ' '.count($errors).' erreur(s) rencontrée(s).';
+                $message .= ' ' . count($errors) . ' erreur(s) rencontrée(s).';
             }
 
             if (! empty($failures)) {
-                $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
+                $message .= ' ' . count($failures) . " ligne(s) ignorée(s) à cause d'erreurs de validation.";
             }
+
+            Log::info("Student import completed: {$importedCount} students imported");
 
             return redirect()->route('students.index')
                 ->with('success', $message);
         } catch (ValidationException $e) {
-            // Handle validation errors
+            // Handle validation errors (Maatwebsite specific)
             $failures = $e->failures();
             $errorMessage = "Erreurs de validation détectées :\n";
 
             foreach ($failures as $failure) {
-                $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
+                $errorMessage .= "Ligne {$failure->row()}: " . implode(', ', $failure->errors()) . "\n";
             }
+
+            Log::error('Student import validation errors: ' . $errorMessage);
 
             return redirect()->back()
                 ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
                 ->with('validation_errors', $failures);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            // CATCH TOUJOURS EN DERNIER RESSORT : Gère toutes les autres erreurs fatales (y compris TypeErrors)
+            // La gestion des erreurs doit TOUJOURS se terminer par un return pour le type hint.
+            Log::error('Student import failed: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
             return redirect()->back()
-                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer.');
+                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer. Détail : ' . $e->getMessage());
         }
     }
 }
