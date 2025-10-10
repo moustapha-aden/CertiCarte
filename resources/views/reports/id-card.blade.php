@@ -514,7 +514,7 @@
 
                             <div class="info-line info-address">
                                 <div class="info-line-content">
-                                    <div class="info-label">Adresse</div>
+                                    <div class="info-label">Pays de Naissance</div>
                                     <div class="info-value">{{ $student->place_of_birth ?? 'Non renseignée' }}</div>
                                 </div>
                             </div>
