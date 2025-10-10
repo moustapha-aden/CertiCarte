@@ -33,7 +33,7 @@
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 @can('generate_attendance_lists')
-                    <x-button onclick="openAttendanceModal('{{ $classe->id }}')" variant="outline" size="lg"
+                    <x-button onclick="openAttendanceModal({{ $classe->id }})" variant="outline" size="lg"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>'
                         class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
                         Générer Liste d'Appel
@@ -387,79 +387,29 @@
     @push('scripts')
         <script>
             let currentClasseId = null;
-
-            // Ouvrir le modal d'appel
-            function openAttendanceModal(classeId) {
-                currentClasseId = classeId;
-                openModal();
-
-                // Set up click handlers after modal is opened
-                setTimeout(() => {
-                    setupModalCardHandlers();
-                }, 400);
-            }
-
-            // Générer la liste d'appel
-            function generateAttendanceList(days) {
-                if (currentClasseId && (days === 1 || days === 2)) {
-                    const url = `{{ url('reports') }}/attendance-list/${currentClasseId}?days=${days}`;
+            function openAttendan(classId){
+                const url = `{{ url('reports') }}/attendance-list/${currentClasseId}?days=${days}`;
 
                     // Fermer le modal
                     closeModal();
 
                     // Ouvrir dans un nouvel onglet
                     window.open(url, '_blank');
-                }
             }
+            // Ouvrir le modal d'appel
+            function generateAttendanceList(classId) {
+            if (!classId) return;
 
-            // Set up modal card click handlers
-            function setupModalCardHandlers() {
-                // Try multiple selectors to find the cards
-                const selectors = [
-                    '.modal-card-attendance',
-                    '[data-days]',
-                    '.rounded-xl.border-2',
-                    '#attendanceModal .rounded-xl'
-                ];
+            // construit l'URL côté serveur (utilise la fonction url() de Blade)
+            const base = "{{ url('reports') }}";
+            const url = `${base}/attendance-list/${classId}?days=1`;
 
-                let cards = [];
-                for (let selector of selectors) {
-                    cards = document.querySelectorAll(selector);
-                    if (cards.length > 0) break;
-                }
+            // ouvre dans un nouvel onglet
+            window.open(url, '_blank');
+        }
 
-                if (cards.length === 0) {
-                    setTimeout(setupModalCardHandlers, 200);
-                    return;
-                }
-
-                // Remove any existing handlers first
-                cards.forEach(card => {
-                    card.removeEventListener('click', handleCardClick);
-                });
-
-                // Add new handlers
-                cards.forEach(card => {
-                    card.addEventListener('click', handleCardClick);
-                });
-            }
-
-            // Handle card clicks
-            function handleCardClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                const days = this.getAttribute('data-days');
-
-                if (days) {
-                    generateAttendanceList(parseInt(days));
-                }
-            }
-
-            // Make functions globally available
-            window.openAttendanceModal = openAttendanceModal;
-            window.generateAttendanceList = generateAttendanceList;
-            window.setupModalCardHandlers = setupModalCardHandlers;
-        </script>
+        // expose au global si besoin (optionnel)
+        window.generateAttendanceList = generateAttendanceList;
+    </script>
     @endpush
 @endsection
