@@ -17,7 +17,7 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 7.5pt; /* Taille de police globale réduite */
             color: #000;
-            margin: 0;
+            margin: 12px;
             padding: 0;
         }
 
@@ -61,7 +61,7 @@
         .attendance-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 3px; /* Marge réduite */
+            margin-top: 10px; /* Marge réduite */
         }
 
         .attendance-table th,
