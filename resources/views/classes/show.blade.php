@@ -33,7 +33,7 @@
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 @can('generate_attendance_lists')
-                    <x-button onclick="openAttendanceModal({{ $classe->id }})" variant="outline" size="lg"
+                    <x-button  onclick="generateAttendanceList({{ $classe->id }})" variant="outline" size="lg"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>'
                         class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600 cursor-pointer">
                         Générer Liste d'Appel
