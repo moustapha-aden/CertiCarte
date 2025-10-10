@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <div class="main-title">Liste d'appel</div>
-            <div class="school-name">LYCEE DE BALBALA</div>
+            <div class="school-name">LYCEE AHMED FARAH ALI</div>
         </div>
         <div class="header-right">
             Classe : <strong>{{ $classe->label }}</strong>
@@ -313,11 +313,6 @@
             </tr>
         </tbody>
     </table>
-
-    <div class="watermark">
-        Imprimer le {{ date('d-m-Y') }}
-    </div>
-
 </body>
 
 </html>
