@@ -204,34 +204,15 @@ class ClasseController extends Controller
             // User must pass 'days=1' or 'days=2' via URL
             $days = $request->query('days', 1);
 
-            // Ensure 'days' is 1 or 2
-            if (! in_array($days, [1, 2])) {
-                return redirect()->back()->with('error', 'Le nombre de jours doit être 1 ou 2.');
-            }
-
             // Get students from the class, sorted by name
             $students = $classe->students()->orderBy('name')->get();
-            $nbrLigne = $classe->students()->count();
 
             // Calculate necessary dates
             $dates = [];
             $today = Carbon::now();
             $dates[] = $today->format('d/m/Y');
 
-            if ($days == 2) {
-                $tomorrow = $today->copy()->addDay();
-                $dates[] = $tomorrow->format('d/m/Y');
-            }
-            // Generate PDF with appropriate view
-            if ($days == 2) {
-                // View for 2 days (landscape format)
-                $pdf = Pdf::loadView('classes.attendance-list-2days', [
-                    'classe' => $classe,
-                    'students' => $students,
-                    'dates' => $dates,
-                    'days' => $days,
-                ]);
-            } else {
+
                 // View for 1 day (portrait format)
                 $pdf = Pdf::loadView('classes.attendance_list_print', [
                     'classe' => $classe,
@@ -239,7 +220,7 @@ class ClasseController extends Controller
                     'dates' => $dates,
                     'days' => $days,
                 ]);
-            }
+
 
             // Define filename
             $fileName = 'Liste_Appel_'.$classe->label.'_'.Carbon::now()->format('Ymd').'.pdf';

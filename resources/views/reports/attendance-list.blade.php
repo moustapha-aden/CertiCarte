@@ -52,7 +52,8 @@
         }
 
         .header-right {
-            text-align: right;
+            text-align: center;
+            margin:auto;
             font-size: 8pt; /* Police de l'en-tête réduite */
         }
 
@@ -67,15 +68,14 @@
         .attendance-table td {
             border: 1px solid #000;
             padding: 1px 2px; /* Padding réduit */
-            text-align: center;
-            vertical-align: middle;
             font-size: 7pt; /* Taille de police du tableau très réduite */
         }
 
         .attendance-table thead th {
-            background-color: #d0d0d0;
             font-weight: bold;
-            height: 14px; /* Hauteur d'en-tête réduite */
+            text-align: center;
+            vertical-align: middle;
+            height: 30px; /* Hauteur d'en-tête réduite */
         }
 
         .attendance-table tbody td {
@@ -96,7 +96,7 @@
         .col-nom {
             width: 25%; /* Augmentée pour les noms */
             text-align: left;
-            padding-left: 3px;
+            /* padding-left: 3px; */
             font-weight: 500;
         }
 
@@ -124,7 +124,7 @@
 
         .col-heure {
             /* 10 colonnes restantes pour les heures */
-            width: 5.2%; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
+            width: 1.2%; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
             background-color: #fafafa;
         }
 
@@ -136,6 +136,8 @@
 
         .footer-row .col-nom {
             font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
             font-size: 8pt; /* Police légèrement augmentée pour les pieds de tableau */
         }
 
@@ -172,7 +174,7 @@
 
     <div class="page-header">
         <div class="header-left">
-            Date : ____________
+            Date : __/__/__
         </div>
         <div class="header-center">
             <div class="main-title">Liste d'appel</div>
@@ -185,7 +187,7 @@
 
     <table class="attendance-table">
         <thead>
-            <tr>
+            <tr class="header">
                 <th class="col-numero">N°</th>
                 <th class="col-matricule">Matricule</th>
                 <th class="col-nom">Noms</th>
