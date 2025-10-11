@@ -442,7 +442,7 @@
                         <!-- Titre de la carte -->
                         <div style="position:absolute; top:15mm; left:0; width:100%; text-align:center;">
                             <span
-                                style="font-size:5pt; font-weight:700; color:#2563eb; background:#fff; padding:1.2px 9px; border-radius:8px; box-shadow:0 1px 3px #e0e7ff; letter-spacing:0.8px;">
+                                style="font-size:6pt; font-weight:bold; color:#2563eb; background:#fff; padding:1.2px 9px; border-radius:8px; box-shadow:0 1px 3px #e0e7ff; letter-spacing:0.8px;">
                                 CARTE D'IDENTITÉ SCOLAIRE
                             </span>
                         </div>
@@ -514,7 +514,7 @@
 
                             <div class="info-line info-address">
                                 <div class="info-line-content">
-                                    <div class="info-label">Pays de Naissance</div>
+                                    <div class="info-label">Päys de naissance</div>
                                     <div class="info-value">{{ $student->place_of_birth ?? 'Non renseignée' }}</div>
                                 </div>
                             </div>
