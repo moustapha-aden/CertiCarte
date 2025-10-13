@@ -203,18 +203,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-- Days Selection (only for attendance list) --}}
-                        <div x-show="reportType === 'attendance_list'" x-transition class="md:col-span-2">
-                            <label for="days" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nombre de Jours
-                            </label>
-                            <select id="days" name="days" x-model="days"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
-                                <option value="1">1 jour</option>
-                                <option value="2">2 jours</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
 
@@ -258,7 +246,6 @@
                 schoolYearId: '',
                 classeId: '',
                 studentId: '',
-                days: 1,
                 classes: [],
                 students: [],
                 isGenerating: false,
@@ -415,12 +402,11 @@
                                 break;
                             case 'attendance_list':
                                 route = `{{ url('reports') }}/attendance-list/${this.classeId}`;
-                                params = `?days=${this.days}`;
                                 break;
                         }
 
                         // Open report in new tab
-                        window.open(route + params, '_blank');
+                        window.open(route, '_blank');
 
                     } catch (error) {
                         console.error('Error generating report:', error);

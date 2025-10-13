@@ -23,14 +23,8 @@ class StudentController extends Controller
     /**
      * Display a paginated listing of students with filtering and sorting capabilities.
      *
-     * Supports filtering by class, gender, and search terms (name or matricule).
-     * Provides sorting by name, matricule, date of birth, gender, or creation date.
-     * Results are paginated with query string preservation for navigation.
-     *
      * @param  Request  $request  The HTTP request containing filter and sort parameters
      * @return View The students index view with paginated and filtered student data
-     *
-     * @throws \Exception If database query fails
      */
     public function index(Request $request): View
     {
@@ -88,9 +82,6 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new student.
      *
-     * Loads all available school years and classes for dropdown selection.
-     * Classes are dynamically loaded based on selected school year.
-     *
      * @param  Request  $request  The HTTP request containing school year selection
      * @return View The student creation form view with school years and classes data
      */
@@ -113,21 +104,14 @@ class StudentController extends Controller
     /**
      * Store a newly created student in the database.
      *
-     * Validates incoming request data and creates a new student record.
-     * Handles optional photo upload to public storage.
-     * Logs successful creation and handles exceptions gracefully.
-     *
      * @param  StoreStudentRequest  $request  The validated request containing student data
      * @return RedirectResponse Redirect to students index with success/error message
-     *
-     * @throws \Exception If student creation fails
      */
     public function store(StoreStudentRequest $request): RedirectResponse
     {
         try {
             $validatedData = $request->validated();
 
-            // Handle photo upload
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('photos/students', 'public');
                 $validatedData['photo'] = $photoPath;
@@ -147,9 +131,6 @@ class StudentController extends Controller
     /**
      * Display the specified student's detailed information.
      *
-     * Loads the student's associated class information and displays
-     * all student details including personal information and academic data.
-     *
      * @param  Student  $student  The student model instance to display
      * @return View The student details view with complete student information
      */
@@ -163,25 +144,18 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified student.
      *
-     * Loads all available school years and classes for dropdown selection.
-     * Pre-selects the student's current school year and class.
-     * Classes are dynamically loaded based on selected school year.
-     *
      * @param  Student  $student  The student model instance to edit
      * @param  Request  $request  The HTTP request containing school year selection
      * @return View The student edit form view with pre-populated data
      */
     public function edit(Student $student, Request $request): View
     {
-        // Get all school years for the dropdown
         $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
 
-        // Figure out the school year ID:
         $selectedYearId = $request->input('school_year_id')
             ?? old('school_year_id')
             ?? optional($student->classe)->year_id;
 
-        // Get classes for that school year
         $classes = collect();
         if ($selectedYearId) {
             $classes = Classe::where('year_id', $selectedYearId)
@@ -194,28 +168,19 @@ class StudentController extends Controller
     /**
      * Update the specified student in the database.
      *
-     * Validates incoming request data and updates the student record.
-     * Handles optional photo update with automatic deletion of old photo.
-     * Logs successful updates and handles exceptions gracefully.
-     *
      * @param  UpdateStudentRequest  $request  The validated request containing updated student data
      * @param  Student  $student  The student model instance to update
      * @return RedirectResponse Redirect to students index with success/error message
-     *
-     * @throws \Exception If student update fails
      */
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
         try {
             $validatedData = $request->validated();
 
-            // Handle photo update
             if ($request->hasFile('photo')) {
-                // Delete old photo if exists
                 if ($student->photo) {
                     Storage::disk('public')->delete($student->photo);
                 }
-                // Store new photo
                 $photoPath = $request->file('photo')->store('photos/students', 'public');
                 $validatedData['photo'] = $photoPath;
             }
@@ -234,18 +199,12 @@ class StudentController extends Controller
     /**
      * Remove the specified student from the database.
      *
-     * Permanently deletes the student record and associated photo file.
-     * This action cannot be undone. Logs successful deletion.
-     *
      * @param  Student  $student  The student model instance to delete
      * @return RedirectResponse Redirect to students index with success/error message
-     *
-     * @throws \Exception If student deletion fails
      */
     public function destroy(Student $student): RedirectResponse
     {
         try {
-            // Delete associated photo if exists
             if ($student->photo) {
                 Storage::disk('public')->delete($student->photo);
             }
@@ -265,14 +224,8 @@ class StudentController extends Controller
     /**
      * Get classes by school year for AJAX requests.
      *
-     * Returns a JSON response containing classes associated with the specified school year.
-     * Used for dynamic dropdown population in student forms.
-     * Includes error handling with appropriate HTTP status codes.
-     *
      * @param  int  $yearId  The school year ID to filter classes by
      * @return JsonResponse JSON response with classes data and metadata
-     *
-     * @throws \Exception If database query fails
      */
     public function getClassesByYear(int $yearId): JsonResponse
     {
@@ -299,18 +252,12 @@ class StudentController extends Controller
     /**
      * Import students from Excel/CSV file.
      *
-     * Validates the uploaded file and processes it using the StudentsImport class.
-     * Handles both successful imports and errors gracefully.
-     *
      * @param  Request  $request  The HTTP request containing the uploaded file
      * @return RedirectResponse Redirect to students index with success/error message
-     *
-     * @throws \Exception If import process fails
      */
     public function import(Request $request): RedirectResponse
     {
         try {
-            // Validate the uploaded file
             $request->validate([
                 'file' => 'required|mimes:xlsx,xls,csv,txt|max:10240',
             ], [
@@ -321,19 +268,15 @@ class StudentController extends Controller
 
             $file = $request->file('file');
 
-            // Log the import attempt
             Log::info('Starting student import from file: '.$file->getClientOriginalName());
 
-            // Import the file using Laravel Excel
             $import = new StudentsImport;
             Excel::import($import, $file);
 
-            // Get import statistics
             $importedCount = $import->getRowCount();
             $errors = $import->errors();
             $failures = $import->failures();
 
-            // Prepare success message
             $message = 'Import terminé avec succès ! ';
             $message .= "{$importedCount} étudiant(s) importé(s).";
 
@@ -350,7 +293,6 @@ class StudentController extends Controller
             return redirect()->route('students.index')
                 ->with('success', $message);
         } catch (ValidationException $e) {
-            // Handle validation errors (Maatwebsite specific)
             $failures = $e->failures();
             $errorMessage = "Erreurs de validation détectées :\n";
 
@@ -364,8 +306,6 @@ class StudentController extends Controller
                 ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
                 ->with('validation_errors', $failures);
         } catch (\Throwable $e) {
-            // CATCH TOUJOURS EN DERNIER RESSORT : Gère toutes les autres erreurs fatales (y compris TypeErrors)
-            // La gestion des erreurs doit TOUJOURS se terminer par un return pour le type hint.
             Log::error('Student import failed: '.$e->getMessage());
             Log::error('Stack trace: '.$e->getTraceAsString());
 
