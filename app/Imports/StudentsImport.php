@@ -56,6 +56,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     public function getCsvSettings(): array
     {
         Log::debug('CSV Settings loaded.');
+
         return [
             'delimiter' => ',',
             'enclosure' => "\0",
@@ -65,35 +66,38 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
 
     public function collection(Collection $rows)
     {
-        Log::debug('Starting student import. Total rows to process (after validation): ' . $rows->count());
+        Log::debug('Starting student import. Total rows to process (after validation): '.$rows->count());
 
         foreach ($rows as $index => $row) {
             $this->rowCount++;
             $rowId = $row['id'] ?? ($index + 2);
-            Log::debug("Processing row ID: {$rowId} - Data: " . json_encode($row->toArray()));
+            Log::debug("Processing row ID: {$rowId} - Data: ".json_encode($row->toArray()));
 
             $name = trim($row['name'] ?? '');
             $matricule = trim($row['matricule'] ?? '');
 
             if (empty($name) || empty($matricule)) {
-                Log::warning('Skipping row, missing name or matricule: ' . json_encode($row->toArray()));
+                Log::warning('Skipping row, missing name or matricule: '.json_encode($row->toArray()));
+
                 continue;
             }
 
             // 1. GESTION DE L'ANNÉE SCOLAIRE (MODIFIÉ : CRÉATION SI INEXISTANTE)
             $schoolYearId = $this->getSchoolYearId($row);
 
-            if (!$schoolYearId) {
-                 Log::error("Skipping student {$name}: School Year ID could not be determined or created.");
-                 continue;
+            if (! $schoolYearId) {
+                Log::error("Skipping student {$name}: School Year ID could not be determined or created.");
+
+                continue;
             }
 
             // 2. GESTION DU LABEL DE CLASSE (MODIFIÉ : CRÉATION SI INEXISTANTE DANS L'ANNÉE DONNÉE)
             $classeLabel = trim($row['classe'] ?? $row['label_classe'] ?? '');
 
             if (empty($classeLabel)) {
-                 Log::warning("Skipping student {$name}: Class label is missing.");
-                 continue;
+                Log::warning("Skipping student {$name}: Class label is missing.");
+
+                continue;
             }
 
             // Recherche ou Création de la Classe basée sur le label ET l'année scolaire
@@ -102,11 +106,11 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                 $classe = Classe::firstOrCreate(
                     [
                         'label' => $classeLabel,
-                        'year_id' => $schoolYearId
+                        'year_id' => $schoolYearId,
                     ],
                     [
                         'label' => $classeLabel,
-                        'year_id' => $schoolYearId
+                        'year_id' => $schoolYearId,
                     ]
                 );
 
@@ -114,7 +118,8 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                 Log::debug("Classe processed: ID {$classeId} for Label '{$classeLabel}' in Year ID {$schoolYearId}.");
 
             } catch (\Exception $e) {
-                Log::error("Failed to find or create Classe {$classeLabel} for year {$schoolYearId}: " . $e->getMessage());
+                Log::error("Failed to find or create Classe {$classeLabel} for year {$schoolYearId}: ".$e->getMessage());
+
                 continue;
             }
 
@@ -130,7 +135,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                     try {
                         $formattedDateOfBirth = Carbon::parse($dateOfBirth)->format('Y-m-d');
                     } catch (\Exception $e2) {
-                        Log::error("Date parsing error for {$name} (Value: {$dateOfBirth}): " . $e2->getMessage());
+                        Log::error("Date parsing error for {$name} (Value: {$dateOfBirth}): ".$e2->getMessage());
                         $formattedDateOfBirth = null;
                     }
                 }
@@ -138,14 +143,14 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
 
             // Genre (pas de changement)
             $gender = strtoupper(trim($row['gender'] ?? ''));
-            if (!in_array($gender, ['M', 'F'])) {
+            if (! in_array($gender, ['M', 'F'])) {
                 $gender = null;
             }
 
             // Situation (pas de changement)
             $situation = strtoupper(trim($row['situation'] ?? 'R'));
             $allowedSituations = ['R', 'NR'];
-            if (!in_array($situation, $allowedSituations)) {
+            if (! in_array($situation, $allowedSituations)) {
                 $situation = 'R'; // Valeur par défaut
             }
 
@@ -166,11 +171,11 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
 
                 Log::info("Successfully imported student: {$name} (Matricule: {$matricule})");
             } catch (\Exception $e) {
-                Log::error("Database error while creating student {$name}: " . $e->getMessage() . ' - Data: ' . json_encode($row->toArray()));
+                Log::error("Database error while creating student {$name}: ".$e->getMessage().' - Data: '.json_encode($row->toArray()));
             }
         }
 
-        Log::debug('Finished student import. Total rows processed (that passed validation): ' . $this->rowCount);
+        Log::debug('Finished student import. Total rows processed (that passed validation): '.$this->rowCount);
     }
 
     /**
@@ -184,13 +189,14 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
             $schoolYearValue = trim(str_replace('"', '', $schoolYearValue));
 
             // Si la valeur est présente, on tente de la trouver ou de la créer
-            if (!empty($schoolYearValue)) {
+            if (! empty($schoolYearValue)) {
                 $schoolYear = SchoolYear::firstOrCreate(
                     ['year' => $schoolYearValue],
                     ['year' => $schoolYearValue]
                 );
 
                 Log::debug("SchoolYear processed: ID {$schoolYear->id} for value: {$schoolYearValue}");
+
                 return $schoolYear->id;
             }
         }
@@ -199,11 +205,13 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
         $latestSchoolYear = SchoolYear::orderBy('year', 'desc')->first();
         if ($latestSchoolYear) {
             Log::debug("Using latest SchoolYear ID: {$latestSchoolYear->id} as fallback.");
+
             return $latestSchoolYear->id;
         }
 
         // Si aucune année n'est trouvée (même pas en fallback)
-        Log::error("Cannot determine or create a SchoolYear.");
+        Log::error('Cannot determine or create a SchoolYear.');
+
         return null;
     }
 
@@ -212,8 +220,9 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
      */
     private function getSchoolYearValue(int $id): ?string
     {
-         $year = SchoolYear::find($id);
-         return $year ? $year->year : 'N/A';
+        $year = SchoolYear::find($id);
+
+        return $year ? $year->year : 'N/A';
     }
 
     /**

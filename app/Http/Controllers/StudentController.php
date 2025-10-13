@@ -49,7 +49,7 @@ class StudentController extends Controller
 
         // Search by name or matricule
         if ($request->filled('search')) {
-            $searchTerm = '%' . $request->input('search') . '%';
+            $searchTerm = '%'.$request->input('search').'%';
             $students->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', $searchTerm)
                     ->orWhere('matricule', 'like', $searchTerm);
@@ -136,7 +136,7 @@ class StudentController extends Controller
             $student = Student::create($validatedData);
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $student->name . '" a été ajouté avec succès.');
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été ajouté avec succès.');
         } catch (Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -223,7 +223,7 @@ class StudentController extends Controller
             $student->update($validatedData);
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $student->name . '" a été mis à jour avec succès.');
+                ->with('success', 'L\'étudiant "'.$student->name.'" a été mis à jour avec succès.');
         } catch (Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -255,7 +255,7 @@ class StudentController extends Controller
             $student->delete();
 
             return redirect()->route('students.index')
-                ->with('success', 'L\'étudiant "' . $studentName . '" a été supprimé avec succès.');
+                ->with('success', 'L\'étudiant "'.$studentName.'" a été supprimé avec succès.');
         } catch (Exception $e) {
             return redirect()->route('students.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'étudiant. Veuillez réessayer.');
@@ -322,7 +322,7 @@ class StudentController extends Controller
             $file = $request->file('file');
 
             // Log the import attempt
-            Log::info('Starting student import from file: ' . $file->getClientOriginalName());
+            Log::info('Starting student import from file: '.$file->getClientOriginalName());
 
             // Import the file using Laravel Excel
             $import = new StudentsImport;
@@ -338,11 +338,11 @@ class StudentController extends Controller
             $message .= "{$importedCount} étudiant(s) importé(s).";
 
             if (! empty($errors)) {
-                $message .= ' ' . count($errors) . ' erreur(s) rencontrée(s).';
+                $message .= ' '.count($errors).' erreur(s) rencontrée(s).';
             }
 
             if (! empty($failures)) {
-                $message .= ' ' . count($failures) . " ligne(s) ignorée(s) à cause d'erreurs de validation.";
+                $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
             }
 
             Log::info("Student import completed: {$importedCount} students imported");
@@ -355,10 +355,10 @@ class StudentController extends Controller
             $errorMessage = "Erreurs de validation détectées :\n";
 
             foreach ($failures as $failure) {
-                $errorMessage .= "Ligne {$failure->row()}: " . implode(', ', $failure->errors()) . "\n";
+                $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
             }
 
-            Log::error('Student import validation errors: ' . $errorMessage);
+            Log::error('Student import validation errors: '.$errorMessage);
 
             return redirect()->back()
                 ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
@@ -366,11 +366,11 @@ class StudentController extends Controller
         } catch (\Throwable $e) {
             // CATCH TOUJOURS EN DERNIER RESSORT : Gère toutes les autres erreurs fatales (y compris TypeErrors)
             // La gestion des erreurs doit TOUJOURS se terminer par un return pour le type hint.
-            Log::error('Student import failed: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+            Log::error('Student import failed: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
 
             return redirect()->back()
-                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer. Détail : ' . $e->getMessage());
+                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer. Détail : '.$e->getMessage());
         }
     }
 }

@@ -212,15 +212,13 @@ class ClasseController extends Controller
             $today = Carbon::now();
             $dates[] = $today->format('d/m/Y');
 
-
-                // View for 1 day (portrait format)
-                $pdf = Pdf::loadView('classes.attendance_list_print', [
-                    'classe' => $classe,
-                    'students' => $students,
-                    'dates' => $dates,
-                    'days' => $days,
-                ]);
-
+            // View for 1 day (portrait format)
+            $pdf = Pdf::loadView('classes.attendance_list_print', [
+                'classe' => $classe,
+                'students' => $students,
+                'dates' => $dates,
+                'days' => $days,
+            ]);
 
             // Define filename
             $fileName = 'Liste_Appel_'.$classe->label.'_'.Carbon::now()->format('Ymd').'.pdf';
