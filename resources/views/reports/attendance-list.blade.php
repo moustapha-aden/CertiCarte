@@ -17,7 +17,7 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 7.5pt; /* Taille de police globale réduite */
             color: #000;
-            margin: 0;
+            margin: 12px;
             padding: 0;
         }
 
@@ -52,7 +52,8 @@
         }
 
         .header-right {
-            text-align: right;
+            text-align: center;
+            margin:auto;
             font-size: 8pt; /* Police de l'en-tête réduite */
         }
 
@@ -60,22 +61,21 @@
         .attendance-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 3px; /* Marge réduite */
+            margin-top: 10px; /* Marge réduite */
         }
 
         .attendance-table th,
         .attendance-table td {
             border: 1px solid #000;
             padding: 1px 2px; /* Padding réduit */
-            text-align: center;
-            vertical-align: middle;
             font-size: 7pt; /* Taille de police du tableau très réduite */
         }
 
         .attendance-table thead th {
-            background-color: #d0d0d0;
             font-weight: bold;
-            height: 14px; /* Hauteur d'en-tête réduite */
+            text-align: center;
+            vertical-align: middle;
+            height: 30px; /* Hauteur d'en-tête réduite */
         }
 
         .attendance-table tbody td {
@@ -96,7 +96,7 @@
         .col-nom {
             width: 25%; /* Augmentée pour les noms */
             text-align: left;
-            padding-left: 3px;
+            /* padding-left: 3px; */
             font-weight: 500;
         }
 
@@ -116,9 +116,15 @@
             color: #c00;
         }
 
+         .col-separe {
+            /* 10 colonnes restantes pour les heures */
+            width: 1px; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
+            background-color: #fafafa;
+        }
+
         .col-heure {
             /* 10 colonnes restantes pour les heures */
-            width: 5.2%; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
+            width: 1.2%; /* Calcul: (100 - (3+8+25+6+3+3)) / 10 = 52 / 10 = 5.2% */
             background-color: #fafafa;
         }
 
@@ -130,6 +136,8 @@
 
         .footer-row .col-nom {
             font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
             font-size: 8pt; /* Police légèrement augmentée pour les pieds de tableau */
         }
 
@@ -166,11 +174,11 @@
 
     <div class="page-header">
         <div class="header-left">
-            Date : ____________
+            Date : __/__/__
         </div>
         <div class="header-center">
             <div class="main-title">Liste d'appel</div>
-            <div class="school-name">LYCEE DE BALBALA</div>
+            <div class="school-name">LYCEE AHMED FARAH ALI</div>
         </div>
         <div class="header-right">
             Classe : <strong>{{ $classe->label }}</strong>
@@ -179,7 +187,7 @@
 
     <table class="attendance-table">
         <thead>
-            <tr>
+            <tr class="header">
                 <th class="col-numero">N°</th>
                 <th class="col-matricule">Matricule</th>
                 <th class="col-nom">Noms</th>
@@ -190,6 +198,7 @@
                 <th class="col-heure">8H</th>
                 <th class="col-heure">9H</th>
                 <th class="col-heure">10H</th>
+                <th class="col-separe"></th>
                 <th class="col-heure">11H</th>
                 <th class="col-heure">14H</th>
                 <th class="col-heure">15H</th>
@@ -199,7 +208,8 @@
         </thead>
         <tbody>
             @php
-                $max_rows = 60; // Nombre total de lignes souhaité
+                $student_count = count($students);
+                $max_rows = $student_count; // Nombre total de lignes souhaité
                 $student_count = count($students);
                 $empty_rows_needed = $max_rows - $student_count;
             @endphp
@@ -213,11 +223,12 @@
                         {{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') : '' }}
                     </td>
                     <td class="col-genre">{{ $student->gender ?? '' }}</td>
-                    <td class="col-red">{{ $student->redoublant ? 'R' : '' }}</td>
+                    <td class="col-red">{{ $student->situation==='R' ? 'R' : '' }}</td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
+                    <td class="col-separe"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
                     <td class="col-heure"></td>
@@ -262,6 +273,7 @@
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
+                <td class="col-heure"></td>
             </tr>
             <tr class="footer-row">
                 <td class="col-numero"></td>
@@ -270,6 +282,7 @@
                 <td class="col-naiss"></td>
                 <td class="col-genre"></td>
                 <td class="col-red"></td>
+                <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
@@ -296,14 +309,10 @@
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
                 <td class="col-heure"></td>
+                <td class="col-heure"></td>
             </tr>
         </tbody>
     </table>
-
-    <div class="watermark">
-        Imprimer le {{ date('d-m-Y') }}
-    </div>
-
 </body>
 
 </html>

@@ -214,7 +214,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-sm font-medium text-gray-900">{{ $recentActivity['new_students_today'] }}
-                            nouvel(le)(s) étudiant(e)(s) inscrit(e)(s) aujourd'hui</p>
+                            nouvelles élèves inscrites</p>
                         <p class="text-xs text-gray-500">Aujourd'hui</p>
                     </div>
                 </div>
@@ -232,7 +232,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-sm font-medium text-gray-900">{{ $recentActivity['new_classes_this_week'] }}
-                            nouvelle(s) classe(s) créée(s) cette semaine</p>
+                            nouvelles classes créées</p>
                         <p class="text-xs text-gray-500">Cette semaine</p>
                     </div>
                 </div>
@@ -250,7 +250,9 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-sm font-medium text-gray-900">
-                            {{ $recentActivity['total_registrations_this_month'] }} inscription(s) ce mois</p>
+                            {{ $recentActivity['total_registrations_this_month'] }}
+                            inscriptions
+                        </p>
                         <p class="text-xs text-gray-500">Ce mois-ci</p>
                     </div>
                 </div>

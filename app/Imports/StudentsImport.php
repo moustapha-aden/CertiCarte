@@ -17,7 +17,17 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+// Correction ici : Utilisation de la classe Failure du namespace Validators
+use Maatwebsite\Excel\Validators\Failure;
 
+/**
+ * Classe d'importation pour les étudiants.
+ *
+ * Elle est modifiée pour :
+ * 1. Utiliser le 'label' de la classe au lieu de 'classe_id'.
+ * 2. Utiliser la colonne 'annee_scolaire' pour grouper les classes.
+ * 3. Créer automatiquement l'année scolaire et la classe si elles n'existent pas (logique firstOrCreate).
+ */
 class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, WithCustomCsvSettings, WithHeadingRow, WithValidation
 {
     use Importable, SkipsErrors, SkipsFailures;
@@ -25,11 +35,28 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
     private $rowCount = 0;
 
     /**
-     * Paramètres pour CSV (utile si tu importes aussi des CSV)
+     * IMPLÉMENTATION CRUCIALE : Log l'échec de validation
+     * Cette méthode capture les lignes qui n'ont pas atteint collection()
+     */
+    public function onFailure(Failure ...$failures)
+    {
+        foreach ($failures as $failure) {
+            $rowNumber = $failure->row();
+            $errors = json_encode($failure->errors());
+            $values = json_encode($failure->values());
+
+            // LOG: Enregistre chaque ligne qui a échoué à la validation et la raison
+            Log::warning("Validation failure detected - Row: {$rowNumber}. Errors: {$errors}. Values: {$values}");
+        }
+    }
+
+    /**
+     * Paramètres pour CSV
      */
     public function getCsvSettings(): array
     {
-        Log::debug('CSV Settings loaded.'); // LOG: Chargement des paramètres CSV
+        Log::debug('CSV Settings loaded.');
+
         return [
             'delimiter' => ',',
             'enclosure' => "\0",
@@ -39,62 +66,95 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
 
     public function collection(Collection $rows)
     {
-        Log::debug('Starting student import. Total rows to process: ' . $rows->count()); // LOG: Début de l'importation
+        Log::debug('Starting student import. Total rows to process (after validation): '.$rows->count());
 
         foreach ($rows as $index => $row) {
-            $this->rowCount++; // Incrémenter pour le décompte
-            Log::debug("Processing row number: " . ($index + 1) . " - Data: " . json_encode($row->toArray())); // LOG: Traitement de la ligne
+            $this->rowCount++;
+            $rowId = $row['id'] ?? ($index + 2);
+            Log::debug("Processing row ID: {$rowId} - Data: ".json_encode($row->toArray()));
 
             $name = trim($row['name'] ?? '');
             $matricule = trim($row['matricule'] ?? '');
 
             if (empty($name) || empty($matricule)) {
-                Log::warning('Skipping row, missing name or matricule: ' . json_encode($row->toArray()));
+                Log::warning('Skipping row, missing name or matricule: '.json_encode($row->toArray()));
+
                 continue;
             }
 
-            // Date de naissance
+            // 1. GESTION DE L'ANNÉE SCOLAIRE (MODIFIÉ : CRÉATION SI INEXISTANTE)
+            $schoolYearId = $this->getSchoolYearId($row);
+
+            if (! $schoolYearId) {
+                Log::error("Skipping student {$name}: School Year ID could not be determined or created.");
+
+                continue;
+            }
+
+            // 2. GESTION DU LABEL DE CLASSE (MODIFIÉ : CRÉATION SI INEXISTANTE DANS L'ANNÉE DONNÉE)
+            $classeLabel = trim($row['classe'] ?? $row['label_classe'] ?? '');
+
+            if (empty($classeLabel)) {
+                Log::warning("Skipping student {$name}: Class label is missing.");
+
+                continue;
+            }
+
+            // Recherche ou Création de la Classe basée sur le label ET l'année scolaire
+            // Utilisation de firstOrCreate pour créer la classe si elle n'existe pas
+            try {
+                $classe = Classe::firstOrCreate(
+                    [
+                        'label' => $classeLabel,
+                        'year_id' => $schoolYearId,
+                    ],
+                    [
+                        'label' => $classeLabel,
+                        'year_id' => $schoolYearId,
+                    ]
+                );
+
+                $classeId = $classe->id;
+                Log::debug("Classe processed: ID {$classeId} for Label '{$classeLabel}' in Year ID {$schoolYearId}.");
+
+            } catch (\Exception $e) {
+                Log::error("Failed to find or create Classe {$classeLabel} for year {$schoolYearId}: ".$e->getMessage());
+
+                continue;
+            }
+
+            // Date de naissance (pas de changement)
             $dateOfBirth = $row['date_of_birth'] ?? null;
             $formattedDateOfBirth = null;
             if ($dateOfBirth) {
                 try {
-                    // Tente d'analyser la date, peut-être en ajoutant un log si la date initiale pose problème
-                    Log::debug("Attempting to parse date: " . $dateOfBirth);
-                    $formattedDateOfBirth = Carbon::parse($dateOfBirth)->format('Y-m-d');
-                    Log::debug("Successfully parsed date to: " . $formattedDateOfBirth);
+                    // Utilisation de createFromFormat pour gérer le format 'DD/MM/YYYY' de ton CSV
+                    $date = Carbon::createFromFormat('d/m/Y', $dateOfBirth);
+                    $formattedDateOfBirth = $date->format('Y-m-d');
                 } catch (\Exception $e) {
-                    Log::error("Date parsing error for {$name} (Value: {$dateOfBirth}): " . $e->getMessage()); // LOG: Erreur de parsing de date
-                    $formattedDateOfBirth = null;
+                    try {
+                        $formattedDateOfBirth = Carbon::parse($dateOfBirth)->format('Y-m-d');
+                    } catch (\Exception $e2) {
+                        Log::error("Date parsing error for {$name} (Value: {$dateOfBirth}): ".$e2->getMessage());
+                        $formattedDateOfBirth = null;
+                    }
                 }
             }
 
-            // Genre
+            // Genre (pas de changement)
             $gender = strtoupper(trim($row['gender'] ?? ''));
-            if (!in_array($gender, ['M', 'F'])) {
-                Log::debug("Gender '{$gender}' for {$name} is invalid, setting to null."); // LOG: Genre invalide
+            if (! in_array($gender, ['M', 'F'])) {
                 $gender = null;
             }
 
-            // Classe
-            $classeId = $row['classe_id'] ?? null;
-            $classe = null;
-
-            if ($classeId) {
-                $classe = Classe::find($classeId);
+            // Situation (pas de changement)
+            $situation = strtoupper(trim($row['situation'] ?? 'R'));
+            $allowedSituations = ['R', 'NR'];
+            if (! in_array($situation, $allowedSituations)) {
+                $situation = 'R'; // Valeur par défaut
             }
 
-            if (!$classe) {
-                Log::warning("Classe ID invalide ou manquant pour {$name} (ID reçu: {$classeId}). Skipping student.");
-                continue;
-            }
-
-            // Situation
-            $situation = $row['situation'] ?? 'R';
-
-            // Récupération de l'année scolaire (si vous décidez de l'utiliser dans la création de l'étudiant)
-            $schoolYearId = $this->getSchoolYearId($row);
-
-            Log::debug("Attempting to create student: Name: {$name}, Matricule: {$matricule}, Classe ID: {$classeId}"); // LOG: Avant la création
+            Log::debug("Attempting to create student: Name: {$name}, Matricule: {$matricule}, Classe ID: {$classeId}");
 
             // Création de l'étudiant
             try {
@@ -103,83 +163,96 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToCollection, With
                     'matricule' => $matricule,
                     'date_of_birth' => $formattedDateOfBirth,
                     'gender' => $gender,
+                    'pays' => $row['pays'] ?? null,
                     'situation' => $situation,
-                    'classe_id' => $classeId,
-                    // 'school_year_id' => $schoolYearId, // Décommentez si vous ajoutez ce champ à la table 'students'
+                    'classe_id' => $classeId, // Utilisation de l'ID trouvé ou créé
+                    'school_year_id' => $schoolYearId,
                 ]);
 
                 Log::info("Successfully imported student: {$name} (Matricule: {$matricule})");
             } catch (\Exception $e) {
-                Log::error("Database error while creating student {$name}: " . $e->getMessage() . ' - Data: ' . json_encode($row->toArray())); // LOG: Erreur DB
+                Log::error("Database error while creating student {$name}: ".$e->getMessage().' - Data: '.json_encode($row->toArray()));
             }
         }
 
-        Log::debug('Finished student import. Total rows processed: ' . $this->rowCount); // LOG: Fin de l'importation
+        Log::debug('Finished student import. Total rows processed (that passed validation): '.$this->rowCount);
     }
 
     /**
-     * Récupération de l'année scolaire (inchangé)
+     * Récupération ou Création de l'année scolaire.
      */
-    private function getSchoolYearId($row)
+    private function getSchoolYearId($row): ?int
     {
-        // ... (votre code existant)
+        // On cherche 'annee_scolaire', 'school_year', ou 'year' dans le fichier.
         $schoolYearValue = $row['annee_scolaire'] ?? $row['school_year'] ?? $row['year'] ?? null;
         if ($schoolYearValue) {
             $schoolYearValue = trim(str_replace('"', '', $schoolYearValue));
-        }
 
-        if ($schoolYearValue) {
-            $schoolYear = SchoolYear::where('year', $schoolYearValue)->first();
-            if ($schoolYear) {
-                Log::debug("Found SchoolYear ID: {$schoolYear->id} for value: {$schoolYearValue}");
+            // Si la valeur est présente, on tente de la trouver ou de la créer
+            if (! empty($schoolYearValue)) {
+                $schoolYear = SchoolYear::firstOrCreate(
+                    ['year' => $schoolYearValue],
+                    ['year' => $schoolYearValue]
+                );
+
+                Log::debug("SchoolYear processed: ID {$schoolYear->id} for value: {$schoolYearValue}");
+
                 return $schoolYear->id;
             }
-            Log::warning("SchoolYear not found for value: {$schoolYearValue}");
         }
 
+        // Si l'année est absente dans le fichier, on prend la plus récente comme valeur de secours
         $latestSchoolYear = SchoolYear::orderBy('year', 'desc')->first();
         if ($latestSchoolYear) {
-            Log::debug("Using latest SchoolYear ID: {$latestSchoolYear->id}");
+            Log::debug("Using latest SchoolYear ID: {$latestSchoolYear->id} as fallback.");
+
+            return $latestSchoolYear->id;
         }
-        return $latestSchoolYear ? $latestSchoolYear->id : null;
+
+        // Si aucune année n'est trouvée (même pas en fallback)
+        Log::error('Cannot determine or create a SchoolYear.');
+
+        return null;
     }
 
     /**
-     * Validation des colonnes (inchangé)
+     * Helper pour afficher la valeur de l'année scolaire.
+     */
+    private function getSchoolYearValue(int $id): ?string
+    {
+        $year = SchoolYear::find($id);
+
+        return $year ? $year->year : 'N/A';
+    }
+
+    /**
+     * Validation des colonnes (pas de changement dans les règles)
      */
     public function rules(): array
     {
         return [
-            // ... (vos règles existantes)
-            'name' => 'nullable|string|max:255',
-            'nom' => 'nullable|string|max:255',
-            'matricule' => 'nullable|string|max:50|unique:students,matricule',
-            'student_id' => 'nullable|string|max:50',
-            'date_of_birth' => 'nullable|date',
-            'date_de_naissance' => 'nullable|date',
-            'birth_date' => 'nullable|date',
-            'gender' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
-            'genre' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
-            'sexe' => 'nullable|string|in:male,female,m,f,masculin,feminin,homme,femme,M,F',
-            'classe' => 'nullable|string|max:255',
-            'class' => 'nullable|string|max:255',
-            'class_name' => 'nullable|string|max:255',
-            'situation' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255',
-            'annee_scolaire' => 'nullable|string|max:255',
-            'school_year' => 'nullable|string|max:255',
-            'year' => 'nullable|string|max:255',
-            'annee' => 'nullable|string|max:255',
+            // Colonne dans le fichier Excel (label de la classe)
+            'classe' => 'required|string|max:255',
+            // Colonne dans le fichier Excel (année scolaire : ex. 2024-2025)
+            'annee_scolaire' => 'nullable|string|max:20', // Si non spécifié, le fallback sera utilisé.
+            'name' => 'required|string|max:255', // Rendu 'required' pour garantir l'utilité de la ligne
+            'matricule' => 'required|string|max:50|unique:students,matricule', // Rendu 'required'
+            'date_of_birth' => 'nullable',
+            'gender' => 'nullable|string',
+            'pays' => 'nullable|string|max:255',
+            'situation' => 'nullable|string|max:2',
         ];
     }
 
     public function customValidationMessages()
     {
         return [
-            'name.required' => 'Le nom de l\'étudiant est requis.',
             'matricule.unique' => 'Le matricule :input existe déjà.',
-            'date_of_birth.date' => 'La date de naissance doit être une date valide.',
-            'gender.in' => 'Le genre doit être masculin ou féminin.',
+            'name.required' => 'Le nom de l\'étudiant est requis.',
+            'matricule.required' => 'Le matricule de l\'étudiant est requis.',
+            'classe.required' => 'Le nom de la classe est requis (colonne "classe").',
+            // NOTE: Les messages d'erreur pour les classes inexistantes sont gérés
+            // dans la méthode `collection()` car ils dépendent de deux colonnes.
         ];
     }
 
