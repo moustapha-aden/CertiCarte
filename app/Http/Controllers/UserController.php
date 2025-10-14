@@ -79,6 +79,14 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Membre du personnel '.$user->name.' créé avec succès.');
     }
 
+    /*
+    function pour le prof ile
+     */
+    public function showProfile(): View
+    {
+        $user = auth()->user();
+        return view('users.profil', compact('user'));
+    }
     /**
      * Display the specified user's details.
      *

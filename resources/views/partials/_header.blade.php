@@ -44,6 +44,13 @@
                 @endcan
 
                 @canany(['generate_certificates', 'generate_cards', 'generate_attendance_lists'])
+                    <a href="{{ route('profile.show') }}"
+                        class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('users.show', Auth::user()) ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
+                        Profil
+                    </a>
+                @endcanany
+
+                @canany(['generate_certificates', 'generate_cards', 'generate_attendance_lists'])
                     <a href="{{ route('reports.index') }}"
                         class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('reports.*') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
                         Rapports
