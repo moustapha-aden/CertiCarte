@@ -9,31 +9,16 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-/**
- * Controller for managing users in the system.
- *
- * Handles CRUD operations for user accounts including creation,
- * modification, viewing, and deletion of user records.
- *
- * @author Lycée Ahmed Farah Ali
- *
- * @version 1.0.0
- */
 class UserController extends Controller
 {
     /**
      * Display a paginated list of users with search functionality.
-     * Only shows secretary users for role management.
-     *
-     * Supports filtering by name, email through the 'q' parameter.
-     * Results are ordered by creation date (newest first) and paginated.
      *
      * @param  Request  $request  The HTTP request containing search parameters
      * @return View The users index view with paginated user data
      */
     public function index(Request $request): View
     {
-        // Only show secretary users
         $query = User::role('secretary')->with(['permissions', 'roles']);
 
         if ($request->filled('q')) {
@@ -60,14 +45,8 @@ class UserController extends Controller
     /**
      * Store a newly created user in the database.
      *
-     * Validates the incoming request data and creates a new user record.
-     * Password is automatically hashed by the User model's mutator.
-     * Automatically assigns the 'secretary' role to the new user.
-     *
      * @param  StoreUserRequest  $request  The validated request containing user data
      * @return RedirectResponse Redirect to users index with success message
-     *
-     * @throws \Illuminate\Validation\ValidationException If validation fails
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
@@ -114,14 +93,9 @@ class UserController extends Controller
     /**
      * Update the specified user in the database.
      *
-     * Validates the incoming request data and updates the user record.
-     * Password is only updated if provided in the request.
-     *
      * @param  UpdateUserRequest  $request  The validated request containing updated user data
      * @param  User  $user  The user model instance to update
      * @return RedirectResponse Redirect to users index with success message
-     *
-     * @throws \Illuminate\Validation\ValidationException If validation fails
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
@@ -141,8 +115,6 @@ class UserController extends Controller
 
     /**
      * Remove the specified user from the database.
-     *
-     * Permanently deletes the user record. This action cannot be undone.
      *
      * @param  User  $user  The user model instance to delete
      * @return RedirectResponse Redirect to users index with success message

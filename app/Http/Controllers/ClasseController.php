@@ -186,46 +186,27 @@ class ClasseController extends Controller
     /**
      * Generate attendance list for the specified class and return as PDF.
      *
-     * Creates a printable attendance list using DomPDF library.
-     * Supports both single-day and two-day formats based on the 'days' parameter.
-     * Includes student names, dates, and class information.
-     * Returns the PDF as a stream for inline browser display.
-     *
-     * @param  Request  $request  The HTTP request containing the 'days' parameter (1 or 2)
+     * @param  Request  $request  The HTTP request
      * @param  Classe  $classe  The class model instance to generate list for
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse PDF stream or redirect with error
-     *
-     * @throws \Exception If PDF generation fails
      */
     public function generateAttendanceList(Request $request, Classe $classe)
     {
         try {
-            // Get the 'days' parameter (default to 1)
-            // User must pass 'days=1' or 'days=2' via URL
-            $days = $request->query('days', 1);
-
-            // Get students from the class, sorted by name
             $students = $classe->students()->orderBy('name')->get();
 
-            // Calculate necessary dates
             $dates = [];
             $today = Carbon::now();
             $dates[] = $today->format('d/m/Y');
 
+            $pdf = Pdf::loadView('classes.attendance_list_print', [
+                'classe' => $classe,
+                'students' => $students,
+                'dates' => $dates,
+            ]);
 
-                // View for 1 day (portrait format)
-                $pdf = Pdf::loadView('classes.attendance_list_print', [
-                    'classe' => $classe,
-                    'students' => $students,
-                    'dates' => $dates,
-                    'days' => $days,
-                ]);
-
-
-            // Define filename
             $fileName = 'Liste_Appel_'.$classe->label.'_'.Carbon::now()->format('Ymd').'.pdf';
 
-            // Return PDF in 'stream' mode (direct display in browser)
             return $pdf->stream($fileName);
         } catch (Exception $e) {
             return redirect()->back()

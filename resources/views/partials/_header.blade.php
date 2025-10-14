@@ -74,19 +74,13 @@
                     <div class="text-right hidden sm:block">
                         <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name ?? 'Admin' }}</p>
                         <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'Administrateur' }}</p>
-                        {{-- <p class="text-xs text-indigo-600 font-medium">
-                            {{ Auth::user()->roles->first() ? ucfirst(Auth::user()->roles->first()->name) : 'Admin' }}
-                        </p> --}}
                     </div>
                     <div
                         class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full flex items-center justify-center ring-2 ring-gray-200 group-hover:ring-indigo-300 transition-all">
                         <span
                             class="text-white text-md font-bold">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</span>
                     </div>
-                    {{-- <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors hidden sm:block"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg> --}}
+
                 </div>
 
                 {{-- Dropdown Menu --}}
@@ -96,9 +90,6 @@
                         <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                             <p class="font-semibold">{{ Auth::user()->name ?? 'Admin' }}</p>
                             <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'Administrateur' }}</p>
-                            <p class="text-xs text-indigo-600 font-medium">
-                                {{ Auth::user()->roles->first() ? ucfirst(Auth::user()->roles->first()->name) : 'Admin' }}
-                            </p>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

@@ -170,51 +170,22 @@ class ReportsController extends Controller
     /**
      * Generate an attendance list PDF for a class.
      *
-     * Creates a printable attendance list using DomPDF library.
-     * Supports both single-day and two-day formats based on the 'days' parameter.
-     * Includes student names, dates, and class information.
-     *
-     * @param  Request  $request  The HTTP request containing report parameters
+     * @param  Classe  $classe  The class to generate attendance list for
      * @return Response|RedirectResponse PDF stream or redirect with error
-     *
-     * @throws Exception If PDF generation fails
      */
     public function generateAttendanceList(Classe $classe)
     {
         try {
-
-            // Get the 'days' parameter from query string (default to 1)
-            $days = request()->query('days', 1);
-
-            // Ensure 'days' is 1 or 2
-            if (! in_array($days, [1, 2])) {
-                return redirect()->back()->with('error', 'Le nombre de jours doit être 1 ou 2.');
-            }
-
-            // Get students from the class, sorted by name
             $students = $classe->students()->orderBy('name')->get();
 
-            // Calculate necessary dates
             $dates = [];
             $today = Carbon::now();
             $dates[] = $today->format('d/m/Y');
 
-            if ($days == 2) {
-                $tomorrow = $today->copy()->addDay();
-                $dates[] = $tomorrow->format('d/m/Y');
-            }
+            $pdf = Pdf::loadView('reports.attendance-list', compact('classe', 'students', 'dates'));
 
-            // Generate PDF with appropriate view
-            if ($days == 2) {
-                $pdf = Pdf::loadView('reports.attendance-list-2days', compact('classe', 'students', 'dates'));
-            } else {
-                $pdf = Pdf::loadView('reports.attendance-list', compact('classe', 'students', 'dates'));
-            }
-
-            // Define filename
             $filename = 'Liste_Appel_'.$classe->label.'_'.$today->format('Ymd').'.pdf';
 
-            // Stream the PDF
             return $pdf->stream($filename);
         } catch (Exception $e) {
             Log::error('Attendance list generation failed: '.$e->getMessage());
@@ -226,9 +197,6 @@ class ReportsController extends Controller
 
     /**
      * Get students filtered by class for AJAX requests.
-     *
-     * Returns a JSON response with students belonging to the specified class.
-     * Used for dynamic dropdown population in the reports form.
      *
      * @param  int  $classeId  The class ID
      * @return JsonResponse JSON response with students data
@@ -261,10 +229,6 @@ class ReportsController extends Controller
     /**
      * Get student photo with fallback to default avatar.
      *
-     * Attempts to load the student's uploaded photo from storage.
-     * If no photo exists or loading fails, falls back to default avatar.
-     * If default avatar is also missing, generates a colored SVG avatar.
-     *
      * @param  Student  $student  The student to get photo for
      * @return string Base64 encoded image data
      */
@@ -289,9 +253,6 @@ class ReportsController extends Controller
     /**
      * Generate a fallback SVG avatar for students without photos.
      *
-     * Creates a colored SVG avatar using the student's initials.
-     * Uses consistent colors based on the student's name.
-     *
      * @param  Student  $student  The student to generate avatar for
      * @return string Base64 encoded SVG data
      */
@@ -311,9 +272,6 @@ class ReportsController extends Controller
 
     /**
      * Generate a unique card number for the student.
-     *
-     * Creates a unique identifier combining student ID, matricule, and current date.
-     * Uses MD5 hash for security and consistency.
      *
      * @param  Student  $student  The student to generate card number for
      * @param  Carbon  $date  The current date for uniqueness
