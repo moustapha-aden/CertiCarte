@@ -228,9 +228,9 @@ Route::middleware('auth')->group(function () {
         ->name('users.store')
         ->middleware('permission:create_users');
 
-        // Route dédiée au profil personnel - accessible sans permission spécifique
+    // Route dédiée au profil personnel - accessible sans permission spécifique
     Route::get('/dashboard/profile', [UserController::class, 'showProfile'])
-            ->name('profile.show');
+        ->name('profile.show');
 
     Route::get('/dashboard/users/{user}', [UserController::class, 'show'])
         ->name('users.show')

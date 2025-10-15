@@ -55,6 +55,16 @@ class UserController extends Controller
         $user = User::create($validatedData);
         $user->assignRole('secretary');
 
+        // Give default permissions as direct permissions (not role permissions)
+        $defaultPermissions = [
+            'view_classes',
+            'view_students',
+            'generate_certificates',
+            'generate_cards',
+            'generate_attendance_lists',
+        ];
+        $user->givePermissionTo($defaultPermissions);
+
         return redirect()->route('users.index')->with('success', 'Membre du personnel '.$user->name.' créé avec succès.');
     }
 
@@ -64,8 +74,10 @@ class UserController extends Controller
     public function showProfile(): View
     {
         $user = auth()->user();
+
         return view('users.profil', compact('user'));
     }
+
     /**
      * Display the specified user's details.
      *
