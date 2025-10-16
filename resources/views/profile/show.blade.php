@@ -28,13 +28,11 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                @can('edit_users')
-                    <x-button href="{{ route('users.edit', $user) }}" variant="outline" size="lg"
-                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
-                        class="bg-white text-indigo-600 hover:bg-gray-100">
-                        Modifier mon profil
-                    </x-button>
-                @endcan
+                <x-button href="{{ route('profile.edit') }}" variant="outline" size="lg"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                    class="bg-white text-indigo-600 hover:bg-gray-100">
+                    Modifier mon profil
+                </x-button>
                 <x-button href="{{ route('dashboard') }}" variant="secondary" size="lg"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
                     Retour au tableau de bord
