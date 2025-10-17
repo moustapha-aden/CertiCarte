@@ -65,5 +65,17 @@ class DatabaseSeeder extends Seeder
         if ($adminUser) {
             $adminUser->assignRole('admin');
         }
+        $secretary = Role::firstOrCreate(['name' => 'secretary']);
+
+// Optionally, assign some permissions to secretary role
+$secretaryPermissions = [
+    'view_students',
+    'create_students',
+    'edit_students',
+    'view_classes',
+    'generate_certificates',
+];
+
+$secretary->syncPermissions($secretaryPermissions);
     }
 }
