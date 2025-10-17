@@ -25,14 +25,7 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            switch ($user->role) {
-                case 'admin':
-                    return redirect()->intended('/dashboard');
-                case 'secretary':
-                    return redirect()->intended('/dashboard');
-                default:
-                    return redirect()->intended('/dashboard');
-            }
+            return redirect()->intended('/dashboard');
         }
 
         return back()->withErrors([

@@ -43,6 +43,7 @@
                     </a>
                 @endcan
 
+
                 @canany(['generate_certificates', 'generate_cards', 'generate_attendance_lists'])
                     <a href="{{ route('reports.index') }}"
                         class="text-base font-semibold px-4 py-2 rounded-lg transition duration-150 {{ request()->routeIs('reports.*') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50' }}">
@@ -84,6 +85,14 @@
                             <p class="font-semibold">{{ Auth::user()->name ?? 'Admin' }}</p>
                             <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'Administrateur' }}</p>
                         </div>
+                        <a href="{{ route('profile.show') }}"
+                            class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span>Profil</span>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"

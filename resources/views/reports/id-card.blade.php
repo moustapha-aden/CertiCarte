@@ -442,26 +442,27 @@
                         <!-- Titre de la carte -->
                         <div style="position:absolute; top:15mm; left:0; width:100%; text-align:center;">
                             <span
-                                style="font-size:6pt; font-weight:bold; color:#2563eb; background:#fff; padding:1.2px 9px; border-radius:8px; box-shadow:0 1px 3px #e0e7ff; letter-spacing:0.8px;">
-                                CARTE D'IDENTITÉ SCOLAIRE
+                                style="font-size:5pt; font-weight:700; color:#2563eb; background:#fff; padding:1.2px 9px; border-radius:8px; box-shadow:0 1px 3px #e0e7ff; letter-spacing:0.8px;">
+                                CARTE SCOLAIRE
                             </span>
                         </div>
 
                         <!-- Informations à gauche -->
-                        <div
-                            style="position:absolute; top:28mm; left:8mm; right:8mm; width:auto; text-align:left; line-height:1.5;">
-                            <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
-                                Nom : <span style="color:#2563eb; font-weight:700;">{{ $student->name }}</span>
-                            </div>
-                            <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
-                                Matricule : <span
-                                    style="color:#2563eb; font-weight:700;">{{ $student->matricule }}</span>
-                            </div>
-                            <div style="font-size:8pt; font-weight:600; color:#1e293b;">
-                                Classe : <span
-                                    style="color:#2563eb; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
-                            </div>
-                        </div>
+<div
+    style="position:absolute; top:28mm; left:8mm; right:8mm; width:auto; text-align:left; line-height:1.5;">
+    <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
+        Nom : <span style="color:#2563eb; font-weight:700;">{{ $student->name }}</span>
+    </div>
+    <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
+        Matricule : <span style="color:#2563eb; font-weight:700;">{{ $student->matricule }}</span>
+    </div>
+    <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
+        Né(e) le : <span style="color:#2563eb; font-weight:700;">{{ $student->date_of_birth->format('d/m/Y') }}</span>
+    </div>
+    <div style="font-size:8pt; font-weight:600; color:#1e293b;">
+        Classe : <span style="color:#2563eb; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
+    </div>
+</div>
 
                         <!-- Année scolaire -->
                         <div class="year-footer"
@@ -474,64 +475,20 @@
                                 {{ $student->classe->schoolYear->year ?? 'N/A' }}
                             </div>
                         </div>
+                          <!-- Signature Le Proviseur en bas au centre -->
+            <div style="position:absolute; left:0; right:0; bottom:5mm; text-align:center;">
+                <div style="font-size:7pt; color:#2563eb; font-weight:600;">Le Proviseur</div>
+                <div style="width:32mm; height:2mm; border-bottom:1px solid #e0e7ff; margin:1mm auto 0 auto;"></div>
+            </div>
 
+        </div>
+    </div>
                     </div>
                 </div>
             </div>
 
 
-            <!-- VERSO -->
-            <div class="card-wrapper">
-                <div class="verso">
-                    {{-- <div class="verso-top-band"></div>
-                    <div class="security-badge">✓</div> --}}
 
-                    <div class="verso-content">
-                        <h3 class="verso-title">Informations Personnelles</h3>
-
-                        <div class="info-grid">
-                            <div class="info-line">
-                                <div class="info-line-content">
-                                    <div class="info-label">Né(e) le</div>
-                                    <div class="info-value">{{ $student->date_of_birth->format('d/m/Y') }}</div>
-                                </div>
-                            </div>
-
-                            <div class="info-line">
-                                <div class="info-line-content">
-                                    <div class="info-label">Sexe</div>
-                                    <div class="info-value">{{ $student->gender === 'M' ? 'Masculin' : 'Féminin' }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="info-line">
-                                <div class="info-line-content">
-                                    <div class="info-label">Délivrée le</div>
-                                    <div class="info-value">{{ $currentDate->format('d/m/Y') }}</div>
-                                </div>
-                            </div>
-
-                            <div class="info-line info-address">
-                                <div class="info-line-content">
-                                    <div class="info-label">Päys de naissance</div>
-                                    <div class="info-value">{{ $student->place_of_birth ?? 'Non renseignée' }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Signatures -->
-                    <div class="signatures-section">
-                        <div class="signatures-layout">
-                            <div class="signature-cell">
-                                <div class="signature-title">Le Proviseur</div>
-                                <div class="signature-line"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
         </div>
     </div>

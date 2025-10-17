@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('matricule')->unique();
-            $table->date('date_of_birth');
+            $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth')->nullable();
-            $table->enum('situation', ['NR', 'R']);
+            $table->enum('situation', ['NR', 'R'])->default('NR');
             $table->enum('gender', ['M', 'F']);
-            $table->string('photo')->nullable()->default('https://cdn-icons-png.flaticon.com/512/5850/5850276.png');
+            $table->string('photo')->nullable();
             $table->foreignId('classe_id')->constrained('classes')->onDelete('cascade');
             $table->timestamps();
         });

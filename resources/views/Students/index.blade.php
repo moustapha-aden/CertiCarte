@@ -220,13 +220,27 @@
     </x-card>
 
     {{-- Import Modal --}}
-    <div id="importModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 {{-- Modal Header --}}
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Importer des Étudiants</h3>
-                    <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Importer des Étudiants</h3>
+                            <p class="text-sm text-gray-600">Sélectionnez un fichier Excel/CSV pour importer les données
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12"></path>
@@ -236,42 +250,126 @@
 
                 {{-- Modal Body --}}
                 <form id="importForm" action="{{ route('students.import') }}" method="POST"
-                    enctype="multipart/form-data" class="space-y-4">
+                    enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
-                    {{-- File Input --}}
-                    <div>
-                        <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
-                            Sélectionner un fichier Excel/CSV
-                        </label>
-                        <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <p class="mt-1 text-xs text-gray-500">
-                            Formats acceptés: .xlsx, .xls, .csv (max 10MB)
-                        </p>
+                    {{-- File Input Section --}}
+                    <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
+                                viewBox="0 0 48 48">
+                                <path
+                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="mt-4">
+                                <label for="file" class="cursor-pointer">
+                                    <span class="mt-2 block text-sm font-medium text-gray-900">
+                                        Cliquez pour sélectionner un fichier
+                                    </span>
+                                    <span class="mt-1 block text-sm text-gray-500">
+                                        ou glissez-déposez votre fichier ici
+                                    </span>
+                                </label>
+                                <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv" required
+                                    class="sr-only">
+
+                                <!-- File Selected Indicator (hidden by default) -->
+                                <div id="fileSelectedIndicator"
+                                    class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-green-900" id="fileName"></p>
+                                            <p class="text-xs text-green-700" id="fileSize"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">
+                                Formats acceptés: .xlsx, .xls, .csv (max 10MB)
+                            </p>
+                        </div>
                     </div>
 
-                    {{-- Instructions --}}
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <h4 class="text-sm font-medium text-blue-800 mb-2">Format attendu:</h4>
-                        <ul class="text-xs text-blue-700 space-y-1">
-                            <li>• <strong>nom</strong> ou <strong>name</strong> (requis)</li>
-                            <li>• <strong>matricule</strong> (optionnel)</li>
-                            <li>• <strong>date_de_naissance</strong> ou <strong>date_of_birth</strong> (optionnel)</li>
-                            <li>• <strong>genre</strong> ou <strong>gender</strong> (masculin/féminin)</li>
-                            <li>• <strong>classe</strong> ou <strong>class</strong> (optionnel)</li>
-                            <li>• <strong>annee_scolaire</strong> ou <strong>school_year</strong> (optionnel)</li>
-                        </ul>
+                    {{-- Format Instructions --}}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold text-blue-900 mb-3">Format des colonnes Excel</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">nom</span>
+                                            <span
+                                                class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">matricule</span>
+                                            <div class="flex items-center space-x-1">
+                                                <span
+                                                    class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                                <span
+                                                    class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Unique</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">date_naissance</span>
+                                            <span
+                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Optionnel</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">pays_naissance</span>
+                                            <span
+                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Optionnel</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">situation</span>
+                                            <span
+                                                class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">R/NR</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">genre</span>
+                                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">M/F</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">classe</span>
+                                            <span
+                                                class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-gray-900">annee_scolaire</span>
+                                            <span
+                                                class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Modal Footer --}}
-                    <div class="flex justify-end space-x-3 pt-4">
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                         <button type="button" onclick="closeImportModal()"
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
                             Annuler
                         </button>
                         <button type="submit"
-                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
                             Importer
                         </button>
                     </div>
@@ -284,11 +382,16 @@
     <script>
         function openImportModal() {
             document.getElementById('importModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeImportModal() {
             document.getElementById('importModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
             document.getElementById('importForm').reset();
+
+            // Reset file indicator
+            document.getElementById('fileSelectedIndicator').classList.add('hidden');
         }
 
         // Close modal when clicking outside
@@ -304,6 +407,27 @@
             const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Import en cours...';
             submitBtn.disabled = true;
+        });
+
+        // Handle file input change
+        document.getElementById('file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const indicator = document.getElementById('fileSelectedIndicator');
+            const fileNameEl = document.getElementById('fileName');
+            const fileSizeEl = document.getElementById('fileSize');
+
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+
+                // Show the indicator
+                indicator.classList.remove('hidden');
+                fileNameEl.textContent = fileName;
+                fileSizeEl.textContent = `Taille: ${fileSize} MB`;
+            } else {
+                // Hide the indicator if no file selected
+                indicator.classList.add('hidden');
+            }
         });
     </script>
 @endsection

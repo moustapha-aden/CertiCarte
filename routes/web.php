@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleManagementController;
 use App\Http\Controllers\StudentController;
@@ -227,6 +228,30 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/users', [UserController::class, 'store'])
         ->name('users.store')
         ->middleware('permission:create_users');
+
+    // ========================================================================
+    // PROFILE MANAGEMENT ROUTES
+    // ========================================================================
+
+    /**
+     * Profile routes for authenticated users to manage their own profile
+     * No specific permissions required - users can always view/edit their own profile
+     *
+     * Routes:
+     * - GET    /dashboard/profile           (show)   - Show user's own profile
+     * - GET    /dashboard/profile/edit     (edit)   - Show profile edit form
+     * - PUT    /dashboard/profile           (update) - Update user's own profile
+     *
+     * @uses ProfileController
+     */
+    Route::get('/dashboard/profile', [ProfileController::class, 'show'])
+        ->name('profile.show');
+
+    Route::get('/dashboard/profile/edit', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::put('/dashboard/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
 
     Route::get('/dashboard/users/{user}', [UserController::class, 'show'])
         ->name('users.show')

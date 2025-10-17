@@ -85,15 +85,8 @@ class DatabaseSeeder extends Seeder
         // Give all permissions to admin
         $admin->syncPermissions(Permission::all());
 
-        // Secretary has default permissions (view + generate)
-        $defaultSecretaryPermissions = [
-            'view_classes',
-            'view_students',
-            'generate_certificates',
-            'generate_cards',
-            'generate_attendance_lists',
-        ];
-        $secretary->syncPermissions($defaultSecretaryPermissions);
+        // Secretary has no default role permissions (will be assigned as direct permissions)
+        $secretary->syncPermissions([]);
 
         // Assign roles to existing users
         $adminUser = User::where('email', 'admin@example.com')->first();
@@ -104,6 +97,15 @@ class DatabaseSeeder extends Seeder
         $secretaryUser = User::where('email', 'secretary@example.com')->first();
         if ($secretaryUser) {
             $secretaryUser->assignRole('secretary');
+            // Give default permissions as direct permissions (not role permissions)
+            $defaultSecretaryPermissions = [
+                'view_classes',
+                'view_students',
+                'generate_certificates',
+                'generate_cards',
+                'generate_attendance_lists',
+            ];
+            $secretaryUser->givePermissionTo($defaultSecretaryPermissions);
         }
     }
 }
