@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-   public function run(): void
+    public function run(): void
     {
         User::create([
             'name' => 'Admin User',
@@ -55,28 +55,28 @@ class DatabaseSeeder extends Seeder
             'edit_users',
             'delete_users',
 
-        $schoolYears = SchoolYear::factory(4)->create();
+            // Class management - CRUD operations
+            'view_classes',
+            'create_classes',
+            'edit_classes',
+            'delete_classes',
 
-        // Create 20 classes total (5 classes per school year)
-        foreach ($schoolYears as $schoolYear) {
-            Classe::factory(5)->create([
-                'year_id' => $schoolYear->id,
-            ]);
+            // Student management - CRUD operations
+            'view_students',
+            'create_students',
+            'edit_students',
+            'delete_students',
+
+            // Special functionalities
+            'generate_certificates',
+            'generate_cards',
+            'generate_attendance_lists',
+            'import_students',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
-
-        $classes = Classe::all();
-
-        // Ensure at least 45 students in each class
-        foreach ($classes as $classe) {
-            Student::factory(45)->create([
-                'classe_id' => $classe->id,
-            ]);
-        }
-
-        // Create granular permissions (CRUD-level)
-        $permissions = [
-            // User management - CRUD operations
-@@ -80,32 +56,14 @@ public function run(): void
 
         // Create roles
         $admin = Role::firstOrCreate(['name' => 'admin']);
@@ -108,6 +108,4 @@ class DatabaseSeeder extends Seeder
             $secretaryUser->givePermissionTo($defaultSecretaryPermissions);
         }
     }
-}
-
 }
