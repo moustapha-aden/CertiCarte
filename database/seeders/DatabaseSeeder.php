@@ -15,58 +15,75 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-  public function run(): void
-{
-    User::create([
-        'name' => 'Proviseur ',
-        'email' => 'admin@gmail.com',
-        'password' => bcrypt('password'),
-    ]);
+   public function run(): void
+    {
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@gmail.com',
+            'name' => 'Proviseur ',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password'),
+        ]);
 
-    // Créer les permissions
-    $permissions = [
-        'view_users',
-        'create_users',
-        'edit_users',
-        'delete_users',
-        'view_classes',
-        'create_classes',
-        'edit_classes',
-        'delete_classes',
-        'view_students',
-        'create_students',
-        'edit_students',
-        'delete_students',
-        'generate_certificates',
-        'generate_cards',
-        'generate_attendance_lists',
-        'import_students',
-    ];
+        User::create([
+            'name' => 'Secretary User',
+            'email' => 'secretary@example.com',
+            'password' => bcrypt('password'),
+        ]);
 
-    foreach ($permissions as $permission) {
-        Permission::firstOrCreate(['name' => $permission]);
-    }
+        $schoolYears = SchoolYear::factory(4)->create();
 
-    // Créer le rôle admin
-    $admin = Role::firstOrCreate(['name' => 'admin']);
-    $admin->syncPermissions(Permission::all());
+        // Create 20 classes total (5 classes per school year)
+        foreach ($schoolYears as $schoolYear) {
+            Classe::factory(5)->create([
+                'year_id' => $schoolYear->id,
+            ]);
+        }
 
-    // Créer le rôle secretary
-    $secretary = Role::firstOrCreate(['name' => 'secretary']);
-    // Permissions que tu souhaites donner au secrétaire, par exemple :
-    $secretaryPermissions = [
-        'view_students',
-        'create_students',
-        'edit_students',
-        'view_classes',
-        'generate_certificates',
-    ];
-    $secretary->syncPermissions($secretaryPermissions);
+        $classes = Classe::all();
 
-    // Assigner le rôle admin à l'utilisateur admin
-    $adminUser = User::where('email', 'admin@gmail.com')->first();
-    if ($adminUser) {
-        $adminUser->assignRole('admin');
+        // Ensure at least 45 students in each class
+        foreach ($classes as $classe) {
+            Student::factory(45)->create([
+                'classe_id' => $classe->id,
+            ]);
+        }
+
+        // Create granular permissions (CRUD-level)
+        $permissions = [
+            // User management - CRUD operations
+@@ -80,32 +56,14 @@ public function run(): void
+
+        // Create roles
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $secretary = Role::firstOrCreate(['name' => 'secretary']);
+
+        // Give all permissions to admin
+        $admin->syncPermissions(Permission::all());
+
+        // Secretary has no default role permissions (will be assigned as direct permissions)
+        $secretary->syncPermissions([]);
+
+        // Assign roles to existing users
+        $adminUser = User::where('email', 'admin@gmail.com')->first();
+        $adminUser = User::where('email', 'admin@gmail.com')->first();
+        if ($adminUser) {
+            $adminUser->assignRole('admin');
+        }
+
+        $secretaryUser = User::where('email', 'secretary@example.com')->first();
+        if ($secretaryUser) {
+            $secretaryUser->assignRole('secretary');
+            // Give default permissions as direct permissions (not role permissions)
+            $defaultSecretaryPermissions = [
+                'view_classes',
+                'view_students',
+                'generate_certificates',
+                'generate_cards',
+                'generate_attendance_lists',
+            ];
+            $secretaryUser->givePermissionTo($defaultSecretaryPermissions);
+        }
     }
 }
 
