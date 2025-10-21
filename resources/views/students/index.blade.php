@@ -336,12 +336,9 @@
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="font-medium text-gray-900">pays_naissance</span>
-                                        <div class="flex items-center space-x-1">
-                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                                jj/mm/aaaa</span>
                                             <span
-                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Optionnel</span>
-                                        </div>
+                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Optionnel
+                                            </span>
                                     </div>
                                 </div>
                                 <div class="space-y-2">
@@ -369,7 +366,13 @@
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="font-medium text-gray-900">annee_scolaire</span>
-                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                        <div class="flex items-center space-x-1">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                            aaaa-aaaa
+                                        </span>
+                                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
