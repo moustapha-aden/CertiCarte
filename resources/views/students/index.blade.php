@@ -46,7 +46,7 @@
         <div class="border-t border-gray-200 mb-6"></div>
 
         {{-- Filters Section --}}
-        <form method="GET" action="{{ route('students.index') }}" class="mb-8">
+        <form method="GET" action="{{ route('students.index') }}" class="mb-8" id="filtersForm">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 {{-- Filters Row --}}
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
@@ -61,11 +61,29 @@
                         </svg>
                     </div>
 
-                    {{-- Classe Filter --}}
+                    {{-- School Year Filter --}}
+                    <div class="flex items-center space-x-2">
+                        <label for="year_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Année
+                            scolaire:</label>
+                        <select name="year_id" id="year_id" onchange="handleYearChange()"
+                            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
+                            <option value="">Toutes les années</option>
+                            @if (isset($schoolYears) && is_iterable($schoolYears))
+                                @foreach ($schoolYears as $id => $year)
+                                    <option value="{{ $id }}" {{ request('year_id') == $id ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    {{-- Classe Filter (always visible but conditionally disabled) --}}
                     <div class="flex items-center space-x-2">
                         <label for="classe_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Classe:</label>
                         <select name="classe_id" id="classe_id" onchange="this.form.submit()"
-                            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
+                            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px] {{ request('year_id') ? '' : 'bg-gray-100 cursor-not-allowed' }}"
+                            {{ request('year_id') ? '' : 'disabled' }}>
                             <option value="">Toutes les classes</option>
                             @if (isset($allClasses) && is_iterable($allClasses))
                                 @foreach ($allClasses as $id => $label)
@@ -80,7 +98,7 @@
                 </div>
 
                 {{-- Reset Button --}}
-                @if (request()->hasAny(['search', 'classe_id']))
+                @if (request()->hasAny(['search', 'year_id', 'classe_id']))
                     <div class="flex justify-end">
                         <x-button type="button" variant="secondary" size="md"
                             onclick="window.location.href='{{ route('students.index') }}'"
@@ -131,10 +149,18 @@
 
                         {{-- Class --}}
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                {{ $student->classe->label ?? 'N/A' }}
-                            </span>
+                            @if ($student->classe)
+                                <a href="{{ route('classes.index', ['classe_id' => $student->classe->id]) }}"
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 hover:text-blue-900 transition-colors duration-200 cursor-pointer"
+                                    title="Voir les détails de la classe {{ $student->classe->label }}">
+                                    {{ $student->classe->label }}
+                                </a>
+                            @else
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                    N/A
+                                </span>
+                            @endif
                         </td>
 
                         {{-- Birth Date --}}
@@ -451,5 +477,52 @@
                 indicator.classList.add('hidden');
             }
         });
+
+        // Handle cascading filters
+        function handleYearChange() {
+            const yearSelect = document.getElementById('year_id');
+            const classeSelect = document.getElementById('classe_id');
+            const form = document.getElementById('filtersForm');
+
+            if (yearSelect.value) {
+                // Enable classe filter
+                classeSelect.disabled = false;
+                classeSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                classeSelect.classList.add('bg-white');
+
+                // Load classes for selected year via AJAX
+                fetch(`/api/classes/by-year/${yearSelect.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Clear existing options except the first one
+                            classeSelect.innerHTML = '<option value="">Toutes les classes</option>';
+
+                            // Add new options
+                            Object.entries(data.classes).forEach(([id, label]) => {
+                                const option = document.createElement('option');
+                                option.value = id;
+                                option.textContent = label;
+                                classeSelect.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading classes:', error);
+                    });
+
+                // Submit form to apply year filter
+                form.submit();
+            } else {
+                // Disable classe filter
+                classeSelect.disabled = true;
+                classeSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
+                classeSelect.classList.remove('bg-white');
+                classeSelect.value = '';
+
+                // Submit form to clear year filter
+                form.submit();
+            }
+        }
     </script>
 @endsection

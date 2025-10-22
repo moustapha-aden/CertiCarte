@@ -28,13 +28,27 @@ class StudentController extends Controller
      */
     public function index(Request $request): View
     {
-        // Get all classes for the filter dropdown
-        $allClasses = Classe::select('id', 'label')
-            ->orderBy('label')
-            ->pluck('label', 'id');
+        // Get all school years for the filter dropdown
+        $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
+
+        // Get classes for the filter dropdown (filtered by school year if selected)
+        $allClasses = collect();
+        if ($request->filled('year_id')) {
+            $allClasses = Classe::where('year_id', $request->input('year_id'))
+                ->select('id', 'label')
+                ->orderBy('label')
+                ->pluck('label', 'id');
+        }
 
         // Build the students query
-        $students = Student::with('classe');
+        $students = Student::with(['classe', 'classe.schoolYear']);
+
+        // Filter by school year (through classe relationship)
+        if ($request->filled('year_id')) {
+            $students->whereHas('classe', function ($query) use ($request) {
+                $query->where('year_id', $request->input('year_id'));
+            });
+        }
 
         // Filter by specific class
         if ($request->filled('classe_id')) {
@@ -73,6 +87,7 @@ class StudentController extends Controller
 
         return view('students.index', [
             'students' => $students,
+            'schoolYears' => $schoolYears,
             'allClasses' => $allClasses,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,

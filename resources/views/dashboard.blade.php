@@ -20,7 +20,7 @@
             </div>
 
             {{-- Welcome Text --}}
-            <div class="grow text-center sm:text-left">
+            <div class="flex-grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">Bienvenue sur le Tableau de Bord</h1>
                 <p class="text-xl text-indigo-100 mb-4">Lycée Ahmed Farah Ali</p>
                 <p class="text-lg text-indigo-200">

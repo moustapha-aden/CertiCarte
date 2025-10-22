@@ -17,7 +17,7 @@
             </div>
 
             {{-- Main Info --}}
-            <div class="grow text-center sm:text-left">
+            <div class="flex-grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">{{ $user->name }}</h1>
                 <p class="text-xl text-indigo-100 mb-2">{{ $user->email }}</p>
                 <p class="text-lg text-indigo-200">

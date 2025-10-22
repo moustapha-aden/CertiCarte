@@ -24,6 +24,11 @@
             <div class="flex flex-col sm:flex-row sm:items-center gap-3">
                 {{-- School Year Filter --}}
                 <form method="GET" action="{{ route('classes.index') }}" class="flex items-center space-x-2">
+                    {{-- Preserve classe_id parameter --}}
+                    @if (request('classe_id'))
+                        <input type="hidden" name="classe_id" value="{{ request('classe_id') }}">
+                    @endif
+
                     <label for="year_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Année
                         scolaire:</label>
                     <select name="year_id" id="year_id" onchange="this.form.submit()"
@@ -50,9 +55,10 @@
         </div>
 
         {{-- Statistics Section --}}
-        @if (request('year_id'))
+        @if (request('year_id') || request('classe_id'))
             @php
-                $selectedYear = $schoolYears->firstWhere('id', request('year_id'));
+                $selectedYear = request('year_id') ? $schoolYears->firstWhere('id', request('year_id')) : null;
+                $selectedClasse = request('classe_id') ? $classes->first() : null;
                 $totalStudents = $classes->sum(function ($classe) {
                     return $classe->students->count();
                 });
@@ -60,10 +66,16 @@
             <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-indigo-800">{{ $selectedYear->year ?? 'Année sélectionnée' }}
-                        </h3>
-                        <p class="text-sm text-indigo-600">{{ $classes->count() }} classe(s) • {{ $totalStudents }} élève(s)
-                        </p>
+                        @if (request('classe_id'))
+                            <h3 class="text-lg font-semibold text-indigo-800">
+                                {{ $selectedClasse->label ?? 'Classe sélectionnée' }}</h3>
+                            <p class="text-sm text-indigo-600">{{ $totalStudents }} élève(s) dans cette classe</p>
+                        @elseif(request('year_id'))
+                            <h3 class="text-lg font-semibold text-indigo-800">
+                                {{ $selectedYear->year ?? 'Année sélectionnée' }}</h3>
+                            <p class="text-sm text-indigo-600">{{ $classes->count() }} classe(s) • {{ $totalStudents }}
+                                élève(s)</p>
+                        @endif
                     </div>
                     <svg class="w-8 h-8 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
@@ -177,14 +189,14 @@
                     </path>
                 </svg>
                 <h3 class="text-lg font-semibold text-gray-700 mb-2">
-                    @if (request()->hasAny(['class_search', 'year_id']))
+                    @if (request()->hasAny(['class_search', 'year_id', 'classe_id']))
                         Aucune classe trouvée
                     @else
                         Aucune classe enregistrée
                     @endif
                 </h3>
                 <p class="text-sm text-gray-600 mb-6">
-                    @if (request()->hasAny(['class_search', 'year_id']))
+                    @if (request()->hasAny(['class_search', 'year_id', 'classe_id']))
                         Aucune classe ne correspond aux critères de recherche.
                     @else
                         Commencez par créer votre première classe.

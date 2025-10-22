@@ -19,7 +19,7 @@
             </div>
 
             {{-- Header Text --}}
-            <div class="grow text-center sm:text-left">
+            <div class="flex-grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">Génération de Rapports</h1>
                 <p class="text-xl text-indigo-100 mb-4">Lycée Ahmed Farah Ali</p>
                 <p class="text-lg text-indigo-200">
@@ -129,9 +129,9 @@
                         Paramètres du Rapport
                     </h3>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col lg:flex-row gap-4">
                         {{-- School Year Selection --}}
-                        <div>
+                        <div class="flex-1">
                             <label for="school_year_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Année Scolaire <span class="text-red-500">*</span>
                             </label>
@@ -146,7 +146,7 @@
                         </div>
 
                         {{-- Class Selection --}}
-                        <div>
+                        <div class="flex-1">
                             <label for="classe_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Classe <span class="text-red-500">*</span>
                             </label>
@@ -175,7 +175,7 @@
 
                         {{-- Student Selection (only for certificate and ID card) --}}
                         <div x-show="reportType === 'certificate' || reportType === 'id_card'" x-transition
-                            class="md:col-span-2">
+                            class="flex-1">
                             <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Étudiant <span x-show="reportType === 'certificate' || reportType === 'id_card'"
                                     class="text-red-500">*</span>

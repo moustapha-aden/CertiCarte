@@ -41,6 +41,11 @@ class ClasseController extends Controller
             $query->where('year_id', $request->input('year_id'));
         }
 
+        // Filter by specific class ID
+        if ($request->filled('classe_id')) {
+            $query->where('id', $request->input('classe_id'));
+        }
+
         // Handle sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
@@ -83,9 +88,21 @@ class ClasseController extends Controller
      * @param  Classe  $classe  The class model instance to display
      * @return View The class details view with students list
      */
-    public function show(Classe $classe): View
+    public function show(Request $request, Classe $classe): View
     {
-        $students = $classe->students()->with('classe')->paginate(10);
+        // Build the students query for this specific class
+        $students = $classe->students()->with('classe');
+
+        // Search by name or matricule within this class
+        if ($request->filled('search')) {
+            $searchTerm = '%'.$request->input('search').'%';
+            $students->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', $searchTerm)
+                    ->orWhere('matricule', 'like', $searchTerm);
+            });
+        }
+
+        $students = $students->paginate(10)->withQueryString();
 
         return view('classes.show', compact('classe', 'students'));
     }
