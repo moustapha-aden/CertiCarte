@@ -10,14 +10,14 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- User Avatar --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
                     <span class="text-white text-4xl font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                 </div>
             </div>
 
             {{-- Main Info --}}
-            <div class="flex-grow text-center sm:text-left">
+            <div class="grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">{{ $user->name }}</h1>
                 <p class="text-xl text-indigo-100 mb-2">{{ $user->email }}</p>
                 <p class="text-lg text-indigo-200">

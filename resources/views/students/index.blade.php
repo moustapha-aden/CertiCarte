@@ -278,7 +278,7 @@
                                 <div id="fileSelectedIndicator"
                                     class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                                     <div class="flex items-center space-x-2">
-                                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none"
+                                        <svg class="w-5 h-5 text-green-600 shrink-0" fill="none"
                                             stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -300,7 +300,7 @@
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div class="space-y-3">
                             <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
                                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

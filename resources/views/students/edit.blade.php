@@ -77,7 +77,7 @@
                 </h3>
 
                 <div class="flex items-center space-x-6">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                             <img id="preview" class="w-full h-full object-cover" src="{{ $student->avatar_url }}"
                                 alt="{{ $student->name }}">

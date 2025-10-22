@@ -10,14 +10,14 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- User Avatar --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center ring-4 ring-white/30">
                     <span class="text-white text-5xl font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                 </div>
             </div>
 
             {{-- Main Info --}}
-            <div class="flex-grow text-center sm:text-left">
+            <div class="grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">{{ $user->name }}</h1>
                 <p class="text-xl text-indigo-100 mb-2">{{ $user->email }}</p>
                 <p class="text-lg text-indigo-200">
@@ -170,7 +170,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach ($user->getAllPermissions() as $permission)
                     <div class="flex items-start p-4 bg-green-50 rounded-lg border-2 border-green-200">
-                        <div class="flex-shrink-0 mr-3">
+                        <div class="shrink-0 mr-3">
                             <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">

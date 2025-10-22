@@ -8,7 +8,7 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Welcome Icon --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
                     <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -20,7 +20,7 @@
             </div>
 
             {{-- Welcome Text --}}
-            <div class="flex-grow text-center sm:text-left">
+            <div class="grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">Bienvenue sur le Tableau de Bord</h1>
                 <p class="text-xl text-indigo-100 mb-4">Lycée Ahmed Farah Ali</p>
                 <p class="text-lg text-indigo-200">
@@ -36,7 +36,7 @@
         @can('view_users')
             <x-card class="hover:shadow-xl transition-shadow duration-300">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -57,7 +57,7 @@
         @can('view_classes')
             <x-card class="hover:shadow-xl transition-shadow duration-300">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -78,7 +78,7 @@
         @can('view_students')
             <x-card class="hover:shadow-xl transition-shadow duration-300">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -98,7 +98,7 @@
         {{-- Current School Year --}}
         <x-card class="hover:shadow-xl transition-shadow duration-300">
             <div class="flex items-center">
-                <div class="flex-shrink-0">
+                <div class="shrink-0">
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

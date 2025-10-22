@@ -8,7 +8,7 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Header Icon --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
                     <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -19,7 +19,7 @@
             </div>
 
             {{-- Header Text --}}
-            <div class="flex-grow text-center sm:text-left">
+            <div class="grow text-center sm:text-left">
                 <h1 class="text-4xl font-extrabold mb-2">Génération de Rapports</h1>
                 <p class="text-xl text-indigo-100 mb-4">Lycée Ahmed Farah Ali</p>
                 <p class="text-lg text-indigo-200">
@@ -55,8 +55,8 @@
                             <input type="radio" name="reportType" value="certificate" x-model="reportType"
                                 class="sr-only peer" @change="resetForm">
                             <div
-                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200 
-                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50 
+                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200
+                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50
                                         group-hover:border-gray-300 group-hover:shadow-md">
                                 <div class="text-center">
                                     <div
@@ -78,8 +78,8 @@
                             <input type="radio" name="reportType" value="id_card" x-model="reportType"
                                 class="sr-only peer" @change="resetForm">
                             <div
-                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200 
-                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50 
+                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200
+                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50
                                         group-hover:border-gray-300 group-hover:shadow-md">
                                 <div class="text-center">
                                     <div
@@ -101,8 +101,8 @@
                             <input type="radio" name="reportType" value="attendance_list" x-model="reportType"
                                 class="sr-only peer" @change="resetForm">
                             <div
-                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200 
-                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50 
+                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200
+                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50
                                         group-hover:border-gray-300 group-hover:shadow-md">
                                 <div class="text-center">
                                     <div
@@ -209,8 +209,8 @@
                 {{-- Step 3: Generate Button --}}
                 <div x-show="reportType" class="flex justify-center" x-transition>
                     <button type="submit" :disabled="!canGenerate"
-                        class="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-xl 
-                                   hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                        class="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-xl
+                                   hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500
                                    focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl
                                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg">
                         <span x-show="!isGenerating" class="flex items-center">
