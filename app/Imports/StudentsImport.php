@@ -115,7 +115,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             'date_of_birth' => $normalizedRow['date_naissance'] ?? $normalizedRow['date naissance'] ?? $normalizedRow['date de naissance'] ?? null,
             'place_of_birth' => $normalizedRow['pays_naissance'] ?? $normalizedRow['pays naissance'] ?? $normalizedRow['pays de naissance'] ?? null,
             'gender' => $normalizedRow['genre'] ?? '',
-            'situation' => $normalizedRow['situation'] ?? 'NR', // Default to NR if not specified
+            'situation' => $normalizedRow['situation'] ?? '',
             'classe' => $normalizedRow['classe'] ?? $normalizedRow['classes'] ?? $normalizedRow['class'] ?? '',
             'annee_scolaire' => $normalizedRow['annee_scolaire'] ?? $normalizedRow['annee scolaire'] ?? $normalizedRow['année scolaire'] ?? '',
         ];
@@ -324,13 +324,13 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      * Parse and validate situation value.
      *
      * @param  string  $value  Situation value from Excel
-     * @return string Validated situation (R/NR), defaults to 'R'
+     * @return string|null Validated situation (R/NR) or null if invalid
      */
-    private function parseSituation(string $value): string
+    private function parseSituation(string $value): ?string
     {
         $situation = strtoupper(trim($value));
 
-        return in_array($situation, ['R', 'NR']) ? $situation : 'R';
+        return in_array($situation, ['R', 'NR']) ? $situation : null;
     }
 
     /**

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('matricule')->unique();
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth')->nullable();
-            $table->enum('situation', ['NR', 'R'])->default('NR');
+            $table->enum('situation', ['NR', 'R']);
             $table->enum('gender', ['M', 'F']);
             $table->string('photo')->nullable();
             $table->foreignId('classe_id')->constrained('classes')->onDelete('cascade');
