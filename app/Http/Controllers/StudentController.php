@@ -273,25 +273,22 @@ class StudentController extends Controller
             $import = new StudentsImport;
             Excel::import($import, $file);
 
-            $importedCount = $import->getRowCount();
-            $errors = $import->errors();
-            $failures = $import->failures();
+            $summary = $import->getSummary();
+            $successCount = $summary['success'];
+            $failedCount = $summary['failed'];
 
-            $message = 'Import terminé avec succès ! ';
-            $message .= "{$importedCount} étudiant(s) importé(s).";
-
-            if (! empty($errors)) {
-                $message .= ' '.count($errors).' erreur(s) rencontrée(s).';
+            if ($failedCount > 0) {
+                $message = "Import terminé : {$successCount} étudiant(s) importé(s) avec succès, {$failedCount} échec(s). Consultez les logs pour les détails des échecs.";
+                $messageType = 'warning';
+            } else {
+                $message = "Import terminé avec succès ! {$successCount} étudiant(s) importé(s).";
+                $messageType = 'success';
             }
 
-            if (! empty($failures)) {
-                $message .= ' '.count($failures)." ligne(s) ignorée(s) à cause d'erreurs de validation.";
-            }
-
-            Log::info("Student import completed: {$importedCount} students imported");
+            Log::info("Student import completed: {$successCount} students imported, {$failedCount} failures");
 
             return redirect()->route('students.index')
-                ->with('success', $message);
+                ->with($messageType, $message);
         } catch (ValidationException $e) {
             $failures = $e->failures();
             $errorMessage = "Erreurs de validation détectées :\n";

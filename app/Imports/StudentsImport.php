@@ -36,6 +36,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
     private $rowCount = 0;
 
+    private $successCount = 0;
+
+    private $failedRows = [];
+
     /**
      * Handle validation failures during import.
      *
@@ -44,6 +48,13 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     public function onFailure(Failure ...$failures): void
     {
         foreach ($failures as $failure) {
+            $this->failedRows[] = [
+                'row' => $failure->row(),
+                'errors' => $failure->errors(),
+                'values' => $failure->values(),
+                'type' => 'validation',
+            ];
+
             Log::warning('Échec de validation détecté', [
                 'row' => $failure->row(),
                 'errors' => $failure->errors(),
@@ -74,15 +85,21 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      */
     public function map($row): array
     {
+        // Normalize keys: lowercase and trim them
+        $normalizedRow = [];
+        foreach ($row as $key => $value) {
+            $normalizedRow[strtolower(trim($key))] = $value;
+        }
+
         return [
-            'name' => $row['nom'] ?? $row['name'] ?? '',
-            'matricule' => $row['matricule'] ?? '',
-            'date_of_birth' => $row['date_naissance'] ?? $row['date_of_birth'] ?? null,
-            'place_of_birth' => $row['pays_naissance'] ?? $row['place_of_birth'] ?? null,
-            'gender' => $row['genre'] ?? $row['gender'] ?? '',
-            'situation' => $row['situation'] ?? 'R',
-            'classe' => $row['classe'] ?? $row['class'] ?? '',
-            'annee_scolaire' => $row['annee_scolaire'] ?? $row['school_year'] ?? '',
+            'name' => $normalizedRow['nom'] ?? '',
+            'matricule' => $normalizedRow['matricule'] ?? '',
+            'date_of_birth' => $normalizedRow['date_naissance'] ?? $normalizedRow['date naissance'] ?? $normalizedRow['date de naissance'] ?? null,
+            'place_of_birth' => $normalizedRow['pays_naissance'] ?? $normalizedRow['pays naissance'] ?? $normalizedRow['pays de naissance'] ?? null,
+            'gender' => $normalizedRow['genre'] ?? '',
+            'situation' => $normalizedRow['situation'] ?? 'NR', // Default to NR if not specified
+            'classe' => $normalizedRow['classe'] ?? $normalizedRow['classes'] ?? $normalizedRow['class'] ?? '',
+            'annee_scolaire' => $normalizedRow['annee_scolaire'] ?? $normalizedRow['annee scolaire'] ?? $normalizedRow['année scolaire'] ?? '',
         ];
     }
 
@@ -97,13 +114,18 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
         $this->rowCount++;
         $rowId = $row['id'] ?? ($this->rowCount + 1);
 
-        Log::debug("Traitement de la ligne ID: {$rowId}", ['row_data' => $row]);
-
         try {
             $name = trim($row['name'] ?? '');
             $matricule = trim($row['matricule'] ?? '');
 
             if (empty($name) || empty($matricule)) {
+                $this->failedRows[] = [
+                    'row' => $rowId,
+                    'error' => 'Champs requis manquants (nom ou matricule)',
+                    'data' => $row,
+                    'type' => 'missing_fields',
+                ];
+
                 Log::warning('Ligne ignorée : champs requis manquants', [
                     'name' => $name,
                     'matricule' => $matricule,
@@ -115,6 +137,13 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
             $schoolYearId = $this->getSchoolYearId($row);
             if (! $schoolYearId) {
+                $this->failedRows[] = [
+                    'row' => $rowId,
+                    'error' => 'Impossible de déterminer l\'année scolaire',
+                    'data' => $row,
+                    'type' => 'school_year_error',
+                ];
+
                 Log::error('Impossible de déterminer l\'année scolaire', [
                     'name' => $name,
                     'matricule' => $matricule,
@@ -126,6 +155,13 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
             $classeId = $this->getClasseId($row, $schoolYearId);
             if (! $classeId) {
+                $this->failedRows[] = [
+                    'row' => $rowId,
+                    'error' => 'Impossible de déterminer la classe',
+                    'data' => $row,
+                    'type' => 'class_error',
+                ];
+
                 Log::error('Impossible de déterminer la classe', [
                     'name' => $name,
                     'matricule' => $matricule,
@@ -140,13 +176,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             $gender = $this->parseGender($row['gender'] ?? '');
             $situation = $this->parseSituation($row['situation'] ?? 'R');
 
-            Log::debug('Création de l\'étudiant', [
-                'name' => $name,
-                'matricule' => $matricule,
-                'classe_id' => $classeId,
-                'school_year_id' => $schoolYearId,
-            ]);
-
             $student = Student::create([
                 'name' => $name,
                 'matricule' => $matricule,
@@ -157,14 +186,17 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
                 'classe_id' => $classeId,
             ]);
 
-            Log::info('Étudiant importé avec succès', [
-                'student_id' => $student->id,
-                'name' => $name,
-                'matricule' => $matricule,
-            ]);
+            $this->successCount++;
 
             return $student;
         } catch (\Exception $e) {
+            $this->failedRows[] = [
+                'row' => $rowId,
+                'error' => 'Erreur de base de données: ' . $e->getMessage(),
+                'data' => $row,
+                'type' => 'database_error',
+            ];
+
             Log::error('Erreur de base de données lors de la création de l\'étudiant', [
                 'name' => $name ?? 'unknown',
                 'matricule' => $matricule ?? 'unknown',
@@ -205,12 +237,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
                 ]
             );
 
-            Log::debug('Classe traitée', [
-                'class_id' => $classe->id,
-                'label' => $classeLabel,
-                'school_year_id' => $schoolYearId,
-            ]);
-
             return $classe->id;
         } catch (\Exception $e) {
             Log::error('Impossible de trouver ou créer la classe', [
@@ -238,10 +264,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
         if (is_numeric($value) && $value > 0 && $value < 100000) {
             try {
                 $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
-                Log::debug('Date Excel analysée', [
-                    'excel_value' => $value,
-                    'formatted_date' => $date->format('Y-m-d'),
-                ]);
 
                 return $date->format('Y-m-d');
             } catch (\Exception $e) {
@@ -317,21 +339,12 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
                     ['year' => $schoolYearValue]
                 );
 
-                Log::debug('Année scolaire traitée', [
-                    'school_year_id' => $schoolYear->id,
-                    'year_value' => $schoolYearValue,
-                ]);
-
                 return $schoolYear->id;
             }
         }
 
         $latestSchoolYear = SchoolYear::orderBy('year', 'desc')->first();
         if ($latestSchoolYear) {
-            Log::debug('Utilisation de la dernière année scolaire par défaut', [
-                'school_year_id' => $latestSchoolYear->id,
-                'year_value' => $latestSchoolYear->year,
-            ]);
 
             return $latestSchoolYear->id;
         }
@@ -380,12 +393,36 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     }
 
     /**
-     * Get the total number of rows processed.
+     * Get the number of successfully imported students.
      *
-     * @return int Number of rows processed
+     * @return int Number of successful imports
      */
-    public function getRowCount(): int
+    public function getSuccessCount(): int
     {
-        return $this->rowCount;
+        return $this->successCount;
+    }
+
+    /**
+     * Get the array of failed rows with their details.
+     *
+     * @return array Array of failed rows with error details
+     */
+    public function getFailedRows(): array
+    {
+        return $this->failedRows;
+    }
+
+    /**
+     * Get a summary of the import process.
+     *
+     * @return array Summary with success count, failed count, and failure details
+     */
+    public function getSummary(): array
+    {
+        return [
+            'success' => $this->successCount,
+            'failed' => count($this->failedRows),
+            'failures' => $this->failedRows,
+        ];
     }
 }
