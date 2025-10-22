@@ -91,6 +91,24 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             $normalizedRow[strtolower(trim($key))] = $value;
         }
 
+        // ✅ Nettoyage et normalisation des valeurs avant mapping
+        foreach ($normalizedRow as $key => &$value) {
+            if (is_numeric($value) && ! in_array($key, ['date_naissance', 'date naissance', 'date de naissance'])) {
+                $value = (string) $value; // Convertit les valeurs numériques en string
+            }
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+        }
+
+        // ✅ Normalise certains champs spécifiques
+        if (isset($normalizedRow['genre'])) {
+            $normalizedRow['genre'] = strtoupper($normalizedRow['genre']);
+        }
+        if (isset($normalizedRow['situation'])) {
+            $normalizedRow['situation'] = strtoupper($normalizedRow['situation']);
+        }
+
         return [
             'name' => $normalizedRow['nom'] ?? '',
             'matricule' => $normalizedRow['matricule'] ?? '',
@@ -192,7 +210,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
         } catch (\Exception $e) {
             $this->failedRows[] = [
                 'row' => $rowId,
-                'error' => 'Erreur de base de données: ' . $e->getMessage(),
+                'error' => 'Erreur de base de données: '.$e->getMessage(),
                 'data' => $row,
                 'type' => 'database_error',
             ];
@@ -250,45 +268,40 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     }
 
     /**
-     * Parse date value with support for Excel numeric dates.
+     * Parse date value with support for multiple formats.
      *
      * @param  mixed  $value  Date value from Excel (numeric or string)
      * @return string|null Formatted date string (Y-m-d) or null on failure
      */
     private function parseExcelDate($value): ?string
     {
-        if (! $value) {
+        if (empty($value)) {
             return null;
         }
 
-        if (is_numeric($value) && $value > 0 && $value < 100000) {
+        // ✅ Si c'est un nombre Excel (ex: 39818)
+        if (is_numeric($value) && $value > 10000 && $value < 50000) {
             try {
-                $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
-
-                return $date->format('Y-m-d');
+                return Carbon::createFromDate(1899, 12, 30)->addDays((int) $value)->format('Y-m-d');
             } catch (\Exception $e) {
-                Log::warning('Échec de l\'analyse de la date Excel', [
-                    'excel_value' => $value,
-                    'error' => $e->getMessage(),
-                ]);
+                Log::warning('Erreur conversion date numérique', ['value' => $value]);
             }
         }
 
-        try {
-            $date = Carbon::createFromFormat('d/m/Y', $value);
-
-            return $date->format('Y-m-d');
-        } catch (\Exception $e) {
+        // ✅ Formats classiques
+        $formats = ['d/m/Y', 'd-m-Y', 'd.m.Y', 'Y-m-d', 'd/m/y', 'd-m-y'];
+        foreach ($formats as $format) {
             try {
-                $date = Carbon::parse($value);
-
-                return $date->format('Y-m-d');
-            } catch (\Exception $e2) {
-                Log::error('Erreur d\'analyse de date', [
-                    'value' => $value,
-                    'error' => $e2->getMessage(),
-                ]);
+                return Carbon::createFromFormat($format, trim((string) $value))->format('Y-m-d');
+            } catch (\Exception $e) {
             }
+        }
+
+        // ✅ Tentative finale
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            Log::error('Format de date non reconnu', ['value' => $value]);
         }
 
         return null;
@@ -384,8 +397,8 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             'matricule.unique' => 'Le matricule :input existe déjà.',
             'name.required' => 'Le nom de l\'étudiant est requis.',
             'matricule.required' => 'Le matricule de l\'étudiant est requis.',
-            'classe.required' => 'Le nom de la classe est requis (colonne "classe").',
-            'annee_scolaire.required' => 'L\'année scolaire est requise (colonne "annee_scolaire").',
+            'classe.required' => 'Le nom de la classe est requis.',
+            'annee_scolaire.required' => 'L\'année scolaire est requise.',
             'gender.required' => 'Le genre est requis (M pour Masculin, F pour Féminin).',
             'gender.in' => 'Le genre doit être M (Masculin) ou F (Féminin).',
             'situation.in' => 'La situation doit être R (Redoublant) ou NR (Non-Redoublant).',

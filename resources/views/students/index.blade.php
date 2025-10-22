@@ -278,8 +278,8 @@
                                 <div id="fileSelectedIndicator"
                                     class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                                     <div class="flex items-center space-x-2">
-                                        <svg class="w-5 h-5 text-green-600 shrink-0" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
@@ -308,16 +308,21 @@
                                         </path>
                                     </svg>
                                 </div>
-                                <h4 class="text-sm font-semibold text-blue-900">Format des colonnes Excel</h4>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-blue-900">Format des colonnes Excel</h4>
+                                    <p class="text-xs font-light text-gray-700">Assurez-vous que les colonnes de votre
+                                        fichier Excel
+                                        respectent le format suivant:</p>
+                                </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                                 <div class="space-y-2">
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">nom</span>
+                                        <span class="font-medium text-gray-900">Nom</span>
                                         <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">matricule</span>
+                                        <span class="font-medium text-gray-900">Matricule</span>
                                         <div class="flex items-center space-x-1">
                                             <span
                                                 class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Unique</span>
@@ -326,7 +331,7 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">date_naissance</span>
+                                        <span class="font-medium text-gray-900">Date de naissance</span>
                                         <div class="flex items-center space-x-1">
                                             <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                                 jj/mm/aaaa</span>
@@ -335,42 +340,42 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">pays_naissance</span>
-                                            <span
-                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Optionnel
-                                            </span>
+                                        <span class="font-medium text-gray-900">Pays de naissance</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Optionnel
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="space-y-2">
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">situation</span>
+                                        <span class="font-medium text-gray-900">Situation</span>
                                         <div class="flex items-center space-x-1">
-                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">format:
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                                 R/NR</span>
                                             <span
                                                 class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">genre</span>
+                                        <span class="font-medium text-gray-900">Genre</span>
                                         <div class="flex items-center space-x-1">
-                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">format:
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                                 M/F</span>
                                             <span
                                                 class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">classe</span>
+                                        <span class="font-medium text-gray-900">Classe</span>
                                         <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="font-medium text-gray-900">annee_scolaire</span>
+                                        <span class="font-medium text-gray-900">Année Scolaire</span>
                                         <div class="flex items-center space-x-1">
                                             <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                            aaaa-aaaa
-                                        </span>
-                                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
+                                                aaaa-aaaa
+                                            </span>
+                                            <span
+                                                class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Requis</span>
                                         </div>
 
                                     </div>
