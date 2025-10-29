@@ -135,6 +135,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      */
     public function map($row): array
     {
+        // Count all rows that are processed (including validation failures)
+        // This ensures empty rows and validation failures are counted
+        $this->rowCount++;
+
         // Normalize keys: lowercase and trim them
         $normalizedRow = [];
         foreach ($row as $key => $value) {
@@ -179,8 +183,9 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      */
     public function model(array $row): ?Student
     {
-        $this->rowCount++;
-        $rowId = $row['id'] ?? ($this->rowCount + 1);
+        // Row count is now handled in map() to include validation failures
+        // Calculate rowId based on current row count (map() already incremented it)
+        $rowId = $row['id'] ?? $this->rowCount;
 
         try {
             $name = trim($row['name'] ?? '');

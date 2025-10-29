@@ -27,6 +27,17 @@
                 </div>
             </div>
             <div class="flex gap-3">
+                @if ($import->failed_count > 0)
+                    <a href="{{ route('students-import.export-errors', $import->id) }}"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                            </path>
+                        </svg>
+                        Télécharger les données à corriger
+                    </a>
+                @endif
                 <x-button href="{{ route('students-import.index') }}" variant="secondary" size="md">
                     Retour à l'Import
                 </x-button>
@@ -51,31 +62,6 @@
             {{-- Import Info --}}
             <x-stat-card label="Importé Par :" :value="$import->user->name" color="gray" :icon="svg('user')" />
         </div>
-
-        {{-- Status Badge and Duration --}}
-        {{-- <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <span
-                    class="px-4 py-2 rounded-full text-sm font-medium
-                    @if ($import->isCompleted()) bg-green-100 text-green-800 border border-green-200
-                    @elseif($import->isFailed()) bg-red-100 text-red-800 border border-red-200
-                    @else bg-yellow-100 text-yellow-800 border border-yellow-200 @endif">
-                    @if ($import->isCompleted())
-                        ✓ Terminé
-                    @elseif($import->isFailed())
-                        ✗ Échec
-                    @else
-                        ⏳ En cours
-                    @endif
-                </span>
-                @if ($import->duration)
-                    <p class="text-gray-600 flex items-center">
-                        <span class="size-4">{!! svg('clock') !!}</span>
-                        <span class="ml-2 text-md">Durée: {{ $import->duration }}</span>
-                    </p>
-                @endif
-            </div>
-        </div> --}}
     </x-card>
 
     {{-- Failed Rows --}}
@@ -136,7 +122,7 @@
                     </tr>
                     {{-- Expandable Row Data --}}
                     <tr id="row-data-{{ $error->id }}" class="hidden">
-                        <td colspan="4" class="px-6 py-4 bg-gray-50">
+                        <td colspan="5" class="px-6 py-4 bg-gray-50">
                             <div class="mb-2">
                                 <span class="text-sm font-medium text-gray-700">Données de la ligne:</span>
                             </div>

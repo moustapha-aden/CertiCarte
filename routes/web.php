@@ -110,6 +110,14 @@ Route::middleware('auth')->group(function () {
         ->name('students-import.show')
         ->middleware('permission:import_students');
 
+    Route::get('/dashboard/students/imports/{id}/export-errors', [StudentImportController::class, 'exportErrors'])
+        ->name('students-import.export-errors')
+        ->middleware('permission:import_students');
+
+    Route::delete('/dashboard/students/imports/{id}/errors', [StudentImportController::class, 'destroyErrors'])
+        ->name('students-import.destroy-errors')
+        ->middleware('permission:import_students');
+
     /**
      * Student resource routes with granular CRUD permissions
      * Each action requires specific permission

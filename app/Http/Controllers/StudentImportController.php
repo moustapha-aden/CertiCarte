@@ -101,6 +101,9 @@ class StudentImportController extends Controller
             $summary = $import->getSummary();
             $successCount = $summary['success'];
             $failedCount = $summary['failed'];
+
+            // Use row count from import (counts all rows including validation failures)
+            // Fallback to success + failed if row count is 0
             $totalRows = $import->getRowCount() > 0 ? $import->getRowCount() : ($successCount + $failedCount);
 
             // Update import record
@@ -132,5 +135,54 @@ class StudentImportController extends Controller
             return redirect()->back()
                 ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer. Détail : '.$e->getMessage());
         }
+    }
+
+    /**
+     * Export errors to Excel for correction.
+     *
+     * @param  int|string  $id  The import ID
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportErrors($id)
+    {
+        $studentImport = StudentImport::with('errors')->findOrFail($id);
+
+        $export = new \App\Exports\StudentImportErrorsExport($studentImport);
+
+        return \Maatwebsite\Excel\Facades\Excel::download($export, 'erreurs_import_'.$studentImport->id.'.xlsx');
+    }
+
+    /**
+     * Delete selected error records in bulk.
+     *
+     * @param  int|string  $id  The import ID
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyErrors($id, Request $request)
+    {
+        $studentImport = StudentImport::findOrFail($id);
+
+        $request->validate([
+            'error_ids' => 'required|string',
+        ]);
+
+        $errorIds = json_decode($request->input('error_ids'), true);
+
+        if (! is_array($errorIds) || empty($errorIds)) {
+            return redirect()->back()
+                ->with('error', 'Aucune erreur sélectionnée.');
+        }
+
+        // Verify all errors belong to this import
+        $deletedCount = $studentImport->errors()
+            ->whereIn('id', $errorIds)
+            ->delete();
+
+        // Update failed_count in import record
+        $newFailedCount = $studentImport->errors()->count();
+        $studentImport->update(['failed_count' => $newFailedCount]);
+
+        return redirect()->back()
+            ->with('success', "{$deletedCount} erreur(s) supprimée(s) avec succès.");
     }
 }
