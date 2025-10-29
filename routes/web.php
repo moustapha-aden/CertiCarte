@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleManagementController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentImportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -29,8 +30,8 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
 
-    return view('login');
-})->name('login');
+    return redirect()->route('login');
+})->name('home');
 
 /**
  * User authentication route
@@ -43,6 +44,7 @@ Route::get('/', function () {
  *
  * @return \Illuminate\Http\RedirectResponse
  */
+Route::get('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
 
 /**
@@ -84,6 +86,29 @@ Route::middleware('auth')->group(function () {
     // ========================================================================
     // STUDENT MANAGEMENT ROUTES
     // ========================================================================
+
+    /**
+     * Student import results routes
+     * Shows detailed import results and import history
+     * Requires 'import_students' permission
+     *
+     * Routes:
+     * - GET /dashboard/students/imports           (import) - Import page with upload form and history
+     * - GET /dashboard/students/imports/{id}       (result) - Show specific import results
+     *
+     * @uses StudentImportController
+     */
+    Route::get('/dashboard/students/imports', [StudentImportController::class, 'index'])
+        ->name('students-import.index')
+        ->middleware('permission:import_students');
+
+    Route::post('/dashboard/students/imports', [StudentImportController::class, 'store'])
+        ->name('students-import.store')
+        ->middleware('permission:import_students');
+
+    Route::get('/dashboard/students/imports/{id}', [StudentImportController::class, 'show'])
+        ->name('students-import.show')
+        ->middleware('permission:import_students');
 
     /**
      * Student resource routes with granular CRUD permissions
@@ -129,23 +154,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/dashboard/students/{student}', [StudentController::class, 'destroy'])
         ->name('students.destroy')
         ->middleware('permission:delete_students');
-
-    /**
-     * Student import route
-     * Imports students from Excel/CSV file
-     * Requires 'import_students' permission
-     *
-     * @route POST /dashboard/students/import
-     *
-     * @name students.import
-     *
-     * @uses StudentController@import
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    Route::post('/dashboard/students/import', [StudentController::class, 'import'])
-        ->name('students.import')
-        ->middleware('permission:import_students');
 
     // ========================================================================
     // CLASSE MANAGEMENT ROUTES
@@ -229,6 +237,22 @@ Route::middleware('auth')->group(function () {
         ->name('users.store')
         ->middleware('permission:create_users');
 
+    Route::get('/dashboard/users/{user}', [UserController::class, 'show'])
+        ->name('users.show')
+        ->middleware('permission:view_users');
+
+    Route::get('/dashboard/users/{user}/edit', [UserController::class, 'edit'])
+        ->name('users.edit')
+        ->middleware('permission:edit_users');
+
+    Route::put('/dashboard/users/{user}', [UserController::class, 'update'])
+        ->name('users.update')
+        ->middleware('permission:edit_users');
+
+    Route::delete('/dashboard/users/{user}', [UserController::class, 'destroy'])
+        ->name('users.destroy')
+        ->middleware('permission:delete_users');
+
     // ========================================================================
     // PROFILE MANAGEMENT ROUTES
     // ========================================================================
@@ -252,22 +276,6 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/dashboard/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
-
-    Route::get('/dashboard/users/{user}', [UserController::class, 'show'])
-        ->name('users.show')
-        ->middleware('permission:view_users');
-
-    Route::get('/dashboard/users/{user}/edit', [UserController::class, 'edit'])
-        ->name('users.edit')
-        ->middleware('permission:edit_users');
-
-    Route::put('/dashboard/users/{user}', [UserController::class, 'update'])
-        ->name('users.update')
-        ->middleware('permission:edit_users');
-
-    Route::delete('/dashboard/users/{user}', [UserController::class, 'destroy'])
-        ->name('users.destroy')
-        ->middleware('permission:delete_users');
 
     // ========================================================================
     // PERMISSION MANAGEMENT ROUTES

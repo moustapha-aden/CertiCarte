@@ -9,7 +9,7 @@
                         @if (isset($header['sortable']) && $header['sortable'])
                             {{-- Sortable Header --}}
                             <x-sortable-header :field="$header['field']" :label="$header['label']" :currentSort="$currentSort ?? ''" :currentOrder="$currentOrder ?? 'asc'"
-                                :route="$header['route'] ?? ''" :queryParams="$queryParams ?? []" :class="$header['class'] ?? ''" />
+                                :route="$header['route'] ?? ''" :queryParams="$queryParams ?? []" :routeParams="$header['routeParams'] ?? []" :class="$header['class'] ?? ''" />
                         @else
                             {{-- Regular Header --}}
                             @php

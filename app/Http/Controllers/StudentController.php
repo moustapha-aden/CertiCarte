@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
-use App\Imports\StudentsImport;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
@@ -12,11 +11,8 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Validators\ValidationException;
 
 class StudentController extends Controller
 {
@@ -261,68 +257,6 @@ class StudentController extends Controller
                 'classes' => [],
                 'count' => 0,
             ], 500);
-        }
-    }
-
-    /**
-     * Import students from Excel/CSV file.
-     *
-     * @param  Request  $request  The HTTP request containing the uploaded file
-     * @return RedirectResponse Redirect to students index with success/error message
-     */
-    public function import(Request $request): RedirectResponse
-    {
-        try {
-            $request->validate([
-                'file' => 'required|mimes:xlsx,xls,csv,txt|max:10240',
-            ], [
-                'file.required' => 'Veuillez sélectionner un fichier à importer.',
-                'file.mimes' => 'Le fichier doit être au format Excel (.xlsx, .xls) ou CSV.',
-                'file.max' => 'Le fichier ne doit pas dépasser 10MB.',
-            ]);
-
-            $file = $request->file('file');
-
-            Log::info('Starting student import from file: '.$file->getClientOriginalName());
-
-            $import = new StudentsImport;
-            Excel::import($import, $file);
-
-            $summary = $import->getSummary();
-            $successCount = $summary['success'];
-            $failedCount = $summary['failed'];
-
-            if ($failedCount > 0) {
-                $message = "Import terminé : {$successCount} étudiant(s) importé(s) avec succès, {$failedCount} échec(s). Consultez les logs pour les détails des échecs.";
-                $messageType = 'warning';
-            } else {
-                $message = "Import terminé avec succès ! {$successCount} étudiant(s) importé(s).";
-                $messageType = 'success';
-            }
-
-            Log::info("Student import completed: {$successCount} students imported, {$failedCount} failures");
-
-            return redirect()->route('students.index')
-                ->with($messageType, $message);
-        } catch (ValidationException $e) {
-            $failures = $e->failures();
-            $errorMessage = "Erreurs de validation détectées :\n";
-
-            foreach ($failures as $failure) {
-                $errorMessage .= "Ligne {$failure->row()}: ".implode(', ', $failure->errors())."\n";
-            }
-
-            Log::error('Student import validation errors: '.$errorMessage);
-
-            return redirect()->back()
-                ->with('error', 'Erreurs de validation dans le fichier. Veuillez vérifier les données et réessayer.')
-                ->with('validation_errors', $failures);
-        } catch (\Throwable $e) {
-            Log::error('Student import failed: '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
-
-            return redirect()->back()
-                ->with('error', 'Une erreur est survenue lors de l\'import. Veuillez vérifier le format du fichier et réessayer. Détail : '.$e->getMessage());
         }
     }
 }
