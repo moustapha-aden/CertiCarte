@@ -236,6 +236,27 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
                 return null;
             }
 
+            // Vérifier l'unicité de la combinaison matricule + classe_id
+            $existingStudent = Student::where('matricule', $matricule)
+                ->where('classe_id', $classeId)
+                ->first();
+
+            if ($existingStudent) {
+                $errorMessage = 'Un étudiant avec le matricule "'.$matricule.'" existe déjà dans cette classe';
+
+                $this->saveError($rowId, 'duplicate', $errorMessage, $row);
+
+                Log::warning('Étudiant en double détecté', [
+                    'name' => $name,
+                    'matricule' => $matricule,
+                    'classe_id' => $classeId,
+                    'existing_student_id' => $existingStudent->id,
+                    'row_data' => $row,
+                ]);
+
+                return null;
+            }
+
             $formattedDateOfBirth = $this->parseExcelDate($row['date_of_birth'] ?? null);
             $gender = $this->parseGender($row['gender'] ?? '');
             $situation = $this->parseSituation($row['situation'] ?? 'R');
@@ -419,7 +440,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     {
         return [
             'name' => 'required|string|max:255',
-            'matricule' => 'required|string|max:50|unique:students,matricule',
+            'matricule' => 'required|string|max:50',
             'date_of_birth' => 'nullable',
             'place_of_birth' => 'nullable|string|max:255',
             'gender' => 'required|string|in:M,F',
@@ -441,7 +462,6 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             'name.max' => 'Le nom ne peut pas dépasser 255 caractères.',
             'matricule.required' => 'Le matricule de l\'étudiant est requis.',
             'matricule.max' => 'Le matricule ne peut pas dépasser 50 caractères.',
-            'matricule.unique' => 'Le matricule :input existe déjà.',
             'place_of_birth.max' => 'Le lieu de naissance ne peut pas dépasser 255 caractères.',
             'gender.required' => 'Le genre est requis.',
             'gender.in' => 'Le genre doit être M (Masculin) ou F (Féminin).',
