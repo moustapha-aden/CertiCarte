@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     /**
+     * Display the login form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function login()
+    {
+        return view('login');
+    }
+
+    /**
      * Handle user authentication attempt.
      *
      * @param  Request  $request  The HTTP request containing login credentials

@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use App\Models\StudentImport;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -38,7 +39,37 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
     private $successCount = 0;
 
-    private $failedRows = [];
+    private $studentImport;
+
+    /**
+     * Create a new instance.
+     *
+     * @param  StudentImport|null  $studentImport  The import record to track
+     */
+    public function __construct(?StudentImport $studentImport = null)
+    {
+        $this->studentImport = $studentImport;
+    }
+
+    /**
+     * Save error to database.
+     *
+     * @param  int  $rowNumber  The row number that failed
+     * @param  string  $errorType  Type of error
+     * @param  string  $errorMessage  Error message
+     * @param  array  $rowData  The row data that failed
+     */
+    private function saveError(int $rowNumber, string $errorType, string $errorMessage, array $rowData): void
+    {
+        if ($this->studentImport) {
+            $this->studentImport->errors()->create([
+                'row_number' => $rowNumber,
+                'error_type' => $errorType,
+                'error_message' => $errorMessage,
+                'row_data' => $rowData,
+            ]);
+        }
+    }
 
     /**
      * Handle validation failures during import.
@@ -47,18 +78,37 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      */
     public function onFailure(Failure ...$failures): void
     {
+        // Group failures by row number
+        $groupedFailures = [];
         foreach ($failures as $failure) {
-            $this->failedRows[] = [
-                'row' => $failure->row(),
-                'errors' => $failure->errors(),
-                'values' => $failure->values(),
-                'type' => 'validation',
-            ];
+            $rowNumber = $failure->row();
+            if (! isset($groupedFailures[$rowNumber])) {
+                $groupedFailures[$rowNumber] = [
+                    'errors' => [],
+                    'values' => $failure->values(),
+                ];
+            }
+            $groupedFailures[$rowNumber]['errors'] = array_merge(
+                $groupedFailures[$rowNumber]['errors'],
+                $failure->errors()
+            );
+        }
+
+        // Save one record per row with combined messages
+        foreach ($groupedFailures as $rowNumber => $grouped) {
+            $combinedMessage = implode('; ', array_unique($grouped['errors']));
+
+            $this->saveError(
+                $rowNumber,
+                'validation',
+                $combinedMessage,
+                $grouped['values']
+            );
 
             Log::warning('Échec de validation détecté', [
-                'row' => $failure->row(),
-                'errors' => $failure->errors(),
-                'values' => $failure->values(),
+                'row' => $rowNumber,
+                'errors' => $grouped['errors'],
+                'values' => $grouped['values'],
             ]);
         }
     }
@@ -85,6 +135,10 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      */
     public function map($row): array
     {
+        // Count all rows that are processed (including validation failures)
+        // This ensures empty rows and validation failures are counted
+        $this->rowCount++;
+
         // Normalize keys: lowercase and trim them
         $normalizedRow = [];
         foreach ($row as $key => $value) {
@@ -129,20 +183,18 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
      */
     public function model(array $row): ?Student
     {
-        $this->rowCount++;
-        $rowId = $row['id'] ?? ($this->rowCount + 1);
+        // Row count is now handled in map() to include validation failures
+        // Calculate rowId based on current row count (map() already incremented it)
+        $rowId = $row['id'] ?? $this->rowCount;
 
         try {
             $name = trim($row['name'] ?? '');
             $matricule = trim($row['matricule'] ?? '');
 
             if (empty($name) || empty($matricule)) {
-                $this->failedRows[] = [
-                    'row' => $rowId,
-                    'error' => 'Champs requis manquants (nom ou matricule)',
-                    'data' => $row,
-                    'type' => 'missing_fields',
-                ];
+                $errorMessage = 'Champs requis manquants (nom ou matricule)';
+
+                $this->saveError($rowId, 'missing_field', $errorMessage, $row);
 
                 Log::warning('Ligne ignorée : champs requis manquants', [
                     'name' => $name,
@@ -155,12 +207,9 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
             $schoolYearId = $this->getSchoolYearId($row);
             if (! $schoolYearId) {
-                $this->failedRows[] = [
-                    'row' => $rowId,
-                    'error' => 'Impossible de déterminer l\'année scolaire',
-                    'data' => $row,
-                    'type' => 'school_year_error',
-                ];
+                $errorMessage = 'Impossible de déterminer l\'année scolaire';
+
+                $this->saveError($rowId, 'school_year', $errorMessage, $row);
 
                 Log::error('Impossible de déterminer l\'année scolaire', [
                     'name' => $name,
@@ -173,17 +222,35 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
             $classeId = $this->getClasseId($row, $schoolYearId);
             if (! $classeId) {
-                $this->failedRows[] = [
-                    'row' => $rowId,
-                    'error' => 'Impossible de déterminer la classe',
-                    'data' => $row,
-                    'type' => 'class_error',
-                ];
+                $errorMessage = 'Impossible de déterminer la classe';
+
+                $this->saveError($rowId, 'class', $errorMessage, $row);
 
                 Log::error('Impossible de déterminer la classe', [
                     'name' => $name,
                     'matricule' => $matricule,
                     'school_year_id' => $schoolYearId,
+                    'row_data' => $row,
+                ]);
+
+                return null;
+            }
+
+            // Vérifier l'unicité de la combinaison matricule + classe_id
+            $existingStudent = Student::where('matricule', $matricule)
+                ->where('classe_id', $classeId)
+                ->first();
+
+            if ($existingStudent) {
+                $errorMessage = 'Un étudiant avec le matricule "'.$matricule.'" existe déjà dans cette classe';
+
+                $this->saveError($rowId, 'duplicate', $errorMessage, $row);
+
+                Log::warning('Étudiant en double détecté', [
+                    'name' => $name,
+                    'matricule' => $matricule,
+                    'classe_id' => $classeId,
+                    'existing_student_id' => $existingStudent->id,
                     'row_data' => $row,
                 ]);
 
@@ -208,12 +275,9 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
             return $student;
         } catch (\Exception $e) {
-            $this->failedRows[] = [
-                'row' => $rowId,
-                'error' => 'Erreur de base de données: '.$e->getMessage(),
-                'data' => $row,
-                'type' => 'database_error',
-            ];
+            $errorMessage = 'Erreur de base de données: '.$e->getMessage();
+
+            $this->saveError($rowId, 'database', $errorMessage, $row);
 
             Log::error('Erreur de base de données lors de la création de l\'étudiant', [
                 'name' => $name ?? 'unknown',
@@ -375,14 +439,14 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     public function rules(): array
     {
         return [
+            'name' => 'required|string|max:255',
+            'matricule' => 'required|string|max:50',
+            'date_of_birth' => 'nullable',
+            'place_of_birth' => 'nullable|string|max:255',
+            'gender' => 'required|string|in:M,F',
+            'situation' => 'required|string|in:R,NR',
             'classe' => 'required|string|max:255',
             'annee_scolaire' => 'required|string|max:20',
-            'name' => 'required|string|max:255',
-            'matricule' => 'required|string|max:50|unique:students,matricule',
-            'date_of_birth' => 'nullable',
-            'gender' => 'required|string|in:M,F',
-            'place_of_birth' => 'nullable|string|max:255',
-            'situation' => 'nullable|string|in:R,NR',
         ];
     }
 
@@ -394,15 +458,30 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     public function customValidationMessages(): array
     {
         return [
-            'matricule.unique' => 'Le matricule :input existe déjà.',
             'name.required' => 'Le nom de l\'étudiant est requis.',
+            'name.max' => 'Le nom ne peut pas dépasser 255 caractères.',
             'matricule.required' => 'Le matricule de l\'étudiant est requis.',
-            'classe.required' => 'Le nom de la classe est requis.',
-            'annee_scolaire.required' => 'L\'année scolaire est requise.',
-            'gender.required' => 'Le genre est requis (M pour Masculin, F pour Féminin).',
+            'matricule.max' => 'Le matricule ne peut pas dépasser 50 caractères.',
+            'place_of_birth.max' => 'Le lieu de naissance ne peut pas dépasser 255 caractères.',
+            'gender.required' => 'Le genre est requis.',
             'gender.in' => 'Le genre doit être M (Masculin) ou F (Féminin).',
+            'situation.required' => 'La situation est requise.',
             'situation.in' => 'La situation doit être R (Redoublant) ou NR (Non-Redoublant).',
+            'classe.required' => 'Le nom de la classe est requis.',
+            'classe.max' => 'Le nom de la classe ne peut pas dépasser 255 caractères.',
+            'annee_scolaire.required' => 'L\'année scolaire est requise.',
+            'annee_scolaire.max' => 'L\'année scolaire ne peut pas dépasser 20 caractères.',
         ];
+    }
+
+    /**
+     * Get the total number of rows processed.
+     *
+     * @return int Total number of rows
+     */
+    public function getRowCount(): int
+    {
+        return $this->rowCount;
     }
 
     /**
@@ -416,26 +495,19 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     }
 
     /**
-     * Get the array of failed rows with their details.
-     *
-     * @return array Array of failed rows with error details
-     */
-    public function getFailedRows(): array
-    {
-        return $this->failedRows;
-    }
-
-    /**
      * Get a summary of the import process.
      *
-     * @return array Summary with success count, failed count, and failure details
+     * @return array Summary with success count and failed count
      */
     public function getSummary(): array
     {
+        $failedCount = $this->studentImport
+            ? $this->studentImport->errors()->count()
+            : 0;
+
         return [
             'success' => $this->successCount,
-            'failed' => count($this->failedRows),
-            'failures' => $this->failedRows,
+            'failed' => $failedCount,
         ];
     }
 }

@@ -5,6 +5,7 @@
     'currentOrder' => 'asc',
     'route' => '',
     'queryParams' => [],
+    'routeParams' => [],
     'class' => '',
 ])
 
@@ -17,7 +18,7 @@
         'sort_order' => $newOrder,
     ]);
 
-    $url = route($route, $params);
+    $url = route($route, array_merge($routeParams, $params));
 
     // Handle text alignment
     $textAlign = 'text-left';
