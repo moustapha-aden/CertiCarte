@@ -11,13 +11,11 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
-        "intervention/image": "^3.11",
         "laravel/framework": "^12.0",
         "laravel/nightwatch": "^1.15",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "phpoffice/phpspreadsheet": "^1.30",
-        "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
@@ -35,10 +33,7 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "app/helpers.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

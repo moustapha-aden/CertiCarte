@@ -169,7 +169,8 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 {{-- Search Input --}}
                 <div class="relative flex-1 max-w-md">
-                    <input type="search" name="search" placeholder="Rechercher un étudiant..." value="{{ request('search') }}"
+                    <input type="search" name="search" placeholder="Rechercher un étudiant..."
+                        value="{{ request('search') }}"
                         class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">

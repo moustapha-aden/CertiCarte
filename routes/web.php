@@ -12,18 +12,10 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// ============================================================================
-// PUBLIC ROUTES (No Authentication Required)
-// ============================================================================
-
 /**
- * Home page route - redirects authenticated users to dashboard
+ * Home page route - redirects authenticated users to dashboard.
  *
- * @route GET /
- *
- * @name login
- *
- * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+ * @return \Illuminate\Http\RedirectResponse
  */
 Route::get('/', function () {
     if (Auth::check()) {
@@ -34,25 +26,15 @@ Route::get('/', function () {
 })->name('home');
 
 /**
- * User authentication route
+ * User authentication route.
  *
- * @route POST /login
- *
- * @name authenticate
- *
- * @uses LoginController@authenticate
- *
- * @return \Illuminate\Http\RedirectResponse
+ * @uses LoginController
  */
 Route::get('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
 
 /**
- * User logout route
- *
- * @route POST /logout
- *
- * @name logout
+ * User logout route.
  *
  * @uses LoginController@logout
  *
@@ -60,22 +42,13 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('authentic
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// ============================================================================
-// PROTECTED ROUTES (Authentication Required)
-// ============================================================================
-
 /**
- * Authenticated routes group
- * All routes within this group require user authentication
+ * Authenticated routes group - all routes require authentication.
  */
 Route::middleware('auth')->group(function () {
 
     /**
-     * Dashboard main page
-     *
-     * @route GET /dashboard
-     *
-     * @name dashboard
+     * Dashboard main page.
      *
      * @uses DashboardController@index
      *
@@ -83,18 +56,9 @@ Route::middleware('auth')->group(function () {
      */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ========================================================================
-    // STUDENT MANAGEMENT ROUTES
-    // ========================================================================
-
     /**
-     * Student import results routes
-     * Shows detailed import results and import history
-     * Requires 'import_students' permission
-     *
-     * Routes:
-     * - GET /dashboard/students/imports           (import) - Import page with upload form and history
-     * - GET /dashboard/students/imports/{id}       (result) - Show specific import results
+     * Student import routes.
+     * Requires 'import_students' permission.
      *
      * @uses StudentImportController
      */
@@ -119,19 +83,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:import_students');
 
     /**
-     * Student resource routes with granular CRUD permissions
-     * Each action requires specific permission
-     *
-     * Generated routes:
-     * - GET    /dashboard/students           (index)   - List all students (view_students)
-     * - GET    /dashboard/students/create    (create)  - Show create form (create_students)
-     * - POST   /dashboard/students           (store)   - Store new student (create_students)
-     * - GET    /dashboard/students/{id}      (show)    - Show specific student (view_students)
-     * - GET    /dashboard/students/{id}/edit (edit)    - Show edit form (edit_students)
-     * - PUT    /dashboard/students/{id}      (update)  - Update student (edit_students)
-     * - DELETE /dashboard/students/{id}     (destroy) - Delete student (delete_students)
-     *
-     * @route resource /dashboard/students
+     * Student resource routes with granular CRUD permissions.
      *
      * @uses StudentController
      */
@@ -163,24 +115,8 @@ Route::middleware('auth')->group(function () {
         ->name('students.destroy')
         ->middleware('permission:delete_students');
 
-    // ========================================================================
-    // CLASSE MANAGEMENT ROUTES
-    // ========================================================================
-
     /**
-     * Classe resource routes with granular CRUD permissions
-     * Each action requires specific permission
-     *
-     * Generated routes:
-     * - GET    /dashboard/classes           (index)   - List all classes (view_classes)
-     * - GET    /dashboard/classes/create    (create)  - Show create form (create_classes)
-     * - POST   /dashboard/classes           (store)   - Store new classe (create_classes)
-     * - GET    /dashboard/classes/{classe}  (show)    - Show specific classe (view_classes)
-     * - GET    /dashboard/classes/{classe}/edit (edit)    - Show edit form (edit_classes)
-     * - PUT    /dashboard/classes/{classe}  (update)  - Update classe (edit_classes)
-     * - DELETE /dashboard/classes/{classe}  (destroy) - Delete classe (delete_classes)
-     *
-     * @route resource /dashboard/classes
+     * Class resource routes with granular CRUD permissions.
      *
      * @uses ClasseController
      */
@@ -212,24 +148,8 @@ Route::middleware('auth')->group(function () {
         ->name('classes.destroy')
         ->middleware('permission:delete_classes');
 
-    // ========================================================================
-    // USER MANAGEMENT ROUTES
-    // ========================================================================
-
     /**
-     * User resource routes with granular CRUD permissions
-     * Each action requires specific permission for user management
-     *
-     * Generated routes:
-     * - GET    /dashboard/users           (index)   - List all secretary users (view_users)
-     * - GET    /dashboard/users/create    (create)  - Show create form (create_users)
-     * - POST   /dashboard/users           (store)   - Store new secretary user (create_users)
-     * - GET    /dashboard/users/{user}    (show)    - Show specific user (view_users)
-     * - GET    /dashboard/users/{user}/edit (edit)    - Show edit form (edit_users)
-     * - PUT    /dashboard/users/{user}    (update)  - Update user (edit_users)
-     * - DELETE /dashboard/users/{user}    (destroy) - Delete user (delete_users)
-     *
-     * @route resource /dashboard/users
+     * User resource routes with granular CRUD permissions.
      *
      * @uses UserController
      */
@@ -261,18 +181,9 @@ Route::middleware('auth')->group(function () {
         ->name('users.destroy')
         ->middleware('permission:delete_users');
 
-    // ========================================================================
-    // PROFILE MANAGEMENT ROUTES
-    // ========================================================================
-
     /**
-     * Profile routes for authenticated users to manage their own profile
-     * No specific permissions required - users can always view/edit their own profile
-     *
-     * Routes:
-     * - GET    /dashboard/profile           (show)   - Show user's own profile
-     * - GET    /dashboard/profile/edit     (edit)   - Show profile edit form
-     * - PUT    /dashboard/profile           (update) - Update user's own profile
+     * Profile routes for authenticated users.
+     * No specific permissions required.
      *
      * @uses ProfileController
      */
@@ -285,18 +196,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/dashboard/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
 
-    // ========================================================================
-    // PERMISSION MANAGEMENT ROUTES
-    // ========================================================================
-
     /**
-     * Permission management routes
-     * Provides permission management functionality for individual users
-     * Requires 'edit_users' permission for managing user permissions
-     *
-     * Routes:
-     * - POST   /dashboard/users/{user}/permissions (updatePermissions) - Update user permissions
-     * - GET    /dashboard/users/{user}/permissions (getUserPermissions) - Get user permissions
+     * Permission management routes.
+     * Requires 'edit_users' permission.
      *
      * @uses RoleManagementController
      */
@@ -309,17 +211,8 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:view_users');
     });
 
-    // ========================================================================
-    // REPORTS ROUTES
-    // ========================================================================
-
     /**
-     * Reports page route
-     * Displays the reports generation interface
-     *
-     * @route GET /dashboard/reports
-     *
-     * @name reports.index
+     * Reports page route.
      *
      * @uses ReportsController@index
      *
@@ -330,12 +223,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:generate_certificates|generate_cards|generate_attendance_lists');
 
     /**
-     * Certificate generation route
-     * Generates a PDF certificate for a specific student
-     *
-     * @route GET /reports/certificate/{student}
-     *
-     * @name reports.certificate
+     * Certificate generation route.
      *
      * @uses ReportsController@generateCertificate
      *
@@ -346,12 +234,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:generate_certificates');
 
     /**
-     * ID card generation route
-     * Generates a PDF ID card for a specific student
-     *
-     * @route GET /reports/id-card/{student}
-     *
-     * @name reports.id_card
+     * ID card generation route.
      *
      * @uses ReportsController@generateIdCard
      *
@@ -362,12 +245,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:generate_cards');
 
     /**
-     * Attendance list generation route
-     * Generates a PDF attendance list for a class
-     *
-     * @route GET /reports/attendance-list/{classe}
-     *
-     * @name reports.attendance_list
+     * Attendance list generation route.
      *
      * @uses ReportsController@generateAttendanceList
      *
@@ -377,17 +255,8 @@ Route::middleware('auth')->group(function () {
         ->name('reports.attendance_list')
         ->middleware('permission:generate_attendance_lists');
 
-    // ========================================================================
-    // API ROUTES
-    // ========================================================================
-
     /**
-     * API route to fetch classes by school year
-     * Used for dynamic dropdown population via AJAX
-     *
-     * @route GET /api/classes/by-year/{year_id}
-     *
-     * @name api.classes.by-year
+     * API route to fetch classes by school year.
      *
      * @param  int  $yearId  The school year ID
      *
@@ -398,12 +267,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/classes/by-year/{yearId}', [StudentController::class, 'getClassesByYear'])->name('api.classes.by-year');
 
     /**
-     * API route to fetch students by class
-     * Used for dynamic dropdown population via AJAX
-     *
-     * @route GET /api/students/by-class/{classe_id}
-     *
-     * @name api.students.by-class
+     * API route to fetch students by class.
      *
      * @param  int  $classeId  The class ID
      *
@@ -412,5 +276,4 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/students/by-class/{classeId}', [ReportsController::class, 'getStudentsByClass'])->name('api.students.by-class');
-
 });
