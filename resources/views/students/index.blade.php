@@ -147,7 +147,7 @@
                         {{-- Class --}}
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if ($student->classe)
-                                <a href="{{ route('classes.index', ['classe_id' => $student->classe->id]) }}"
+                                <a href="{{ route('classes.show', $student->classe) }}"
                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 hover:text-blue-900 transition-colors duration-200 cursor-pointer"
                                     title="Voir les détails de la classe {{ $student->classe->label }}">
                                     {{ $student->classe->label }}
@@ -211,6 +211,13 @@
                     </tr>
                 @endforeach
             </x-table>
+
+            {{-- Pagination --}}
+            @if ($students->hasPages())
+                <div class="mt-8">
+                    <x-pagination :paginator="$students" :itemLabel="'étudiants'" />
+                </div>
+            @endif
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">

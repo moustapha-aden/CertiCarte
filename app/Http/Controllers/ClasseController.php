@@ -41,11 +41,6 @@ class ClasseController extends Controller
             $query->where('year_id', $request->input('year_id'));
         }
 
-        // Filter by specific class ID
-        if ($request->filled('classe_id')) {
-            $query->where('id', $request->input('classe_id'));
-        }
-
         // Handle sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
