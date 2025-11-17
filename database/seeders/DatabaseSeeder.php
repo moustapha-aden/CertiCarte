@@ -15,17 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+            ]
+        );
 
-        User::create([
-            'name' => 'Secretary User',
-            'email' => 'secretary@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        $secretaryUser = User::firstOrCreate(
+            ['email' => 'secretary@example.com'],
+            [
+                'name' => 'Secretary User',
+                'password' => bcrypt('password'),
+            ]
+        );
 
         // Create granular permissions (CRUD-level)
         $permissions = [
@@ -68,14 +72,12 @@ class DatabaseSeeder extends Seeder
         // Secretary has no default role permissions (will be assigned as direct permissions)
         $secretary->syncPermissions([]);
 
-        // Assign roles to existing users
-        $adminUser = User::where('email', 'admin@example.com')->first();
-        if ($adminUser) {
+        // Assign roles to users
+        if (! $adminUser->hasRole('admin')) {
             $adminUser->assignRole('admin');
         }
 
-        $secretaryUser = User::where('email', 'secretary@example.com')->first();
-        if ($secretaryUser) {
+        if (! $secretaryUser->hasRole('secretary')) {
             $secretaryUser->assignRole('secretary');
             // Give default permissions as direct permissions (not role permissions)
             $defaultSecretaryPermissions = [

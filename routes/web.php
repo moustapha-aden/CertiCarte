@@ -412,4 +412,5 @@ Route::middleware('auth')->group(function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::get('/api/students/by-class/{classeId}', [ReportsController::class, 'getStudentsByClass'])->name('api.students.by-class');
+
 });

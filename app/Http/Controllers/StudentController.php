@@ -2,20 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ImageProcessingException;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Classe;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use App\Services\ImageService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class StudentController extends Controller
 {
+    protected ImageService $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     /**
      * Display a paginated listing of students with filtering and sorting capabilities.
      *
@@ -51,7 +59,7 @@ class StudentController extends Controller
             $students->where('classe_id', $request->input('classe_id'));
         }
 
-        // Search by name or matricule
+        // Simple search (searches name or matricule)
         if ($request->filled('search')) {
             $searchTerm = '%'.$request->input('search').'%';
             $students->where(function ($query) use ($searchTerm) {
@@ -124,8 +132,20 @@ class StudentController extends Controller
             $validatedData = $request->validated();
 
             if ($request->hasFile('photo')) {
-                $photoPath = $request->file('photo')->store('photos/students', 'public');
-                $validatedData['photo'] = $photoPath;
+                try {
+                    $photoPath = $this->imageService->resizeAndStore(
+                        $request->file('photo'),
+                        'photos/students',
+                        1200,
+                        1200,
+                        90
+                    );
+                    $validatedData['photo'] = $photoPath;
+                } catch (ImageProcessingException $e) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Erreur lors du traitement de l\'image: '.$e->getMessage());
+                }
             }
 
             $student = Student::create($validatedData);
@@ -189,11 +209,25 @@ class StudentController extends Controller
             $validatedData = $request->validated();
 
             if ($request->hasFile('photo')) {
-                if ($student->photo) {
-                    Storage::disk('public')->delete($student->photo);
+                try {
+                    // Delete old photo if exists
+                    if ($student->photo) {
+                        $this->imageService->delete($student->photo);
+                    }
+                    // Process and store new photo
+                    $photoPath = $this->imageService->resizeAndStore(
+                        $request->file('photo'),
+                        'photos/students',
+                        1200,
+                        1200,
+                        90
+                    );
+                    $validatedData['photo'] = $photoPath;
+                } catch (ImageProcessingException $e) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Erreur lors du traitement de l\'image: '.$e->getMessage());
                 }
-                $photoPath = $request->file('photo')->store('photos/students', 'public');
-                $validatedData['photo'] = $photoPath;
             }
 
             $student->update($validatedData);
@@ -217,7 +251,7 @@ class StudentController extends Controller
     {
         try {
             if ($student->photo) {
-                Storage::disk('public')->delete($student->photo);
+                $this->imageService->delete($student->photo);
             }
 
             $studentName = $student->name;
