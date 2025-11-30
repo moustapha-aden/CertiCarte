@@ -40,9 +40,13 @@ services:
           name: certicarte-db
           property: password
 
+# Note: Render's free tier may only support PostgreSQL
+# If MySQL is required, create it manually via the Render dashboard
+# and link it to the web service using environment variables
 databases:
   - name: certicarte-db
     databaseName: certicarte
     user: certicarte_user
     plan: free
+    # databaseType: mysql  # Uncomment if Render supports this syntax
 
