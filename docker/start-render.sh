@@ -12,84 +12,21 @@ echo "   DB_DATABASE: ${DB_DATABASE:-not set}"
 echo "   DB_USERNAME: ${DB_USERNAME:-not set}"
 echo "   DB_CONNECTION: ${DB_CONNECTION:-not set}"
 
-# Attendre que la base de données soit prête (avec timeout)
-echo "⏳ Waiting for database to be ready..."
-timeout=120
-count=0
-db_ready=0
+# CRITIQUE : Démarrer Nginx rapidement pour que Render détecte le port
+# Les opérations de base de données peuvent être faites après
 
-while [ $count -lt $timeout ]; do
-    if php -r "
-    try {
-        \$host = getenv('DB_HOST') ?: 'localhost';
-        \$port = getenv('DB_PORT') ?: '3306';
-        \$database = getenv('DB_DATABASE') ?: '';
-        \$username = getenv('DB_USERNAME') ?: 'root';
-        \$password = getenv('DB_PASSWORD') ?: '';
-
-        if (empty(\$host) || empty(\$database)) {
-            echo 'Missing DB_HOST or DB_DATABASE' . PHP_EOL;
-            exit(1);
-        }
-
-        \$dsn = 'mysql:host=' . \$host . ';port=' . \$port;
-        if (!empty(\$database)) {
-            \$dsn .= ';dbname=' . \$database;
-        }
-
-        \$pdo = new PDO(\$dsn, \$username, \$password);
-        \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        \$pdo->query('SELECT 1');
-        exit(0);
-    } catch (Exception \$e) {
-        echo 'Error: ' . \$e->getMessage() . PHP_EOL;
-        exit(1);
-    }
-    " 2>&1; then
-        db_ready=1
-        break
-    fi
-
-    echo "Database unavailable, retrying... ($count/$timeout seconds)"
-    sleep 2
-    count=$((count+2))
-done
-
-if [ $db_ready -eq 1 ]; then
-    echo "✅ Database is ready!"
-else
-    echo "⚠️  Database connection timeout after $timeout seconds, continuing anyway..."
-    echo "⚠️  The application may not work correctly without database connection."
-fi
-
-# Générer la clé si nécessaire
-if [ -z "$(grep APP_KEY=.env 2>/dev/null | cut -d '=' -f2)" ] || [ "$(grep APP_KEY=.env 2>/dev/null | cut -d '=' -f2)" = "" ]; then
-    echo "🔑 Generating application key..."
-    php artisan key:generate --force || true
-fi
-
-# Exécuter les migrations
-echo "🗄️  Running migrations..."
-php artisan migrate --force || true
-
-# Créer le lien storage si nécessaire
-if [ ! -L "public/storage" ]; then
-    echo "🔗 Creating storage link..."
-    php artisan storage:link || true
-fi
-
-# Démarrer PHP-FPM en arrière-plan
+# Démarrer PHP-FPM en arrière-plan IMMÉDIATEMENT
 echo "🚀 Starting PHP-FPM..."
 php-fpm -D || {
     echo "❌ Failed to start PHP-FPM"
     exit 1
 }
 
-# Remplacer PORT dans la config Nginx avec la variable d'environnement Render
+# Configurer Nginx IMMÉDIATEMENT
 PORT=${PORT:-10000}
 echo "🔧 Configuring Nginx to listen on port $PORT"
 
-# Créer une nouvelle config Nginx avec le bon port
+# Créer la config Nginx
 cat > /etc/nginx/http.d/default.conf <<EOF
 server {
     listen $PORT;
@@ -160,7 +97,72 @@ nginx -t || {
     exit 1
 }
 
-# Démarrer Nginx au premier plan
-echo "✅ Starting Nginx on port $PORT..."
+# Faire les opérations de base de données en arrière-plan (non bloquant)
+(
+    echo "⏳ Waiting for database to be ready (non-blocking)..."
+    timeout=30
+    count=0
+    db_ready=0
+
+    while [ $count -lt $timeout ]; do
+        if php -r "
+        try {
+            \$host = getenv('DB_HOST') ?: 'localhost';
+            \$port = getenv('DB_PORT') ?: '3306';
+            \$database = getenv('DB_DATABASE') ?: '';
+            \$username = getenv('DB_USERNAME') ?: 'root';
+            \$password = getenv('DB_PASSWORD') ?: '';
+
+            if (empty(\$host) || empty(\$database)) {
+                exit(1);
+            }
+
+            \$dsn = 'mysql:host=' . \$host . ';port=' . \$port;
+            if (!empty(\$database)) {
+                \$dsn .= ';dbname=' . \$database;
+            }
+
+            \$pdo = new PDO(\$dsn, \$username, \$password);
+            \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            \$pdo->query('SELECT 1');
+            exit(0);
+        } catch (Exception \$e) {
+            exit(1);
+        }
+        " 2>/dev/null; then
+            db_ready=1
+            break
+        fi
+
+        sleep 2
+        count=$((count+2))
+    done
+
+    if [ $db_ready -eq 1 ]; then
+        echo "✅ Database is ready!"
+
+        # Générer la clé si nécessaire
+        if [ -z "$(grep APP_KEY=.env 2>/dev/null | cut -d '=' -f2)" ] || [ "$(grep APP_KEY=.env 2>/dev/null | cut -d '=' -f2)" = "" ]; then
+            echo "🔑 Generating application key..."
+            php artisan key:generate --force || true
+        fi
+
+        # Exécuter les migrations
+        echo "🗄️  Running migrations..."
+        php artisan migrate --force || true
+
+        # Créer le lien storage si nécessaire
+        if [ ! -L "public/storage" ]; then
+            echo "🔗 Creating storage link..."
+            php artisan storage:link || true
+        fi
+    else
+        echo "⚠️  Database connection timeout, but Nginx is running"
+        echo "⚠️  The application will work but database features may not be available"
+    fi
+) &
+
+# Démarrer Nginx au PREMIER PLAN (critique pour que Render détecte le port)
+echo "✅ Starting Nginx on port $PORT (foreground)..."
 echo "🌐 Application should be accessible on port $PORT"
 exec nginx -g "daemon off;"
