@@ -26,17 +26,17 @@ while [ $count -lt $timeout ]; do
         \$database = getenv('DB_DATABASE') ?: '';
         \$username = getenv('DB_USERNAME') ?: 'root';
         \$password = getenv('DB_PASSWORD') ?: '';
-        
+
         if (empty(\$host) || empty(\$database)) {
             echo 'Missing DB_HOST or DB_DATABASE' . PHP_EOL;
             exit(1);
         }
-        
+
         \$dsn = 'mysql:host=' . \$host . ';port=' . \$port;
         if (!empty(\$database)) {
             \$dsn .= ';dbname=' . \$database;
         }
-        
+
         \$pdo = new PDO(\$dsn, \$username, \$password);
         \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         \$pdo->query('SELECT 1');
@@ -49,7 +49,7 @@ while [ $count -lt $timeout ]; do
         db_ready=1
         break
     fi
-    
+
     echo "Database unavailable, retrying... ($count/$timeout seconds)"
     sleep 2
     count=$((count+2))
@@ -138,7 +138,7 @@ server {
         fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
         include fastcgi_params;
         fastcgi_hide_header X-Powered-By;
-        
+
         # Augmenter les limites pour les imports Excel
         fastcgi_read_timeout 300;
         client_max_body_size 50M;
