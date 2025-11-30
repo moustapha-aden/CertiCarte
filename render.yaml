@@ -12,10 +12,13 @@ services:
         value: false
       - key: APP_KEY
         generateValue: true
+      - key: APP_URL
+        fromService:
+          name: certicarte
+          type: web
+          property: host
       - key: DB_CONNECTION
-        fromDatabase:
-          name: certicarte-db
-          property: connectionString
+        value: mysql
       - key: DB_HOST
         fromDatabase:
           name: certicarte-db
