@@ -1,0 +1,111 @@
+services:
+  # Service PHP-FPM
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+    container_name: certicarte_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    networks:
+      - certicarte-network
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=certicarte
+      - DB_USERNAME=certicarte_user
+      - DB_PASSWORD=${DB_PASSWORD:-certicarte_password}
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm --test || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Service Nginx
+  web:
+    image: nginx:alpine
+    container_name: certicarte_web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./storage:/var/www/html/storage
+    networks:
+      - certicarte-network
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service MySQL
+  db:
+    image: mysql:8.0
+    container_name: certicarte_db
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-certicarte}
+      MYSQL_USER: certicarte_user
+      MYSQL_PASSWORD: ${DB_PASSWORD:-certicarte_password}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - certicarte-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Service pour les queues Laravel (optionnel)
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+    container_name: certicarte_queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    networks:
+      - certicarte-network
+    depends_on:
+      - app
+      - db
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=certicarte
+      - DB_USERNAME=certicarte_user
+      - DB_PASSWORD=${DB_PASSWORD:-certicarte_password}
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  certicarte-network:
+    driver: bridge
+
