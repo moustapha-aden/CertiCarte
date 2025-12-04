@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -26,10 +25,5 @@ class AppServiceProvider extends ServiceProvider
 
         // Configure route model binding for Classe model
         Route::model('classe', \App\Models\Classe::class);
-
-        // Force HTTPS in production (useful behind Railway's proxy)
-        if (app()->environment('production')) {
-            URL::forceScheme('https');
-        }
     }
 }
