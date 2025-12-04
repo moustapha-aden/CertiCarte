@@ -7,8 +7,15 @@ services:
     dockerfilePath: ./Dockerfile
     buildCommand: ""
     startCommand: ""
+    preDeployCommand: |
+      # Générer APP_KEY si elle n'existe pas
+      if [ -z "$APP_KEY" ]; then
+        php artisan key:generate --show
+      fi
     postDeployCommand: |
-      php artisan key:generate --force
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
       php artisan migrate --force
       php artisan db:seed --force
       php artisan storage:link
@@ -21,10 +28,26 @@ services:
         value: "false"
       - key: APP_URL
         sync: false
+      - key: APP_KEY
+        generateValue: true
       - key: LOG_CHANNEL
         value: stderr
+      - key: LOG_LEVEL
+        value: error
       - key: FILESYSTEM_DISK
         value: public
+      - key: VIEW_COMPILED_PATH
+        value: /var/www/html/storage/framework/views
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: "120"
+      - key: CACHE_STORE
+        value: database
+      - key: CACHE_PREFIX
+        value: certicart_cache
+      - key: QUEUE_CONNECTION
+        value: database
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -53,12 +76,6 @@ services:
           property: connectionString
       - key: DB_SCHEMA
         value: public
-      - key: SESSION_DRIVER
-        value: database
-      - key: CACHE_STORE
-        value: database
-      - key: QUEUE_CONNECTION
-        value: database
       - key: MAIL_MAILER
         sync: false
       - key: MAIL_HOST
@@ -71,11 +88,8 @@ services:
         sync: false
       - key: MAIL_ENCRYPTION
         sync: false
-      - key: APP_KEY
-        sync: false
 
 databases:
   - name: certicart-db
     plan: free
     region: oregon
-

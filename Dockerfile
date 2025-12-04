@@ -65,7 +65,11 @@ COPY --from=vendor --chown=www-data:www-data /app/composer.lock ./composer.lock
 COPY --from=vendor --chown=www-data:www-data /app/composer.json ./composer.json
 COPY --from=frontend --chown=www-data:www-data /app/public/build ./public/build
 
-RUN mkdir -p storage bootstrap/cache \
+RUN mkdir -p storage/framework/sessions \
+             storage/framework/views \
+             storage/framework/cache \
+             storage/logs \
+             bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R ug+rwx storage bootstrap/cache
 
