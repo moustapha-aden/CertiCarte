@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-ARG NODE_VERSION=20.11.1
+ARG NODE_VERSION=22.12.0
 ARG COMPOSER_VERSION=2.7
 
 FROM node:${NODE_VERSION}-bookworm AS frontend
@@ -71,4 +71,3 @@ RUN mkdir -p storage bootstrap/cache \
 
 EXPOSE 80
 CMD ["apache2-foreground"]
-
