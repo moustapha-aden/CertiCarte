@@ -1,0 +1,8 @@
+[build]
+dockerfile = "Dockerfile"
+
+[deploy]
+# Run database migrations, then cache configuration/routes/views, then start the base image entrypoint (nginx + php-fpm)
+startCommand = "php artisan migrate --force && php artisan storage:link && php artisan config:cache && php artisan route:cache && php artisan view:cache && /entrypoint"
+
+
