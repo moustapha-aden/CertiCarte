@@ -10,6 +10,7 @@ services:
     postDeployCommand: |
       php artisan key:generate --force
       php artisan migrate --force
+      php artisan db:seed --force
       php artisan storage:link
     envVars:
       - key: APP_NAME
