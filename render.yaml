@@ -7,11 +7,6 @@ services:
     dockerfilePath: ./Dockerfile
     buildCommand: ""
     startCommand: ""
-    preDeployCommand: |
-      # Générer APP_KEY si elle n'existe pas
-      if [ -z "$APP_KEY" ]; then
-        php artisan key:generate --show
-      fi
     postDeployCommand: |
       php artisan config:cache
       php artisan route:cache
