@@ -56,9 +56,8 @@
                         <div>
                             <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la création de classe</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• <strong>Nom de classe:</strong> Utilisez des formats cohérents (ex:"2nde A" "1ère B2",
-                                    "Tle C3")</li>
-                                <li>• <strong>Année scolaire:</strong> Format recommandé "2024-2025" ou "2025-2026"</li>
+                                <li>• <strong>Nom de classe:</strong> Utilisez des formats cohérents</li>
+                                <li>• <strong>Année scolaire:</strong> Format recommandé YYYY-YYYY (ex: 2024-2025)</li>
                                 <li>• Évitez les caractères spéciaux et les espaces multiples</li>
                                 <li>• Le nom doit être unique pour chaque année scolaire</li>
                             </ul>

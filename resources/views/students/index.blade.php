@@ -46,9 +46,10 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 {{-- Filters Row --}}
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
-                    {{-- Search Filter --}}
+                    {{-- Simple Search Filter --}}
                     <div class="relative flex-1 max-w-md">
-                        <input type="search" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
+                        <input type="search" name="search" placeholder="Rechercher (nom ou matricule)..."
+                            value="{{ request('search') }}"
                             class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">

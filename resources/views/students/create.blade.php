@@ -32,7 +32,7 @@
                     <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender')"
                         placeholder="Sélectionner le genre" required />
                     <x-input name="place_of_birth" label="Lieu de naissance" placeholder="Entrez le lieu de naissance"
-                        :value="old('place_of_birth')" required />
+                        :value="old('place_of_birth')" />
                     <x-input name="situation" type="select" label="Situation" :options="['R' => 'Redoublant', 'NR' => 'Non Redoublant']" :value="old('situation')"
                         placeholder="Sélectionner la situation" required />
                 </div>

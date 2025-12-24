@@ -51,7 +51,7 @@ class StudentController extends Controller
             $students->where('classe_id', $request->input('classe_id'));
         }
 
-        // Search by name or matricule
+        // Simple search (searches name or matricule)
         if ($request->filled('search')) {
             $searchTerm = '%'.$request->input('search').'%';
             $students->where(function ($query) use ($searchTerm) {
