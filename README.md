@@ -81,7 +81,7 @@ CertiCarte is a modern web application designed to streamline school administrat
 
 -   **Backend**: Laravel 12 (PHP 8.2+)
 -   **Frontend**: Tailwind CSS, Alpine.js
--   **Database**: PostgreSQL/SQLite (configurable)
+-   **Database**: MySQL/SQLite (configurable)
 -   **PDF Generation**: DomPDF
 -   **Authentication**: Laravel's built-in authentication system
 -   **Authorization**: Spatie Laravel Permission
@@ -97,7 +97,7 @@ CertiCarte is a modern web application designed to streamline school administrat
 -   PHP 8.2 or higher
 -   Composer
 -   Node.js and npm
--   PostgreSQL or SQLite
+-   MySQL or SQLite
 -   Web server (Apache/Nginx) or Laravel development server
 
 ### Setup Instructions
@@ -233,13 +233,12 @@ APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 
-DB_CONNECTION=pgsql
+DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=5432
+DB_PORT=3306
 DB_DATABASE=certicarte
-DB_USERNAME=postgres
+DB_USERNAME=root
 DB_PASSWORD=
-DB_SCHEMA=public
 
 MAIL_MAILER=smtp
 MAIL_HOST=mailpit
@@ -261,7 +260,7 @@ FILESYSTEM_DISK=local
 
 ### Database Configuration
 
-The application supports both PostgreSQL and SQLite databases. Configure your preferred database in the `.env` file and run migrations accordingly.
+The application supports both MySQL and SQLite databases. Configure your preferred database in the `.env` file and run migrations accordingly.
 
 ### Permissions System
 
@@ -277,45 +276,3 @@ Available permissions:
 -   `view_classes`, `create_classes`, `edit_classes`, `delete_classes`
 -   `view_users`, `create_users`, `edit_users`, `delete_users`
 -   `generate_certificates`, `generate_cards`, `generate_attendance_lists`
-
-## Render Deployment Guide
-
-The repository ships with a `render.yaml` blueprint so you can recreate the full stack (web service + PostgreSQL) on Render in a single step. If you already created a managed database manually, simply remove the `databases:` section before applying the blueprint and keep the `services:` block.
-
-### 1. Prepare the database
-
-1. In the Render dashboard, create a **PostgreSQL** instance (Free plan is enough for tests).
-2. Copy the credentials (host, port `5432`, database name, username, password, connection string).  
-3. If you apply the blueprint with the `databases` block intact, Render provisions this DB automatically and wires the variables for you.
-
-### 2. Deploy the web service
-
-1. Click **New → Blueprint** and select your fork of this repo.
-2. Render reads `render.yaml`:
-    - Builds the Docker image with the repo `Dockerfile`.
-    - Creates a `certicart-web` service on the Free plan in the Oregon region.
-    - Injects all required env vars (APP\_ENV, DB\_HOST, etc.) and wires them to the database defined in the blueprint.
-    - Runs the `postDeployCommand` once so `php artisan key:generate`, `php artisan migrate --force`, and `php artisan storage:link` execute automatically after each deploy.
-3. Wait for the deploy to finish; the public URL (for example `https://certicart-web.onrender.com`) appears on the service page.
-
-### 3. Environment variables to review
-
-- `APP_URL`: set it to your Render URL to fix asset links (e.g. `https://certicart-web.onrender.com`).
-- `APP_KEY`: the blueprint leaves it empty but the post-deploy command calls `php artisan key:generate --force`. If you prefer to control it, set a base64 key manually and remove that command.
-- `MAIL_*`: fill in your SMTP provider (Mailtrap, Mailgun, etc.).
-- `FILESYSTEM_DISK`: defaults to `public`. Render disks are ephemeral, so for persistent student photos you can switch to S3-compatible storage and add the corresponding env vars.
-
-### 4. Optional worker
-
-If you need queues (`php artisan queue:work`) or scheduled tasks, duplicate the `certicart-web` block inside `render.yaml`, change `type` to `worker`, set `startCommand` to `php artisan queue:work --sleep=3 --tries=3`, and redeploy the blueprint. Both services can point to the same `certicart-db`.
-
-### 5. Manual commands
-
-- To re-run migrations or seed data: open the Render service → **Shell** → run `php artisan migrate --force` or `php artisan db:seed --force`.
-- To inspect logs: use the **Logs** tab; we route logs to `stderr` so everything is visible there.
-
-### 6. Redeploys & updates
-
-1. Commit & push changes to GitHub.
-2. Trigger a new deploy from Render (or enable auto-deploy on push).
-3. The blueprint hooks rebuild the Docker image, run the post-deploy Artisan commands, and roll out the new containers automatically.
