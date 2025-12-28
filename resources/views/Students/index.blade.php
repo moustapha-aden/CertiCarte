@@ -30,6 +30,16 @@
                         </svg>
                         Importer des Étudiants
                     </button>
+
+                    {{-- Import Photos Button --}}
+                    <button type="button" onclick="openImportPhotosModal()"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Importer des Photos
+                    </button>
                 @endcan
 
                 {{-- Add New Student Button --}}
@@ -76,7 +86,6 @@
                             @endif
                         </select>
                     </div>
-
                 </div>
 
                 {{-- Reset Button --}}
@@ -426,6 +435,341 @@
                 fileSizeEl.textContent = `Taille: ${fileSize} MB`;
             } else {
                 // Hide the indicator if no file selected
+                indicator.classList.add('hidden');
+            }
+        });
+    </script>
+
+    {{-- Import Photos Modal --}}
+    <div id="importPhotosModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                {{-- Modal Header --}}
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Importer des Photos</h3>
+                            <p class="text-sm text-gray-600">Sélectionnez plusieurs photos pour les associer automatiquement aux étudiants</p>
+                        </div>
+                    </div>
+                    <button onclick="closeImportPhotosModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <form id="importPhotosForm" action="{{ route('students.import-photos') }}" method="POST"
+                    enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+
+                    {{-- File Input Section --}}
+                    <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
+                                viewBox="0 0 48 48">
+                                <path
+                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="mt-4">
+                                <label for="photos" class="cursor-pointer">
+                                    <span class="mt-2 block text-sm font-medium text-gray-900">
+                                        Cliquez pour sélectionner des photos
+                                    </span>
+                                    <span class="mt-1 block text-sm text-gray-500">
+                                        ou glissez-déposez vos photos ici
+                                    </span>
+                                </label>
+                                <input type="file" id="photos" name="photos[]" accept="image/*" multiple required
+                                    class="sr-only">
+
+                                <!-- Files Selected Indicator (hidden by default) -->
+                                <div id="photosSelectedIndicator"
+                                    class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-green-900" id="photosCount"></p>
+                                            <p class="text-xs text-green-700" id="photosTotalSize"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">
+                                Formats acceptés: JPEG, PNG, JPG, GIF, WEBP (max 2MB par fichier, jusqu'à 400 fichiers)
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Format Instructions --}}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold text-blue-900 mb-2">Instructions importantes:</h4>
+                                <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                                    <li>Nommez chaque photo avec le <strong>matricule</strong> de l'étudiant suivi de l'extension</li>
+                                    <li>Exemple: <code class="bg-blue-100 px-1 rounded">12345.jpg</code>, <code class="bg-blue-100 px-1 rounded">67890.png</code></li>
+                                    <li>Le système associera automatiquement chaque photo à l'étudiant correspondant</li>
+                                    <li>Les photos existantes seront remplacées si elles ont le même matricule</li>
+                                    <li>Les fichiers avec des matricules introuvables seront ignorés</li>
+                                    <li><strong>Note:</strong> Pour importer 100-200 photos ou plus, configurez PHP avec: <code class="bg-blue-100 px-1 rounded">max_file_uploads ≥ 400</code>, <code class="bg-blue-100 px-1 rounded">upload_max_filesize ≥ 2M</code>, et <code class="bg-blue-100 px-1 rounded">post_max_size ≥ 800M</code> (voir PHP_CONFIG_GUIDE.md)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Modal Footer --}}
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="closeImportPhotosModal()"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            Annuler
+                        </button>
+                        <button type="submit" id="importPhotosSubmitBtn"
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            Importer les Photos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Detailed Import Report Display --}}
+    @if (session('photos_import_report'))
+        @php
+            $report = session('photos_import_report');
+        @endphp
+        <div id="photosImportReport" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+            <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Rapport d'import des photos</h3>
+                    </div>
+                    <button onclick="closePhotosImportReport()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+                    {{-- Success Summary --}}
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h4 class="text-lg font-semibold text-gray-900">Résumé</h4>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">Fichiers reçus par le serveur:</span>
+                                <span class="font-bold text-gray-900">{{ $report['received'] ?? ($report['imported'] ?? 0) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">Photos importées avec succès:</span>
+                                <span class="font-bold text-green-700">{{ $report['imported'] ?? 0 }}</span>
+                            </div>
+                            @if (isset($report['max_file_uploads']) && $report['max_file_uploads'] && ($report['received'] ?? 0) >= $report['max_file_uploads'])
+                                <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                                    <p class="text-xs text-yellow-800">
+                                        ⚠️ Limite PHP détectée: max_file_uploads = {{ $report['max_file_uploads'] }}.
+                                        Si vous avez sélectionné plus de fichiers, certains n'ont peut-être pas été envoyés.
+                                        Augmentez max_file_uploads dans php.ini.
+                                    </p>
+                                </div>
+                            @endif
+                            @if (($report['replaced'] ?? 0) > 0)
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Photos remplacées:</span>
+                                    <span class="font-bold text-blue-700">{{ $report['replaced'] }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Not Found Photos --}}
+                    @if (!empty($report['not_found']))
+                        <div class="mb-6">
+                            <div class="flex items-center space-x-2 mb-4">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <h4 class="text-lg font-semibold text-gray-900">
+                                    Photos non associées ({{ count($report['not_found']) }})
+                                </h4>
+                            </div>
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <p class="text-sm text-red-700 mb-2">
+                                    Les matricules suivants n'ont pas été trouvés dans la base de données:
+                                </p>
+                                <ul class="space-y-1 max-h-40 overflow-y-auto">
+                                    @foreach ($report['not_found'] as $filename)
+                                        <li class="text-sm text-red-800 flex items-center space-x-2">
+                                            <span class="text-red-500">•</span>
+                                            <code class="bg-red-100 px-2 py-1 rounded">{{ $filename }}</code>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Errors --}}
+                    @if (!empty($report['errors']))
+                        <div class="mb-6">
+                            <div class="flex items-center space-x-2 mb-4">
+                                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                    </path>
+                                </svg>
+                                <h4 class="text-lg font-semibold text-gray-900">
+                                    Erreurs ({{ count($report['errors']) }})
+                                </h4>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <ul class="space-y-1 max-h-40 overflow-y-auto">
+                                    @foreach ($report['errors'] as $error)
+                                        <li class="text-sm text-yellow-800 flex items-start space-x-2">
+                                            <span class="text-yellow-500 mt-1">•</span>
+                                            <span>{{ $error }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="flex justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+                    <button onclick="closePhotosImportReport()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function closePhotosImportReport() {
+                document.getElementById('photosImportReport').remove();
+            }
+
+            // Close on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('photosImportReport')) {
+                    closePhotosImportReport();
+                }
+            });
+
+            // Close when clicking outside
+            document.getElementById('photosImportReport')?.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePhotosImportReport();
+                }
+            });
+        </script>
+    @endif
+
+    {{-- JavaScript for Photos Import Modal --}}
+    <script>
+        function openImportPhotosModal() {
+            document.getElementById('importPhotosModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImportPhotosModal() {
+            document.getElementById('importPhotosModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('importPhotosForm').reset();
+            document.getElementById('photosSelectedIndicator').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('importPhotosModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImportPhotosModal();
+            }
+        });
+
+        // Handle form submission with loading state
+        document.getElementById('importPhotosForm')?.addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('importPhotosSubmitBtn');
+            submitBtn.textContent = 'Import en cours...';
+            submitBtn.disabled = true;
+        });
+
+        // Handle file input change
+        document.getElementById('photos')?.addEventListener('change', function(e) {
+            const files = e.target.files;
+            const indicator = document.getElementById('photosSelectedIndicator');
+            const photosCountEl = document.getElementById('photosCount');
+            const photosTotalSizeEl = document.getElementById('photosTotalSize');
+
+            if (files && files.length > 0) {
+                // Vérifier la limite de fichiers
+                if (files.length > 400) {
+                    alert('Vous ne pouvez pas sélectionner plus de 400 fichiers à la fois. Veuillez réduire le nombre de fichiers.');
+                    this.value = '';
+                    indicator.classList.add('hidden');
+                    return;
+                }
+
+                const totalSize = Array.from(files).reduce((sum, file) => sum + file.size, 0);
+                const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
+                const maxSizeMB = 800; // 400 fichiers * 2MB max par fichier
+
+                // Avertissement si la taille totale dépasse 500MB (pour laisser une marge)
+                if (totalSize > 500 * 1024 * 1024) {
+                    const confirmMessage = `Attention: Vous avez sélectionné ${files.length} fichiers (${totalSizeMB} MB).\n\n` +
+                        `Pour un upload réussi, assurez-vous que:\n` +
+                        `- max_file_uploads ≥ ${files.length}\n` +
+                        `- post_max_size ≥ ${(totalSizeMB * 1.2).toFixed(0)}M\n\n` +
+                        `Voulez-vous continuer l'import?`;
+                    if (!confirm(confirmMessage)) {
+                        this.value = '';
+                        indicator.classList.add('hidden');
+                        return;
+                    }
+                }
+
+                indicator.classList.remove('hidden');
+                photosCountEl.textContent = `${files.length} fichier(s) sélectionné(s)`;
+                photosTotalSizeEl.textContent = `Taille totale: ${totalSizeMB} MB`;
+            } else {
                 indicator.classList.add('hidden');
             }
         });

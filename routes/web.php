@@ -146,6 +146,23 @@ Route::middleware('auth')->group(function () {
         ->name('students.import')
         ->middleware('permission:import_students');
 
+    /**
+     * Student photos import route
+     * Imports multiple student photos in bulk
+     * Requires 'import_students' permission
+     *
+     * @route POST /dashboard/students/import-photos
+     *
+     * @name students.import-photos
+     *
+     * @uses StudentController@importPhotos
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    Route::post('/dashboard/students/import-photos', [StudentController::class, 'importPhotos'])
+        ->name('students.import-photos')
+        ->middleware('permission:import_students');
+
     // ========================================================================
     // CLASSE MANAGEMENT ROUTES
     // ========================================================================
