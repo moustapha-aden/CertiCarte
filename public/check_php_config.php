@@ -72,14 +72,14 @@
 <body>
     <div class="container">
         <h1>🔍 Vérification Configuration PHP</h1>
-        
+
         <?php
         $maxFileUploads = ini_get('max_file_uploads');
         $uploadMaxFilesize = ini_get('upload_max_filesize');
         $postMaxSize = ini_get('post_max_size');
         $maxExecutionTime = ini_get('max_execution_time');
         $memoryLimit = ini_get('memory_limit');
-        
+
         // Convertir en bytes pour comparaison
         function convertToBytes($val) {
             $val = trim($val);
@@ -92,11 +92,11 @@
             }
             return $val;
         }
-        
+
         $uploadMaxBytes = convertToBytes($uploadMaxFilesize);
         $postMaxBytes = convertToBytes($postMaxSize);
         $memoryLimitBytes = convertToBytes($memoryLimit);
-        
+
         // Évaluer chaque configuration
         function evaluateConfig($value, $type, $recommended) {
             switch($type) {
@@ -115,14 +115,14 @@
                     return 'good';
             }
         }
-        
+
         $maxFileUploadsClass = evaluateConfig($maxFileUploads, 'max_file_uploads', 400);
         $uploadMaxFilesizeClass = evaluateConfig($uploadMaxFilesize, 'size', '10M');
         $postMaxSizeClass = evaluateConfig($postMaxSize, 'size', '800M');
         $maxExecutionTimeClass = evaluateConfig($maxExecutionTime, 'time', 600);
         $memoryLimitClass = evaluateConfig($memoryLimit, 'size', '512M');
         ?>
-        
+
         <div class="config-item <?php echo $maxFileUploadsClass; ?>">
             <span class="label">max_file_uploads:</span>
             <span class="value"><?php echo $maxFileUploads; ?></span>
@@ -136,7 +136,7 @@
                 </p>
             <?php endif; ?>
         </div>
-        
+
         <div class="config-item <?php echo $uploadMaxFilesizeClass; ?>">
             <span class="label">upload_max_filesize:</span>
             <span class="value"><?php echo $uploadMaxFilesize; ?></span>
@@ -150,7 +150,7 @@
                 </p>
             <?php endif; ?>
         </div>
-        
+
         <div class="config-item <?php echo $postMaxSizeClass; ?>">
             <span class="label">post_max_size:</span>
             <span class="value"><?php echo $postMaxSize; ?></span>
@@ -164,7 +164,7 @@
                 </p>
             <?php endif; ?>
         </div>
-        
+
         <div class="config-item <?php echo $maxExecutionTimeClass; ?>">
             <span class="label">max_execution_time:</span>
             <span class="value"><?php echo $maxExecutionTime; ?> secondes</span>
@@ -178,7 +178,7 @@
                 </p>
             <?php endif; ?>
         </div>
-        
+
         <div class="config-item <?php echo $memoryLimitClass; ?>">
             <span class="label">memory_limit:</span>
             <span class="value"><?php echo $memoryLimit; ?></span>
@@ -192,13 +192,13 @@
                 </p>
             <?php endif; ?>
         </div>
-        
+
         <div class="path-info">
             <h3>📁 Fichier php.ini utilisé :</h3>
             <p style="font-family: monospace; background: white; padding: 10px; border-radius: 4px;">
                 <?php echo php_ini_loaded_file(); ?>
             </p>
-            <?php 
+            <?php
             $iniPath = php_ini_loaded_file();
             if (strpos($iniPath, 'apache') !== false || strpos($iniPath, 'Apache') !== false) {
                 echo '<p style="color: #2e7d32; margin-top: 10px;">✓ C\'est le bon fichier php.ini (celui d\'Apache)</p>';
@@ -208,15 +208,15 @@
             }
             ?>
         </div>
-        
+
         <div class="recommended">
             <h3>📋 Résumé</h3>
             <?php
-            $allGood = ($maxFileUploads >= 400) && 
+            $allGood = ($maxFileUploads >= 400) &&
                       (convertToBytes($uploadMaxFilesize) >= convertToBytes('10M')) &&
                       (convertToBytes($postMaxSize) >= convertToBytes('800M')) &&
                       ($maxExecutionTime >= 600);
-            
+
             if ($allGood) {
                 echo '<p style="color: #2e7d32; font-size: 1.1em; font-weight: bold;">✓ Votre configuration est excellente ! Vous pouvez importer 100-200 photos sans problème.</p>';
             } else {
@@ -224,7 +224,7 @@
             }
             ?>
         </div>
-        
+
         <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-radius: 4px;">
             <p><strong>💡 Conseil :</strong> Après avoir modifié php.ini, n'oubliez pas de <strong>redémarrer Apache</strong> !</p>
             <p>Dans WAMP : Clic droit sur l'icône → Apache → Redémarrer</p>

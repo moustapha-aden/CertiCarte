@@ -29,23 +29,6 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        $schoolYears = SchoolYear::factory(4)->create();
-
-        // Create 20 classes total (5 classes per school year)
-        foreach ($schoolYears as $schoolYear) {
-            Classe::factory(5)->create([
-                'year_id' => $schoolYear->id,
-            ]);
-        }
-
-        $classes = Classe::all();
-
-        // Ensure at least 45 students in each class
-        foreach ($classes as $classe) {
-            Student::factory(45)->create([
-                'classe_id' => $classe->id,
-            ]);
-        }
 
         // Create granular permissions (CRUD-level)
         $permissions = [

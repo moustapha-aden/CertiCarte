@@ -561,49 +561,51 @@
         @php
             $report = session('photos_import_report');
         @endphp
-        <div id="photosImportReport" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-            <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="photosImportReport" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-2 sm:p-4">
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
+                {{-- Modal Header --}}
+                <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900">Rapport d'import des photos</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Rapport d'import des photos</h3>
                     </div>
-                    <button onclick="closePhotosImportReport()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="closePhotosImportReport()" class="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
 
-                <div class="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+                {{-- Modal Body --}}
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6">
                     {{-- Success Summary --}}
-                    <div class="mb-6">
-                        <div class="flex items-center space-x-2 mb-4">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mb-4 sm:mb-6">
+                        <div class="flex items-center space-x-2 mb-3 sm:mb-4">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <h4 class="text-lg font-semibold text-gray-900">Résumé</h4>
+                            <h4 class="text-base sm:text-lg font-semibold text-gray-900">Résumé</h4>
                         </div>
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Fichiers reçus par le serveur:</span>
-                                <span class="font-bold text-gray-900">{{ $report['received'] ?? ($report['imported'] ?? 0) }}</span>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 space-y-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                                <span class="text-xs sm:text-sm text-gray-700">Fichiers reçus par le serveur:</span>
+                                <span class="font-bold text-gray-900 text-sm sm:text-base">{{ $report['received'] ?? ($report['imported'] ?? 0) }}</span>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Photos importées avec succès:</span>
-                                <span class="font-bold text-green-700">{{ $report['imported'] ?? 0 }}</span>
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                                <span class="text-xs sm:text-sm text-gray-700">Photos importées avec succès:</span>
+                                <span class="font-bold text-green-700 text-sm sm:text-base">{{ $report['imported'] ?? 0 }}</span>
                             </div>
                             @if (isset($report['max_file_uploads']) && $report['max_file_uploads'] && ($report['received'] ?? 0) >= $report['max_file_uploads'])
-                                <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                                    <p class="text-xs text-yellow-800">
+                                <div class="mt-2 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                    <p class="text-xs sm:text-sm text-yellow-800">
                                         ⚠️ Limite PHP détectée: max_file_uploads = {{ $report['max_file_uploads'] }}.
                                         Si vous avez sélectionné plus de fichiers, certains n'ont peut-être pas été envoyés.
                                         Augmentez max_file_uploads dans php.ini.
@@ -611,9 +613,9 @@
                                 </div>
                             @endif
                             @if (($report['replaced'] ?? 0) > 0)
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-700">Photos remplacées:</span>
-                                    <span class="font-bold text-blue-700">{{ $report['replaced'] }}</span>
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                                    <span class="text-xs sm:text-sm text-gray-700">Photos remplacées:</span>
+                                    <span class="font-bold text-blue-700 text-sm sm:text-base">{{ $report['replaced'] }}</span>
                                 </div>
                             @endif
                         </div>
@@ -621,67 +623,163 @@
 
                     {{-- Not Found Photos --}}
                     @if (!empty($report['not_found']))
-                        <div class="mb-6">
-                            <div class="flex items-center space-x-2 mb-4">
-                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <h4 class="text-lg font-semibold text-gray-900">
-                                    Photos non associées ({{ count($report['not_found']) }})
-                                </h4>
+                        <div class="mb-4 sm:mb-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <h4 class="text-base sm:text-lg font-semibold text-gray-900">
+                                        Photos non associées ({{ count($report['not_found']) }})
+                                    </h4>
+                                </div>
+                                @if (count($report['not_found']) > 20)
+                                    <div class="flex items-center space-x-2">
+                                        <input type="text" id="searchNotFound" placeholder="Rechercher un fichier..."
+                                            class="text-xs sm:text-sm px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full sm:w-auto">
+                                        <button onclick="clearSearchNotFound()" class="text-xs sm:text-sm text-gray-600 hover:text-gray-800 px-2">
+                                            Effacer
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
-                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                                <p class="text-sm text-red-700 mb-2">
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+                                <p class="text-xs sm:text-sm text-red-700 mb-3 sm:mb-4">
                                     Les matricules suivants n'ont pas été trouvés dans la base de données:
                                 </p>
-                                <ul class="space-y-1 max-h-40 overflow-y-auto">
-                                    @foreach ($report['not_found'] as $filename)
-                                        <li class="text-sm text-red-800 flex items-center space-x-2">
-                                            <span class="text-red-500">•</span>
-                                            <code class="bg-red-100 px-2 py-1 rounded">{{ $filename }}</code>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                                <div class="max-h-96 sm:max-h-[500px] overflow-y-auto mb-2">
+                                    <div id="notFoundList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                                        @foreach ($report['not_found'] as $index => $filename)
+                                            <div class="not-found-item bg-white border border-red-200 rounded-md p-2 sm:p-3 flex items-start space-x-2 hover:border-red-400 hover:shadow-sm transition-all"
+                                                 data-filename="{{ strtolower($filename) }}">
+                                                <svg class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                <code class="text-xs sm:text-sm text-red-800 break-all bg-red-50 px-2 py-1 rounded flex-1 font-mono">{{ $filename }}</code>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div id="notFoundCount" class="flex items-center justify-between text-xs sm:text-sm text-red-600">
+                                    <span>
+                                        <span id="visibleCount">{{ count($report['not_found']) }}</span> / {{ count($report['not_found']) }} fichier(s) visible(s)
+                                    </span>
+                                    @if (count($report['not_found']) > 20)
+                                        <span class="italic">Utilisez la recherche pour filtrer les résultats</span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
+
+                        @if (count($report['not_found']) > 20)
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const searchInput = document.getElementById('searchNotFound');
+                                    const notFoundItems = document.querySelectorAll('.not-found-item');
+                                    const visibleCountEl = document.getElementById('visibleCount');
+
+                                    function filterNotFound() {
+                                        const searchTerm = searchInput.value.toLowerCase().trim();
+                                        let visibleCount = 0;
+
+                                        notFoundItems.forEach(item => {
+                                            const filename = item.getAttribute('data-filename');
+                                            if (filename.includes(searchTerm)) {
+                                                item.style.display = '';
+                                                visibleCount++;
+                                            } else {
+                                                item.style.display = 'none';
+                                            }
+                                        });
+
+                                        visibleCountEl.textContent = visibleCount;
+                                    }
+
+                                    searchInput?.addEventListener('input', filterNotFound);
+
+                                    window.clearSearchNotFound = function() {
+                                        searchInput.value = '';
+                                        filterNotFound();
+                                    };
+                                });
+                            </script>
+                        @endif
                     @endif
 
                     {{-- Errors --}}
                     @if (!empty($report['errors']))
-                        <div class="mb-6">
-                            <div class="flex items-center space-x-2 mb-4">
-                                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="mb-4 sm:mb-6">
+                            <div class="flex items-center space-x-2 mb-3 sm:mb-4">
+                                <svg class="w-5 h-5 text-yellow-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                                     </path>
                                 </svg>
-                                <h4 class="text-lg font-semibold text-gray-900">
+                                <h4 class="text-base sm:text-lg font-semibold text-gray-900">
                                     Erreurs ({{ count($report['errors']) }})
                                 </h4>
                             </div>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                <ul class="space-y-1 max-h-40 overflow-y-auto">
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
+                                <div class="max-h-96 sm:max-h-[400px] overflow-y-auto space-y-2">
                                     @foreach ($report['errors'] as $error)
-                                        <li class="text-sm text-yellow-800 flex items-start space-x-2">
-                                            <span class="text-yellow-500 mt-1">•</span>
-                                            <span>{{ $error }}</span>
-                                        </li>
+                                        <div class="bg-white border border-yellow-200 rounded-md p-2 sm:p-3 flex items-start space-x-2 hover:border-yellow-400 hover:shadow-sm transition-all">
+                                            <svg class="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                                </path>
+                                            </svg>
+                                            <span class="text-xs sm:text-sm text-yellow-800 flex-1 break-words">{{ $error }}</span>
+                                        </div>
                                     @endforeach
-                                </ul>
+                                </div>
                             </div>
                         </div>
                     @endif
                 </div>
 
-                <div class="flex justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+                {{-- Modal Footer --}}
+                <div class="flex justify-end space-x-3 p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                     <button onclick="closePhotosImportReport()"
-                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        class="w-full sm:w-auto px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm sm:text-base">
                         Fermer
                     </button>
                 </div>
             </div>
         </div>
+
+        <style>
+            /* Style du scrollbar pour les listes dans le modal */
+            #photosImportReport .overflow-y-auto::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+            #photosImportReport .overflow-y-auto::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 5px;
+            }
+            #photosImportReport .overflow-y-auto::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 5px;
+                border: 2px solid #f1f1f1;
+            }
+            #photosImportReport .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+            /* Style pour Firefox */
+            #photosImportReport .overflow-y-auto {
+                scrollbar-width: thin;
+                scrollbar-color: #888 #f1f1f1;
+            }
+            /* Animation pour les éléments filtrés */
+            .not-found-item {
+                transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+            .not-found-item[style*="display: none"] {
+                display: none !important;
+            }
+        </style>
 
         <script>
             function closePhotosImportReport() {
