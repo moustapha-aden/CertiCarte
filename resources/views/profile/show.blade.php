@@ -10,7 +10,7 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- User Avatar --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center ring-4 ring-white/30">
                     <span class="text-white text-5xl font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                 </div>
@@ -28,12 +28,15 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                @can('edit_users')
-                    <x-button href="{{ route('users.edit', $user) }}" variant="secondary" size="lg"
-                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'>
-                        Modifier mon profil
-                    </x-button>
-                @endcan
+                <x-button href="{{ route('profile.edit') }}" variant="outline" size="lg"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                    class="bg-white text-indigo-600 hover:bg-gray-100">
+                    Modifier mon profil
+                </x-button>
+                <x-button href="{{ route('dashboard') }}" variant="secondary" size="lg"
+                    icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
+                    Retour au tableau de bord
+                </x-button>
             </div>
         </div>
     </div>
@@ -122,18 +125,18 @@
             </div>
 
             {{-- Last Update --}}
-            <div class="p-6 bg-orange-50 rounded-xl border border-orange-200 hover:shadow-md transition-shadow">
+            <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200 hover:shadow-md transition-shadow">
                 <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
                             </path>
                         </svg>
                     </div>
-                    <h3 class="text-sm font-semibold text-orange-700 uppercase tracking-wide">Dernière mise à jour</h3>
+                    <h3 class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Dernière mise à jour</h3>
                 </div>
-                <p class="text-xl font-bold text-gray-900">{{ $user->updated_at->format('d/m/Y') }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ $user->updated_at->format('d/m/Y') }}</p>
                 <p class="text-sm text-gray-600 mt-1">À {{ $user->updated_at->format('H:i') }}</p>
             </div>
         </div>
@@ -155,7 +158,8 @@
                 <div>
                     <h3 class="text-sm font-medium text-blue-800">Vos Autorisations</h3>
                     <p class="text-sm text-blue-700 mt-1">
-                        Voici les permissions qui vous ont été attribuées. Ces permissions déterminent les actions que vous pouvez effectuer dans le système.
+                        Voici les permissions qui vous ont été attribuées. Ces permissions déterminent les actions que vous
+                        pouvez effectuer dans le système.
                     </p>
                 </div>
             </div>
@@ -166,10 +170,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach ($user->getAllPermissions() as $permission)
                     <div class="flex items-start p-4 bg-green-50 rounded-lg border-2 border-green-200">
-                        <div class="flex-shrink-0 mr-3">
+                        <div class="shrink-0 mr-3">
                             <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
                         </div>
@@ -257,7 +263,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span class="text-sm font-semibold text-gray-700">
                             Vous avez {{ $user->getAllPermissions()->count() }} permission(s) active(s)
@@ -277,51 +284,10 @@
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune permission assignée</h3>
                 <p class="text-sm text-gray-600 max-w-md mx-auto">
-                    Vous n'avez actuellement aucune permission spécifique. Contactez votre administrateur si vous pensez que cela est une erreur.
+                    Vous n'avez actuellement aucune permission spécifique. Contactez votre administrateur si vous pensez que
+                    cela est une erreur.
                 </p>
             </div>
         @endif
     </x-card>
-
-    {{-- Quick Actions Card (Optional) --}}
-    @canany(['edit_users'])
-        <x-card title="Actions Rapides"
-            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>'
-            class="mb-8">
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @can('edit_users')
-                    <a href="{{ route('users.edit', $user) }}"
-                        class="flex items-center p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors group">
-                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                </path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="text-sm font-semibold text-gray-900">Modifier mes informations</h4>
-                            <p class="text-xs text-gray-600 mt-1">Mettre à jour mon nom, email ou mot de passe</p>
-                        </div>
-                    </a>
-                @endcan
-
-                <a href="{{ route('dashboard') }}"
-                    class="flex items-center p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors group">
-                    <div class="flex-shrink-0 w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center group-hover:bg-green-600 transition-colors">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <h4 class="text-sm font-semibold text-gray-900">Retour au tableau de bord</h4>
-                        <p class="text-xs text-gray-600 mt-1">Accéder à la page d'accueil</p>
-                    </div>
-                </a>
-            </div>
-        </x-card>
-    @endcanany
 @endsection

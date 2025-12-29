@@ -48,7 +48,7 @@
 
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
-                        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                 clip-rule="evenodd"></path>
@@ -56,9 +56,8 @@
                         <div>
                             <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la création de classe</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• <strong>Nom de classe:</strong> Utilisez des formats cohérents (ex:"2nde A" "1ère B2",
-                                    "Tle C3")</li>
-                                <li>• <strong>Année scolaire:</strong> Format recommandé "2024-2025" ou "2025-2026"</li>
+                                <li>• <strong>Nom de classe:</strong> Utilisez des formats cohérents</li>
+                                <li>• <strong>Année scolaire:</strong> Format recommandé YYYY-YYYY (ex: 2024-2025)</li>
                                 <li>• Évitez les caractères spéciaux et les espaces multiples</li>
                                 <li>• Le nom doit être unique pour chaque année scolaire</li>
                             </ul>

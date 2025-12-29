@@ -55,17 +55,19 @@ class UserController extends Controller
         $user = User::create($validatedData);
         $user->assignRole('secretary');
 
+        // Give default permissions as direct permissions (not role permissions)
+        $defaultPermissions = [
+            'view_classes',
+            'view_students',
+            'generate_certificates',
+            'generate_cards',
+            'generate_attendance_lists',
+        ];
+        $user->givePermissionTo($defaultPermissions);
+
         return redirect()->route('users.index')->with('success', 'Membre du personnel '.$user->name.' créé avec succès.');
     }
 
-    /*
-    function pour le prof ile
-     */
-    public function showProfile(): View
-    {
-        $user = auth()->user();
-        return view('users.profil', compact('user'));
-    }
     /**
      * Display the specified user's details.
      *
@@ -74,6 +76,10 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
+        if ($user->isPrimaryAdmin()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $user->load(['permissions', 'roles']);
 
         return view('users.show', compact('user'));
@@ -87,6 +93,10 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
+        if ($user->isPrimaryAdmin()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         return view('users.edit', compact('user'));
     }
 
@@ -99,6 +109,10 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
+        if ($user->isPrimaryAdmin()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $validatedData = $request->validated();
 
         $user->name = $validatedData['name'];
@@ -121,6 +135,10 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        if ($user->isPrimaryAdmin()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'Membre du personnel supprimé avec succès.');

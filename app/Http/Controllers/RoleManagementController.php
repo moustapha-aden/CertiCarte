@@ -25,6 +25,13 @@ class RoleManagementController extends Controller
             ], 403);
         }
 
+        if ($user->isPrimaryAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Accès non autorisé.',
+            ], 403);
+        }
+
         $request->validate([
             'permissions' => 'array',
             'permissions.*' => 'string|exists:permissions,name',
@@ -51,6 +58,13 @@ class RoleManagementController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Utilisateur non autorisé',
+            ], 403);
+        }
+
+        if ($user->isPrimaryAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Accès non autorisé.',
             ], 403);
         }
 

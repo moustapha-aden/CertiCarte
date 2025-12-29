@@ -155,6 +155,13 @@
                     </tr>
                 @endforeach
             </x-table>
+
+            {{-- Pagination --}}
+            @if ($users->hasPages())
+                <div class="mt-8">
+                    <x-pagination :paginator="$users" :itemLabel="'personnel'" />
+                </div>
+            @endif
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">

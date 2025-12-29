@@ -37,7 +37,7 @@
                     <x-input name="gender" type="select" label="Genre" :options="['M' => 'Masculin', 'F' => 'Féminin']" :value="old('gender', $student->gender)"
                         placeholder="Sélectionner le genre" required />
                     <x-input name="place_of_birth" label="Lieu de naissance" placeholder="Entrez le lieu de naissance"
-                        :value="old('place_of_birth', $student->place_of_birth)" required />
+                        :value="old('place_of_birth', $student->place_of_birth)" />
                     <x-input name="situation" type="select" label="Situation" :options="['R' => 'Redoublant', 'NR' => 'Non Redoublant']" :value="old('situation', $student->situation)"
                         placeholder="Sélectionner la situation" required />
                 </div>
@@ -77,7 +77,7 @@
                 </h3>
 
                 <div class="flex items-center space-x-6">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                             <img id="preview" class="w-full h-full object-cover" src="{{ $student->avatar_url }}"
                                 alt="{{ $student->name }}">

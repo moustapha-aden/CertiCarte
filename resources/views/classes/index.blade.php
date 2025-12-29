@@ -49,29 +49,6 @@
             </div>
         </div>
 
-        {{-- Statistics Section --}}
-        @if (request('year_id'))
-            @php
-                $selectedYear = $schoolYears->firstWhere('id', request('year_id'));
-                $totalStudents = $classes->sum(function ($classe) {
-                    return $classe->students->count();
-                });
-            @endphp
-            <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold text-indigo-800">{{ $selectedYear->year ?? 'Année sélectionnée' }}
-                        </h3>
-                        <p class="text-sm text-indigo-600">{{ $classes->count() }} classe(s) • {{ $totalStudents }} élève(s)
-                        </p>
-                    </div>
-                    <svg class="w-8 h-8 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
-                    </svg>
-                </div>
-            </div>
-        @endif
-
         {{-- Classes Table Section --}}
         @if ($classes->count() > 0)
             <x-table :headers="[
@@ -168,6 +145,13 @@
                     </tr>
                 @endforeach
             </x-table>
+
+            {{-- Pagination --}}
+            @if ($classes->hasPages())
+                <div class="mt-8">
+                    <x-pagination :paginator="$classes" :itemLabel="'classes'" />
+                </div>
+            @endif
         @else
             {{-- Empty State --}}
             <div class="text-center py-12">
@@ -199,4 +183,5 @@
             </div>
         @endif
     </x-card>
+
 @endsection

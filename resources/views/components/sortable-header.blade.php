@@ -5,6 +5,8 @@
     'currentOrder' => 'asc',
     'route' => '',
     'queryParams' => [],
+    'routeParams' => [],
+    'class' => '',
 ])
 
 @php
@@ -16,10 +18,19 @@
         'sort_order' => $newOrder,
     ]);
 
-    $url = route($route, $params);
+    $url = route($route, array_merge($routeParams, $params));
+
+    // Handle text alignment
+    $textAlign = 'text-left';
+    if (str_contains($class, 'text-center')) {
+        $textAlign = 'text-center';
+    } elseif (str_contains($class, 'text-right')) {
+        $textAlign = 'text-right';
+    }
+    $headerClass = str_replace(['text-left', 'text-center', 'text-right'], '', $class);
 @endphp
 
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group"
+<th class="px-6 py-3 {{ $textAlign }} text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group {{ trim($headerClass) }}"
     onclick="window.location.href='{{ $url }}'">
     <div class="flex items-center space-x-1">
         <span class="group-hover:text-gray-700">{{ $label }}</span>

@@ -10,7 +10,7 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Class Icon --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
                     <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -34,6 +34,7 @@
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 @can('generate_attendance_lists')
                     <x-button href="{{ route('reports.attendance_list', $classe) }}" variant="outline" size="lg"
+                        target="_blank"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>'
                         class="bg-white text-green-600 hover:bg-gray-100 border-green-500 hover:border-green-600">
                         Générer Liste d'Appel
@@ -163,6 +164,35 @@
     <x-card title="Étudiants de cette classe"
         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>'>
 
+        {{-- Search Filter Section --}}
+        <form method="GET" action="{{ route('classes.show', $classe) }}" class="mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                {{-- Search Input --}}
+                <div class="relative flex-1 max-w-md">
+                    <input type="search" name="search" placeholder="Rechercher un étudiant..."
+                        value="{{ request('search') }}"
+                        class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+
+                {{-- Reset Button --}}
+                @if (request()->has('search'))
+                    <div class="flex justify-end">
+                        <x-button type="button" variant="secondary" size="md"
+                            onclick="window.location.href='{{ route('classes.show', $classe) }}'"
+                            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>'
+                            class="bg-red-600 hover:bg-red-700 text-white">
+                            Réinitialiser la recherche
+                        </x-button>
+                    </div>
+                @endif
+            </div>
+        </form>
+
         @if ($students->count() > 0)
             {{-- Students Table --}}
             <x-table :headers="[
@@ -257,8 +287,20 @@
                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
                     </path>
                 </svg>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Aucun étudiant dans cette classe</h3>
-                <p class="text-sm text-gray-600 mb-6">Cette classe ne contient aucun étudiant pour le moment.</p>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">
+                    @if (request()->has('search'))
+                        Aucun étudiant trouvé
+                    @else
+                        Aucun étudiant dans cette classe
+                    @endif
+                </h3>
+                <p class="text-sm text-gray-600 mb-6">
+                    @if (request()->has('search'))
+                        Aucun étudiant ne correspond à votre recherche dans cette classe.
+                    @else
+                        Cette classe ne contient aucun étudiant pour le moment.
+                    @endif
+                </p>
                 @can('create_students')
                     <x-button href="{{ route('students.create') }}" variant="primary" size="lg"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>

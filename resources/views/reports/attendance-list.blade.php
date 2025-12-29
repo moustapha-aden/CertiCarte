@@ -198,8 +198,8 @@
                 <th class="col-heure">8H</th>
                 <th class="col-heure">9H</th>
                 <th class="col-heure">10H</th>
-                <th class="col-separe"></th>
                 <th class="col-heure">11H</th>
+                <th class="col-separe"></th>
                 <th class="col-heure">14H</th>
                 <th class="col-heure">15H</th>
                 <th class="col-heure">16H</th>

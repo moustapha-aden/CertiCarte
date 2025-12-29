@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('matricule')->unique();
+            $table->string('matricule');
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth')->nullable();
-            $table->enum('situation', ['NR', 'R'])->default('NR');
+            $table->enum('situation', ['NR', 'R']);
             $table->enum('gender', ['M', 'F']);
             $table->string('photo')->nullable();
             $table->foreignId('classe_id')->constrained('classes')->onDelete('cascade');
+            $table->unique(['matricule', 'classe_id']);
             $table->timestamps();
         });
     }

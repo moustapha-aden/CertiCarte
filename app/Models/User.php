@@ -45,4 +45,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Check if this user is the primary admin (ID 1 with admin role).
+     */
+    public function isPrimaryAdmin(): bool
+    {
+        return $this->id === 1 && $this->hasRole('admin');
+    }
 }

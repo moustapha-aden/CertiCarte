@@ -8,7 +8,7 @@
     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Header Icon --}}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
                     <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -55,8 +55,8 @@
                             <input type="radio" name="reportType" value="certificate" x-model="reportType"
                                 class="sr-only peer" @change="resetForm">
                             <div
-                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200 
-                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50 
+                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200
+                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50
                                         group-hover:border-gray-300 group-hover:shadow-md">
                                 <div class="text-center">
                                     <div
@@ -78,8 +78,8 @@
                             <input type="radio" name="reportType" value="id_card" x-model="reportType"
                                 class="sr-only peer" @change="resetForm">
                             <div
-                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200 
-                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50 
+                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200
+                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50
                                         group-hover:border-gray-300 group-hover:shadow-md">
                                 <div class="text-center">
                                     <div
@@ -101,8 +101,8 @@
                             <input type="radio" name="reportType" value="attendance_list" x-model="reportType"
                                 class="sr-only peer" @change="resetForm">
                             <div
-                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200 
-                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50 
+                                class="p-6 border-2 border-gray-200 rounded-xl transition-all duration-200
+                                        peer-checked:border-indigo-500 peer-checked:bg-indigo-50
                                         group-hover:border-gray-300 group-hover:shadow-md">
                                 <div class="text-center">
                                     <div
@@ -129,9 +129,9 @@
                         Paramètres du Rapport
                     </h3>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col lg:flex-row gap-4">
                         {{-- School Year Selection --}}
-                        <div>
+                        <div class="flex-1">
                             <label for="school_year_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Année Scolaire <span class="text-red-500">*</span>
                             </label>
@@ -146,7 +146,7 @@
                         </div>
 
                         {{-- Class Selection --}}
-                        <div>
+                        <div class="flex-1">
                             <label for="classe_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Classe <span class="text-red-500">*</span>
                             </label>
@@ -175,7 +175,7 @@
 
                         {{-- Student Selection (only for certificate and ID card) --}}
                         <div x-show="reportType === 'certificate' || reportType === 'id_card'" x-transition
-                            class="md:col-span-2">
+                            class="flex-1">
                             <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Étudiant <span x-show="reportType === 'certificate' || reportType === 'id_card'"
                                     class="text-red-500">*</span>
@@ -209,8 +209,8 @@
                 {{-- Step 3: Generate Button --}}
                 <div x-show="reportType" class="flex justify-center" x-transition>
                     <button type="submit" :disabled="!canGenerate"
-                        class="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-xl 
-                                   hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                        class="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-xl
+                                   hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500
                                    focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl
                                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg">
                         <span x-show="!isGenerating" class="flex items-center">
