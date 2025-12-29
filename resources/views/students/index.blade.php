@@ -6,9 +6,6 @@
 @section('content')
     <x-breadcrumb :items="[['label' => 'Étudiants']]" />
 
-    {{-- Flash Messages --}}
-    <x-flash-message />
-
     {{-- Single Card: Complete Students Management --}}
     <x-card class="mb-8">
         {{-- Card Header: Title, Filters, and Action Buttons --}}
@@ -35,8 +32,6 @@
                         </svg>
                         Importer des Étudiants
                     </a>
-                @endcan
-                @can('import_students')
                     <button type="button" onclick="openImportPhotosModal()"
                         class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,7 +432,7 @@
                                 </div>
                                 @if (count($report['not_found']) > 20)
                                     <div class="flex items-center space-x-2">
-                                        <input type="text" id="searchNotFound" placeholder="Rechercher un fichier..." 
+                                        <input type="text" id="searchNotFound" placeholder="Rechercher un fichier..."
                                             class="text-xs sm:text-sm px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full sm:w-auto">
                                         <button onclick="clearSearchNotFound()" class="text-xs sm:text-sm text-gray-600 hover:text-gray-800 px-2">
                                             Effacer
@@ -452,7 +447,7 @@
                                 <div class="max-h-96 sm:max-h-[500px] overflow-y-auto mb-2">
                                     <div id="notFoundList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                                         @foreach ($report['not_found'] as $index => $filename)
-                                            <div class="not-found-item bg-white border border-red-200 rounded-md p-2 sm:p-3 flex items-start space-x-2 hover:border-red-400 hover:shadow-sm transition-all" 
+                                            <div class="not-found-item bg-white border border-red-200 rounded-md p-2 sm:p-3 flex items-start space-x-2 hover:border-red-400 hover:shadow-sm transition-all"
                                                  data-filename="{{ strtolower($filename) }}">
                                                 <svg class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -473,18 +468,18 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         @if (count($report['not_found']) > 20)
                             <script>
                                 document.addEventListener('DOMContentLoaded', function() {
                                     const searchInput = document.getElementById('searchNotFound');
                                     const notFoundItems = document.querySelectorAll('.not-found-item');
                                     const visibleCountEl = document.getElementById('visibleCount');
-                                    
+
                                     function filterNotFound() {
                                         const searchTerm = searchInput.value.toLowerCase().trim();
                                         let visibleCount = 0;
-                                        
+
                                         notFoundItems.forEach(item => {
                                             const filename = item.getAttribute('data-filename');
                                             if (filename.includes(searchTerm)) {
@@ -494,12 +489,12 @@
                                                 item.style.display = 'none';
                                             }
                                         });
-                                        
+
                                         visibleCountEl.textContent = visibleCount;
                                     }
-                                    
+
                                     searchInput?.addEventListener('input', filterNotFound);
-                                    
+
                                     window.clearSearchNotFound = function() {
                                         searchInput.value = '';
                                         filterNotFound();
