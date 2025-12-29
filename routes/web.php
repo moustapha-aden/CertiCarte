@@ -116,6 +116,16 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:delete_students');
 
     /**
+     * Bulk photo import route for students.
+     * Requires 'import_students' permission.
+     *
+     * @uses StudentController@importPhotos
+     */
+    Route::post('/dashboard/students/import-photos', [StudentController::class, 'importPhotos'])
+        ->name('students.import-photos')
+        ->middleware('permission:import_students');
+
+    /**
      * Class resource routes with granular CRUD permissions.
      *
      * @uses ClasseController

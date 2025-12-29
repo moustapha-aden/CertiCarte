@@ -334,6 +334,14 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
     /**
      * Parse date value with support for multiple formats.
      *
+     * Supports all common date formats including:
+     * - jj/MM/aaaa, jj-MM-aaaa, jj.MM.aaaa (d/m/Y, d-m-Y, d.m.Y)
+     * - jj/MM/aa, jj-MM-aa, jj.MM.aa (d/m/y, d-m-y, d.m.y)
+     * - aaaa-MM-jj, aaaa/MM/jj, aaaa.MM.jj (Y-m-d, Y/m/d, Y.m.d)
+     * - MM/jj/aaaa, MM-jj-aaaa, MM.jj.aaaa (m/d/Y, m-d-Y, m.d.Y)
+     * - Excel numeric dates
+     * - And more...
+     *
      * @param  mixed  $value  Date value from Excel (numeric or string)
      * @return string|null Formatted date string (Y-m-d) or null on failure
      */
@@ -343,29 +351,126 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             return null;
         }
 
-        // ✅ Si c'est un nombre Excel (ex: 39818)
+        // Convert to string and clean
+        $dateString = trim((string) $value);
+
+        // ✅ Si c'est un nombre Excel (ex: 39818 pour une date)
         if (is_numeric($value) && $value > 10000 && $value < 50000) {
             try {
-                return Carbon::createFromDate(1899, 12, 30)->addDays((int) $value)->format('Y-m-d');
+                // Excel date epoch: 1899-12-30
+                $excelEpoch = Carbon::create(1899, 12, 30);
+                $date = $excelEpoch->copy()->addDays((int) $value);
+
+                // Vérifier que la date est raisonnable (entre 1900 et 2100)
+                if ($date->year >= 1900 && $date->year <= 2100) {
+                    return $date->format('Y-m-d');
+                }
             } catch (\Exception $e) {
-                Log::warning('Erreur conversion date numérique', ['value' => $value]);
+                Log::warning('Erreur conversion date numérique Excel', ['value' => $value, 'error' => $e->getMessage()]);
             }
         }
 
-        // ✅ Formats classiques
-        $formats = ['d/m/Y', 'd-m-Y', 'd.m.Y', 'Y-m-d', 'd/m/y', 'd-m-y'];
+        // ✅ Liste exhaustive de formats de date à essayer
+        // Formats avec séparateurs: / - . et espaces
+        $formats = [
+            // Format jour/mois/année (4 chiffres) - Les plus courants
+            'd/m/Y',    // 25/12/2000
+            'd-m-Y',    // 25-12-2000
+            'd.m.Y',    // 25.12.2000
+            'd / m / Y', // 25 / 12 / 2000 (avec espaces)
+            'd - m - Y', // 25 - 12 - 2000
+            'd . m . Y', // 25 . 12 . 2000
+
+            // Format jour/mois/année (2 chiffres)
+            'd/m/y',    // 25/12/00
+            'd-m-y',    // 25-12-00
+            'd.m.y',    // 25.12.00
+
+            // Format avec jour avec zéro devant
+            'dd/mm/yyyy', // Format alternatif
+            'dd-mm-yyyy',
+            'dd.mm.yyyy',
+
+            // Format année/mois/jour
+            'Y-m-d',    // 2000-12-25 (ISO)
+            'Y/m/d',    // 2000/12/25
+            'Y.m.d',    // 2000.12.25
+            'Y / m / d',
+            'Y - m - d',
+            'Y . m . d',
+
+            // Format mois/jour/année (format US)
+            'm/d/Y',    // 12/25/2000
+            'm-d-Y',    // 12-25-2000
+            'm.d.Y',    // 12.25.2000
+            'm / d / Y',
+            'm - d - Y',
+
+            // Format jour avec nom abrégé
+            'd M Y',    // 25 Dec 2000
+            'd M y',    // 25 Dec 00
+            'd-M-Y',    // 25-Dec-2000
+            'd/M/Y',    // 25/Dec/2000
+
+            // Format avec mois complet
+            'd F Y',    // 25 December 2000
+            'd F y',    // 25 December 00
+            'F d, Y',   // December 25, 2000
+            'F d Y',    // December 25 2000
+
+            // Format avec zéro initial
+            'j/n/Y',    // Jour sans zéro, mois sans zéro
+            'j-n-Y',
+            'j.n.Y',
+
+            // Formats courts
+            'd/m',      // 25/12 (juste jour/mois)
+            'd-m',
+            'd.m',
+
+            // Formats avec heures (si inclus)
+            'd/m/Y H:i:s',
+            'd-m-Y H:i:s',
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+            'd/m/Y H:i',
+            'd-m-Y H:i',
+        ];
+
+        // ✅ Essayer chaque format dans l'ordre
         foreach ($formats as $format) {
             try {
-                return Carbon::createFromFormat($format, trim((string) $value))->format('Y-m-d');
+                $date = Carbon::createFromFormat($format, $dateString);
+
+                // Vérifier que la date est raisonnable (entre 1900 et 2100)
+                if ($date->year >= 1900 && $date->year <= 2100) {
+                    return $date->format('Y-m-d');
+                }
             } catch (\Exception $e) {
+                // Continuer avec le format suivant
+                continue;
             }
         }
 
-        // ✅ Tentative finale
+        // ✅ Tentative avec analyse automatique de Carbon (fallback)
+        // Carbon peut reconnaître beaucoup de formats automatiquement
         try {
-            return Carbon::parse($value)->format('Y-m-d');
+            // Nettoyer la chaîne (enlever les guillemets, espaces multiples, etc.)
+            $cleaned = preg_replace('/["\']/', '', $dateString);
+            $cleaned = preg_replace('/\s+/', ' ', trim($cleaned));
+
+            $date = Carbon::parse($cleaned);
+
+            // Vérifier que la date est raisonnable
+            if ($date->year >= 1900 && $date->year <= 2100) {
+                return $date->format('Y-m-d');
+            }
         } catch (\Exception $e) {
-            Log::error('Format de date non reconnu', ['value' => $value]);
+            Log::warning('Format de date non reconnu après toutes les tentatives', [
+                'value' => $value,
+                'cleaned' => $cleaned ?? $dateString,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         return null;
