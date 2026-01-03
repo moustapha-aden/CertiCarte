@@ -93,6 +93,9 @@ class StudentImportController extends Controller
                 'started_at' => now(),
             ]);
 
+            // Supprimer les erreurs existantes de cet import (au cas où il y aurait eu une tentative précédente)
+            $studentImport->errors()->delete();
+
             // Perform the import
             $import = new \App\Imports\StudentsImport($studentImport);
             \Maatwebsite\Excel\Facades\Excel::import($import, $file);

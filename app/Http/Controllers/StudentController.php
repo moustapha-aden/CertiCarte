@@ -275,11 +275,17 @@ class StudentController extends Controller
     {
         try {
             $photos = $request->file('photos');
-            $totalFilesSelected = $request->input('total_files_selected');
 
-            // Check if any files were received at all
-            if (! $photos || count($photos) === 0) {
+            // Check if any files were actually received by PHP
+            if (! $photos || (is_array($photos) && count($photos) === 0)) {
+                Log::error('No photos received in request', [
+                    'has_photos' => !empty($photos),
+                    'photos_count' => is_array($photos) ? count($photos) : 'not_array',
+                    'request_keys' => array_keys($request->all()),
+                ]);
+
                 return redirect()->back()
+                    ->withInput()
                     ->with('error', 'Aucun fichier n\'a été reçu. Vérifiez que les limites PHP sont configurées correctement (max_file_uploads, upload_max_filesize, post_max_size).');
             }
 
@@ -287,19 +293,30 @@ class StudentController extends Controller
             $notFound = [];
             $errors = [];
             $replaced = 0;
-            $filesReceivedCount = count($photos);
+            $details = [];
+            $receivedCount = count($photos); // Track actual received files
 
-            Log::info('Starting photos import: '.$filesReceivedCount.' files received');
+            Log::info('Starting photos import: '.$receivedCount.' files');
 
-            // Check for PHP max_file_uploads limit
+            // Warning if the number of received files seems limited by PHP configuration
             $maxFileUploads = ini_get('max_file_uploads');
-            if ($totalFilesSelected && $filesReceivedCount < $totalFilesSelected) {
-                $errors[] = "Avertissement: Seulement {$filesReceivedCount} fichier(s) sur {$totalFilesSelected} ont été reçus par le serveur. Vérifiez la configuration PHP (max_file_uploads = {$maxFileUploads}).";
-                Log::warning("Only {$filesReceivedCount} files received out of {$totalFilesSelected} selected. PHP max_file_uploads might be too low.");
+            if ($maxFileUploads && $receivedCount >= (int) $maxFileUploads) {
+                Log::warning('The number of received files reached PHP max_file_uploads limit: '.$maxFileUploads);
+                $errors[] = 'Avertissement: Le nombre de fichiers reçus ('.$receivedCount.') atteint la limite PHP max_file_uploads ('.$maxFileUploads.'). Certains fichiers peuvent ne pas avoir été envoyés.';
             }
 
             foreach ($photos as $photo) {
                 try {
+                    // Vérifier que c'est bien un fichier uploadé valide
+                    if (! $photo || ! $photo->isValid()) {
+                        $errors[] = ($photo ? $photo->getClientOriginalName() : 'fichier inconnu').' (fichier invalide ou corrompu)';
+                        Log::warning('Invalid photo file', [
+                            'file' => $photo ? $photo->getClientOriginalName() : 'null',
+                            'is_valid' => $photo ? $photo->isValid() : false,
+                        ]);
+                        continue;
+                    }
+
                     $filename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
                     $matricule = trim($filename);
 
@@ -323,13 +340,42 @@ class StudentController extends Controller
                         Storage::disk('public')->delete($student->photo);
                     }
 
-                    $photoPath = $photo->store('photos/students', 'public');
-                    $student->update(['photo' => $photoPath]);
+                    // Stocker la photo avec le matricule comme nom de fichier pour faciliter la gestion
+                    $extension = $photo->getClientOriginalExtension();
+                    $photoPath = $photo->storeAs('photos/students', $matricule.'.'.$extension, 'public');
+
+                    // Vérifier que le stockage a réussi
+                    if (! $photoPath) {
+                        throw new Exception('Échec du stockage du fichier : '.$photo->getClientOriginalName());
+                    }
+
+                    Log::info('Photo stored successfully', [
+                        'matricule' => $matricule,
+                        'photo_path' => $photoPath,
+                        'student_id' => $student->id,
+                        'original_filename' => $photo->getClientOriginalName(),
+                    ]);
+
+                    // Mettre à jour l'étudiant
+                    $updated = $student->update(['photo' => $photoPath]);
+
+                    // Vérifier que l'update a réussi
+                    if (! $updated) {
+                        // Supprimer le fichier stocké si l'update a échoué
+                        Storage::disk('public')->delete($photoPath);
+                        throw new Exception('Échec de la mise à jour de l\'étudiant : '.$matricule);
+                    }
 
                     $imported++;
                     if ($hadPhoto) {
                         $replaced++;
                     }
+                    $details[] = [
+                        'filename' => $photo->getClientOriginalName(),
+                        'matricule' => $matricule,
+                        'status' => 'success',
+                        'replaced' => $hadPhoto,
+                    ];
                 } catch (Exception $e) {
                     $errors[] = $photo->getClientOriginalName().' ('.$e->getMessage().')';
                     Log::error('Error processing photo: '.$photo->getClientOriginalName(), [
@@ -339,11 +385,8 @@ class StudentController extends Controller
                 }
             }
 
-            $message = "Import des photos terminé ! {$imported} photo(s) importée(s) avec succès";
-            if ($filesReceivedCount < $totalFilesSelected) {
-                $message .= " ({$filesReceivedCount} sur {$totalFilesSelected} fichiers reçus)";
-            }
-            $message .= '.';
+            $message = "Import des photos terminé ! ";
+            $message .= "{$imported} photo(s) importée(s) avec succès sur {$receivedCount} fichier(s) reçu(s).";
 
             if ($replaced > 0) {
                 $message .= " {$replaced} photo(s) remplacée(s).";
@@ -360,25 +403,42 @@ class StudentController extends Controller
             Log::info("Photos import completed: {$imported} imported, ".count($notFound).' not found, '.count($errors).' errors');
 
             $reportData = [
+                'received' => $receivedCount,
                 'imported' => $imported,
                 'replaced' => $replaced,
                 'not_found' => $notFound,
                 'errors' => $errors,
-                'files_received_count' => $filesReceivedCount,
-                'total_files_selected' => $totalFilesSelected,
-                'max_file_uploads' => $maxFileUploads,
-                'received' => $filesReceivedCount,
+                'details' => $details,
+                'max_file_uploads' => (int) $maxFileUploads,
             ];
 
-            return redirect()->route('students.index')
+            // Redirect based on where the request came from
+            $redirectRoute = request()->header('Referer') && str_contains(request()->header('Referer'), route('classes.index', [], false))
+                ? 'classes.index'
+                : 'students.index';
+
+            return redirect()->route($redirectRoute)
                 ->with('success', $message)
                 ->with('photos_import_report', $reportData);
-        } catch (\Throwable $e) {
-            Log::error('Photos import failed: '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Photo import validation failed', [
+                'errors' => $e->errors(),
+            ]);
 
             return redirect()->back()
-                ->with('error', 'Une erreur inattendue est survenue lors de l\'import des photos. Détail : '.$e->getMessage());
+                ->withInput()
+                ->withErrors($e->errors())
+                ->with('error', 'Erreur de validation : Veuillez vérifier les fichiers sélectionnés.');
+        } catch (\Throwable $e) {
+            Log::error('Bulk photo import failed: '.$e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de l\'import des photos. Veuillez réessayer. Détail : '.$e->getMessage());
         }
     }
 }

@@ -83,6 +83,16 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:import_students');
 
     /**
+     * Bulk photo import route.
+     * Requires 'import_students' permission.
+     *
+     * @uses StudentController@importPhotos
+     */
+    Route::post('/dashboard/students/import-photos', [StudentController::class, 'importPhotos'])
+        ->name('students.import-photos')
+        ->middleware('permission:import_students');
+
+    /**
      * Student resource routes with granular CRUD permissions.
      *
      * @uses StudentController
