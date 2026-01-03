@@ -147,12 +147,22 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
 
         // ✅ Nettoyage et normalisation des valeurs avant mapping
         foreach ($normalizedRow as $key => &$value) {
-            if (is_numeric($value) && ! in_array($key, ['date_naissance', 'date naissance', 'date de naissance'])) {
+            // Ne pas convertir les dates en string - elles peuvent être des nombres Excel
+            $isDateField = in_array($key, [
+                'date_de_naissance',  // Format avec underscores (celui du fichier Excel)
+                'date_naissance',
+                'date naissance',
+                'date de naissance',
+            ]);
+
+            // Ne pas convertir les nombres Excel de dates en string
+            if (is_numeric($value) && ! $isDateField) {
                 $value = (string) $value; // Convertit les valeurs numériques en string
             }
             if (is_string($value)) {
                 $value = trim($value);
             }
+            // Les nombres Excel de dates sont conservés comme nombres
         }
 
         // ✅ Normalise certains champs spécifiques
@@ -166,7 +176,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
         return [
             'name' => $normalizedRow['nom'] ?? '',
             'matricule' => $normalizedRow['matricule'] ?? '',
-            'date_of_birth' => $normalizedRow['date_naissance'] ?? $normalizedRow['date naissance'] ?? $normalizedRow['date de naissance'] ?? null,
+            'date_of_birth' => $normalizedRow['date_de_naissance'] ?? $normalizedRow['date_naissance'] ?? $normalizedRow['date naissance'] ?? $normalizedRow['date de naissance'] ?? null,
             'place_of_birth' => $normalizedRow['pays_naissance'] ?? $normalizedRow['pays naissance'] ?? $normalizedRow['pays de naissance'] ?? null,
             'gender' => $normalizedRow['genre'] ?? '',
             'situation' => $normalizedRow['situation'] ?? '',
@@ -251,6 +261,7 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
                     'matricule' => $matricule,
                     'classe_id' => $classeId,
                     'existing_student_id' => $existingStudent->id,
+                    'existing_student_date' => $existingStudent->date_of_birth,
                     'row_data' => $row,
                 ]);
 
@@ -258,6 +269,24 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             }
 
             $formattedDateOfBirth = $this->parseExcelDate($row['date_of_birth'] ?? null);
+
+            // Si la date n'a pas pu être parsée, on ne peut pas créer l'étudiant
+            if ($formattedDateOfBirth === null) {
+                $errorMessage = 'Date de naissance invalide ou manquante (valeur: '.($row['date_of_birth'] ?? 'vide').')';
+
+                $this->saveError($rowId, 'invalid_date', $errorMessage, $row);
+
+                Log::warning('Date de naissance invalide', [
+                    'name' => $name,
+                    'matricule' => $matricule,
+                    'date_value' => $row['date_of_birth'] ?? null,
+                    'date_type' => gettype($row['date_of_birth'] ?? null),
+                    'row_data' => $row,
+                ]);
+
+                return null;
+            }
+
             $gender = $this->parseGender($row['gender'] ?? '');
             $situation = $this->parseSituation($row['situation'] ?? 'R');
 
@@ -343,12 +372,28 @@ class StudentsImport implements SkipsOnError, SkipsOnFailure, ToModel, WithCalcu
             return null;
         }
 
-        // ✅ Si c'est un nombre Excel (ex: 39818)
-        if (is_numeric($value) && $value > 10000 && $value < 50000) {
-            try {
-                return Carbon::createFromDate(1899, 12, 30)->addDays((int) $value)->format('Y-m-d');
-            } catch (\Exception $e) {
-                Log::warning('Erreur conversion date numérique', ['value' => $value]);
+        // ✅ Si c'est un nombre Excel (ex: 39733, 39818)
+        // Les dates Excel sont typiquement entre 1 et 100000 (dates de 1900 à ~2174)
+        if (is_numeric($value)) {
+            $numValue = (float) $value;
+            // Accepter les nombres Excel de dates
+            if ($numValue > 0 && $numValue < 100000) {
+                try {
+                    // Excel date epoch: 1899-12-30
+                    $excelEpoch = Carbon::create(1899, 12, 30);
+                    $date = $excelEpoch->copy()->addDays((int) $numValue);
+
+                    // Vérifier que la date est raisonnable (entre 1900 et 2100)
+                    if ($date->year >= 1900 && $date->year <= 2100) {
+                        return $date->format('Y-m-d');
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Erreur conversion date numérique Excel', [
+                        'value' => $value,
+                        'num_value' => $numValue,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         }
 

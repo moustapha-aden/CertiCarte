@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('matricule');
-            $table->date('date_of_birth')->nullable();
+            $table->date('date_of_birth');
             $table->string('place_of_birth')->nullable();
             $table->enum('situation', ['NR', 'R']);
             $table->enum('gender', ['M', 'F']);
