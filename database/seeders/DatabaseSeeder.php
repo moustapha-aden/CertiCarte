@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Classe;
+use App\Models\SchoolYear;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -88,6 +90,21 @@ class DatabaseSeeder extends Seeder
                 'generate_attendance_lists',
             ];
             $secretaryUser->givePermissionTo($defaultSecretaryPermissions);
+        }
+
+        $schoolYears = SchoolYear::factory(3)->create();
+
+        foreach ($schoolYears as $schoolYear) {
+            Classe::factory(6)->create([
+                'year_id' => $schoolYear->id,
+            ]);
+        }
+
+        $classes = Classe::all();
+        foreach ($classes as $classe) {
+            Student::factory(2)->create([
+                'classe_id' => $classe->id,
+            ]);
         }
     }
 }
