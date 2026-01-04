@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -402,7 +403,11 @@ class StudentController extends Controller
 
             Log::info("Photos import completed: {$imported} imported, ".count($notFound).' not found, '.count($errors).' errors');
 
+            // Generate unique report ID (clean format for URLs)
+            $reportId = str_replace('.', '_', uniqid('photo_import_', true));
+            
             $reportData = [
+                'id' => $reportId,
                 'received' => $receivedCount,
                 'imported' => $imported,
                 'replaced' => $replaced,
@@ -410,16 +415,15 @@ class StudentController extends Controller
                 'errors' => $errors,
                 'details' => $details,
                 'max_file_uploads' => (int) $maxFileUploads,
+                'created_at' => now()->toDateTimeString(),
             ];
 
-            // Redirect based on where the request came from
-            $redirectRoute = request()->header('Referer') && str_contains(request()->header('Referer'), route('classes.index', [], false))
-                ? 'classes.index'
-                : 'students.index';
+            // Store report in session (valid for 1 hour)
+            Session::put("photo_import_report_{$reportId}", $reportData);
 
-            return redirect()->route($redirectRoute)
-                ->with('success', $message)
-                ->with('photos_import_report', $reportData);
+            // Redirect to report page
+            return redirect()->route('students.photo-import-report', $reportId)
+                ->with('success', $message);
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Photo import validation failed', [
                 'errors' => $e->errors(),
@@ -440,5 +444,43 @@ class StudentController extends Controller
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de l\'import des photos. Veuillez réessayer. Détail : '.$e->getMessage());
         }
+    }
+
+    /**
+     * Display the photo import report page.
+     *
+     * @param  string  $reportId  The unique report identifier
+     * @return View|RedirectResponse The report view or redirect if report not found
+     */
+    public function showPhotoImportReport(string $reportId): View|RedirectResponse
+    {
+        $reportKey = "photo_import_report_{$reportId}";
+        $report = Session::get($reportKey);
+
+        if (! $report) {
+            return redirect()->route('students.index')
+                ->with('error', 'Le rapport d\'import n\'existe plus ou a expiré.');
+        }
+
+        // Extract referer from report or default to students.index
+        $referer = request()->header('Referer');
+        $backRoute = 'students.index';
+        $backLabel = 'Retour aux Étudiants';
+        $backRouteParams = null;
+
+        // Check if we should go back to a classe show page
+        if (str_contains($referer ?? '', '/classes/')) {
+            preg_match('/\/classes\/(\d+)/', $referer, $matches);
+            if (isset($matches[1])) {
+                $classe = Classe::find($matches[1]);
+                if ($classe) {
+                    $backRoute = 'classes.show';
+                    $backRouteParams = $classe->id;
+                    $backLabel = "Retour à la Classe : {$classe->label}";
+                }
+            }
+        }
+
+        return view('students.photo-import-report', compact('report', 'reportId', 'backRoute', 'backLabel', 'backRouteParams'));
     }
 }
