@@ -33,16 +33,16 @@
         }
 
         .signature {
-            margin-top: 100px;
+            /* margin-top: 100px; */
             text-align: center;
             text-transform: capitalize;
         }
 
-        .proviseur-name {
-            margin-top: 10px;
+        /* .name {
+            margin-top: 10px; 
             font-weight: bold;
             text-transform: uppercase;
-        }
+        } */
     </style>
 </head>
 
@@ -100,7 +100,8 @@
     <!-- SIGNATURE -->
     <div class="signature">
         <p>Le Proviseur</p>
-        <p class="proviseur-name">MOHAMED HOUSSEIN DIRIEH</p>
+        <p style="font-weight: bold; text-transform: uppercase;">MOHAMED HOUSSEIN DIRIEH</p>
+        <img src="{{ public_path('images/signature.jpg') }}" style="height: 150px;" />
     </div>
 
 </body>
