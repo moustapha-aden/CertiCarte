@@ -92,6 +92,10 @@ Route::middleware('auth')->group(function () {
         ->name('students.import-photos')
         ->middleware('permission:import_students');
 
+    Route::get('/dashboard/students/photo-import-report/{reportId}', [StudentController::class, 'showPhotoImportReport'])
+        ->name('students.photo-import-report')
+        ->middleware('permission:import_students');
+
     /**
      * Student resource routes with granular CRUD permissions.
      *
