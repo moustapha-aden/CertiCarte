@@ -182,7 +182,10 @@
             var a = e.target.closest('a[href*="classes"]');
             if (!a || !a.href) return;
             var href = a.getAttribute('href');
-            if (href && href.indexOf(baseUrl.split('?')[0]) === 0 && !e.ctrlKey && !e.metaKey) {
+            if (!href || e.ctrlKey || e.metaKey) return;
+            var basePath = new URL(baseUrl, window.location.origin).pathname.replace(/\/+$/, '');
+            var linkPath = new URL(href, window.location.origin).pathname.replace(/\/+$/, '');
+            if (linkPath === basePath) {
                 e.preventDefault();
                 loadTable(href);
             }
