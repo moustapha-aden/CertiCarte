@@ -8,9 +8,8 @@
 
     {{-- Single Card: Complete Classes Management --}}
     <x-card class="mb-8">
-        {{-- Card Header: Title, School Year Filter, and Add Button --}}
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-            {{-- Title --}}
+        {{-- Card Header: Title and Add Button --}}
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div class="flex items-center space-x-3">
                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -20,26 +19,7 @@
                 <h1 class="text-2xl font-bold text-gray-800">Catalogue des Classes</h1>
             </div>
 
-            {{-- School Year Filter and Add Button --}}
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                {{-- School Year Filter --}}
-                <form method="GET" action="{{ route('classes.index') }}" class="flex items-center space-x-2">
-                    <label for="year_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Année
-                        scolaire:</label>
-                    <select name="year_id" id="year_id" onchange="this.form.submit()"
-                        class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
-                        <option value="">Toutes les années</option>
-                        @if (isset($schoolYears) && is_iterable($schoolYears))
-                            @foreach ($schoolYears as $year)
-                                <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
-                                    {{ $year->year }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                </form>
-
-                {{-- Import Photos Button --}}
+            <div class="flex flex-col sm:flex-row gap-3">
                 @can('import_students')
                     <x-button type="button" onclick="openImportPhotosModal()" variant="success" size="md"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>'>
@@ -47,7 +27,6 @@
                     </x-button>
                 @endcan
 
-                {{-- Add Class Button --}}
                 @can('create_classes')
                     <x-button href="{{ route('classes.create') }}" variant="primary" size="md"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
@@ -57,140 +36,163 @@
             </div>
         </div>
 
-        {{-- Classes Table Section --}}
-        @if ($classes->count() > 0)
-            <x-table :headers="[
-                ['field' => 'label', 'label' => 'Nom de la Classe', 'sortable' => true, 'route' => 'classes.index'],
-                ['label' => 'Année Scolaire'],
-                [
-                    'field' => 'students_count',
-                    'label' => 'Nombre d\'Élèves',
-                    'sortable' => true,
-                    'route' => 'classes.index',
-                ],
-                [
-                    'field' => 'created_at',
-                    'label' => 'Date de Création',
-                    'sortable' => true,
-                    'route' => 'classes.index',
-                ],
-                ['label' => 'Actions', 'class' => 'text-center'],
-            ]" :currentSort="$sortBy" :currentOrder="$sortOrder" :queryParams="request()->query()" :pagination="$classes"
-                :itemLabel="'classes'">
+        {{-- Horizontal Divider --}}
+        <div class="border-t border-gray-200 mb-6"></div>
 
-                @foreach ($classes as $classe)
-                    <tr class="hover:bg-indigo-50/30 transition-colors">
-                        {{-- Class Name --}}
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div class="text-lg font-semibold text-gray-900">{{ $classe->label }}</div>
-                                    <div class="text-sm text-gray-500">ID: #{{ $classe->id }}</div>
-                                </div>
-                            </div>
-                        </td>
-
-                        {{-- School Year --}}
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ $classe->schoolYear->year ?? 'N/A' }}</div>
-                        </td>
-
-                        {{-- Student Count --}}
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <span class="text-2xl font-bold text-indigo-600">{{ $classe->students->count() }}</span>
-                                <span
-                                    class="text-sm text-gray-500 ml-2">élève{{ $classe->students->count() > 1 ? 's' : '' }}</span>
-                            </div>
-                        </td>
-
-                        {{-- Creation Date --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            <div>{{ $classe->created_at->format('d/m/Y') }}</div>
-                            <div class="text-xs text-gray-500">{{ $classe->created_at->format('H:i') }}</div>
-                        </td>
-
-                        {{-- Actions --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                            <div class="flex items-center justify-center space-x-2">
-                                {{-- View Button --}}
-                                @can('view_classes')
-                                    <x-button href="{{ route('classes.show', $classe) }}" variant="ghost" size="sm"
-                                        title="Voir les détails"
-                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>'
-                                        class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 border-blue-200 hover:border-blue-300" />
-                                @endcan
-
-                                {{-- Edit Button --}}
-                                @can('edit_classes')
-                                    <x-button href="{{ route('classes.edit', $classe) }}" variant="ghost" size="sm"
-                                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
-                                        title="Modifier"
-                                        class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border-indigo-200 hover:border-indigo-300" />
-                                @endcan
-
-                                {{-- Delete Button --}}
-                                @can('delete_classes')
-                                    <form method="POST" action="{{ route('classes.destroy', $classe) }}" class="inline-block"
-                                        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer la classe {{ $classe->label }} ?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <x-button type="submit" variant="ghost" size="sm"
-                                            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>'
-                                            title="Supprimer" class="text-red-600 hover:text-red-800 hover:bg-red-50" />
-                                    </form>
-                                @endcan
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </x-table>
-
-            {{-- Pagination --}}
-            @if ($classes->hasPages())
-                <div class="mt-8">
-                    <x-pagination :paginator="$classes" :itemLabel="'classes'" />
-                </div>
+        {{-- Filters Section (comme les étudiants) --}}
+        <form method="GET" action="{{ route('classes.index') }}" class="mb-8" id="classesFiltersForm" role="search">
+            @if (request()->filled('sort_by'))
+                <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
             @endif
-        @else
-            {{-- Empty State --}}
-            <div class="text-center py-12">
-                <svg class="w-16 h-16 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                    </path>
-                </svg>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">
-                    @if (request()->hasAny(['class_search', 'year_id']))
-                        Aucune classe trouvée
-                    @else
-                        Aucune classe enregistrée
-                    @endif
-                </h3>
-                <p class="text-sm text-gray-600 mb-6">
-                    @if (request()->hasAny(['class_search', 'year_id']))
-                        Aucune classe ne correspond aux critères de recherche.
-                    @else
-                        Commencez par créer votre première classe.
-                    @endif
-                </p>
-                @can('create_classes')
-                    <x-button href="{{ route('classes.create') }}" variant="primary" size="lg"
-                        icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>
-                        Créer une nouvelle classe
-                    </x-button>
-                @endcan
+            @if (request()->filled('sort_order'))
+                <input type="hidden" name="sort_order" value="{{ request('sort_order') }}">
+            @endif
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+                    <div class="relative flex-1 max-w-md">
+                        <input type="search" name="search" id="classes_search" placeholder="Rechercher (nom de classe)..."
+                            value="{{ request('search') }}"
+                            class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            aria-label="Rechercher une classe">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label for="year_id" class="text-sm font-medium text-gray-700 whitespace-nowrap">Année scolaire:</label>
+                        <select name="year_id" id="year_id"
+                            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[150px]">
+                            <option value="">Toutes les années</option>
+                            @if (isset($schoolYears) && is_iterable($schoolYears))
+                                @foreach ($schoolYears as $year)
+                                    <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
+                                        {{ $year->year }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                </div>
+                @if (request()->hasAny(['search', 'year_id']))
+                    <div class="flex justify-end">
+                        <x-button type="button" variant="secondary" size="md" id="classesResetFilters"
+                            icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>'
+                            class="bg-red-600 hover:bg-red-700 text-white">
+                            Réinitialiser les filtres
+                        </x-button>
+                    </div>
+                @endif
             </div>
-        @endif
+        </form>
+
+        {{-- Conteneur table (mis à jour en AJAX sans recharger la page) --}}
+        <div id="classes-table-container" aria-live="polite" aria-busy="false">
+            @include('classes.partials.table')
+        </div>
     </x-card>
+
+    <script>
+    (function() {
+        var baseUrl = '{{ route("classes.index") }}';
+        var form = document.getElementById('classesFiltersForm');
+        var container = document.getElementById('classes-table-container');
+        var searchInput = document.getElementById('classes_search');
+        var yearSelect = document.getElementById('year_id');
+        var resetBtn = document.getElementById('classesResetFilters');
+        var debounceTimer = null;
+
+        function buildUrl(params) {
+            var qs = new URLSearchParams(params).toString();
+            return qs ? baseUrl + '?' + qs : baseUrl;
+        }
+
+        function getFormParams() {
+            if (!form) return {};
+            var fd = new FormData(form);
+            var params = {};
+            fd.forEach(function(v, k) { if (v) params[k] = v; });
+            return params;
+        }
+
+        function loadTable(url) {
+            if (!container) return;
+            container.setAttribute('aria-busy', 'true');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.onload = function() {
+                container.setAttribute('aria-busy', 'false');
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data.html !== undefined) {
+                            container.innerHTML = data.html;
+                            if (url !== window.location.href) {
+                                window.history.pushState({}, '', url);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Classes: invalid JSON', e);
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                container.setAttribute('aria-busy', 'false');
+            };
+            xhr.send();
+        }
+
+        function applyFilters() {
+            var params = getFormParams();
+            loadTable(buildUrl(params));
+        }
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                applyFilters();
+            });
+        }
+        if (yearSelect) {
+            yearSelect.addEventListener('change', applyFilters);
+        }
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyFilters, 400);
+            });
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (debounceTimer) clearTimeout(debounceTimer);
+                    applyFilters();
+                }
+            });
+        }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                window.location.href = baseUrl;
+            });
+        }
+
+        container.addEventListener('click', function(e) {
+            var a = e.target.closest('a[href*="classes"]');
+            if (!a || !a.href) return;
+            var href = a.getAttribute('href');
+            if (href && href.indexOf(baseUrl.split('?')[0]) === 0 && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                loadTable(href);
+            }
+        });
+
+        window.addEventListener('popstate', function() {
+            loadTable(window.location.href);
+        });
+    })();
+    </script>
 
     {{-- Import Photos Modal --}}
     @can('import_students')

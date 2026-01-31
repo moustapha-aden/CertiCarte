@@ -23,9 +23,9 @@ class StudentController extends Controller
      * Display a paginated listing of students with filtering and sorting capabilities.
      *
      * @param  Request  $request  The HTTP request containing filter and sort parameters
-     * @return View The students index view with paginated and filtered student data
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse The students index view or JSON with table HTML and allClasses for AJAX
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         // Get all school years for the filter dropdown
         $schoolYears = SchoolYear::orderBy('year', 'desc')->pluck('year', 'id');
@@ -84,13 +84,22 @@ class StudentController extends Controller
 
         $students = $students->paginate(10)->withQueryString();
 
-        return view('students.index', [
+        $data = [
             'students' => $students,
             'schoolYears' => $schoolYears,
             'allClasses' => $allClasses,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
-        ]);
+        ];
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('students.partials.table', $data)->render(),
+                'allClasses' => $allClasses->isEmpty() ? (object) [] : $allClasses->toArray(),
+            ]);
+        }
+
+        return view('students.index', $data);
     }
 
     /**

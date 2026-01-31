@@ -9,6 +9,7 @@ use App\Models\SchoolYear;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,11 +24,11 @@ class ClasseController extends Controller
      * Includes student count for each class.
      *
      * @param  Request  $request  The HTTP request containing filter and sort parameters
-     * @return View The classes index view with paginated and filtered class data
+     * @return View|JsonResponse The classes index view or JSON with table HTML for AJAX
      *
      * @throws \Exception If database query fails
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         // Get all school years for the filter dropdown
         $schoolYears = SchoolYear::orderBy('year', 'desc')->get();
@@ -39,6 +40,12 @@ class ClasseController extends Controller
         // Filter by school year
         if ($request->filled('year_id')) {
             $query->where('year_id', $request->input('year_id'));
+        }
+
+        // Filter by class name (search)
+        if ($request->filled('search')) {
+            $searchTerm = '%'.$request->input('search').'%';
+            $query->where('label', 'like', $searchTerm);
         }
 
         // Handle sorting
@@ -66,12 +73,20 @@ class ClasseController extends Controller
 
         $classes = $query->paginate(12)->withQueryString();
 
-        return view('classes.index', [
+        $data = [
             'classes' => $classes,
             'schoolYears' => $schoolYears,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
-        ]);
+        ];
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('classes.partials.table', $data)->render(),
+            ]);
+        }
+
+        return view('classes.index', $data);
     }
 
     /**
