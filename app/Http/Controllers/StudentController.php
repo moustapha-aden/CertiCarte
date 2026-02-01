@@ -136,9 +136,20 @@ class StudentController extends Controller
             $validatedData = $request->validated();
 
             if ($request->hasFile('photo')) {
-                $photoPath = $request->file('photo')->store('photos/students', 'public');
+                $matricule = $validatedData['matricule'];
+                $extension = $request->file('photo')->getClientOriginalExtension();
+
+                $filename = $matricule . '.' . $extension;
+
+                $photoPath = $request->file('photo')->storeAs(
+                    'photos/students',
+                    $filename,
+                    'public'
+                );
+
                 $validatedData['photo'] = $photoPath;
             }
+
 
             $student = Student::create($validatedData);
 
@@ -201,10 +212,23 @@ class StudentController extends Controller
             $validatedData = $request->validated();
 
             if ($request->hasFile('photo')) {
-                if ($student->photo) {
+
+                // Supprimer l’ancienne photo
+                if ($student->photo && Storage::disk('public')->exists($student->photo)) {
                     Storage::disk('public')->delete($student->photo);
                 }
-                $photoPath = $request->file('photo')->store('photos/students', 'public');
+
+                $matricule = $validatedData['matricule'] ?? $student->matricule;
+                $extension = $request->file('photo')->getClientOriginalExtension();
+
+                $filename = $matricule . '.' . $extension;
+
+                $photoPath = $request->file('photo')->storeAs(
+                    'photos/students',
+                    $filename,
+                    'public'
+                );
+
                 $validatedData['photo'] = $photoPath;
             }
 
@@ -414,7 +438,7 @@ class StudentController extends Controller
 
             // Generate unique report ID (clean format for URLs)
             $reportId = str_replace('.', '_', uniqid('photo_import_', true));
-            
+
             $reportData = [
                 'id' => $reportId,
                 'received' => $receivedCount,
