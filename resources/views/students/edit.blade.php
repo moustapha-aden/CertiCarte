@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            @include('Students.partials.photo-upload-with-webcam', [
+            @include('students.partials.photo-upload-with-webcam', [
                 'fileInputLabel' => 'Choisir une nouvelle photo',
                 'previewInitialSrc' => $student->avatar_url,
                 'previewAlt' => $student->name,

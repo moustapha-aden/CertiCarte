@@ -2,496 +2,344 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Carte d'Étudiant - {{ $student->name }}</title>
-    <style>
-        @page {
-            margin: 0;
-        }
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Carte d'Étudiant - {{ $student->name }}</title>
 
-        body {
-            font-family: 'Montserrat', 'Arial', sans-serif;
-            margin: 0;
-            padding: 18mm;
-            font-size: 10.5pt;
-            background: #f3f4f6;
-        }
+<style>
 
-        .page {
-            width: 100%;
-        }
+@page{
+margin:0;
+}
 
-        /* Container pour alignement horizontal */
-        .cards-container {
-            width: 100%;
-            margin-bottom: 10mm;
-        }
+body{
+font-family:'Montserrat','Arial',sans-serif;
+margin:0;
+padding:18mm;
+background:#f3f4f6;
+}
 
-        /* Dimensions carte standard (85.6mm x 53.98mm) */
-        .card-wrapper {
-            width: 86mm;
-            height: 54mm;
-            border-radius: 8mm;
-            overflow: hidden;
-            margin: 12px;
-            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.10);
-            position: relative;
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 7mm;
-            background: #f7f8fa;
-            border: none;
-        }
 
-        /* === RECTO PROFESSIONNEL === */
-        .recto {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            position: relative;
-            background: #fff url('/images/photo_carte.jpg') center center/cover no-repeat;
-            color: #222;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+/* CARTE */
 
-        .recto::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.75);
-            z-index: 1;
-        }
+.card-wrapper{
 
-        .recto-content,
-        .logo-section,
-        .badge-d,
-        .year-footer {
-            position: relative;
-            z-index: 2;
-        }
+width:86mm;
+height:54mm;
 
-        /* Contenu principal */
-        .recto-content {
-            height: 100%;
-            color: white;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
+border-radius:8mm;
+overflow:hidden;
 
-        /* Logo section */
-        .logo-section {
-            position: absolute;
-            top: 7mm;
-            left: 7mm;
-            width: 18mm;
-            height: 18mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+position:relative;
 
-        .school-logo {
-            width: 13mm;
-            height: 13mm;
-            border-radius: 3mm;
-            border: none;
-            background: #fff;
-            padding: 0;
-            box-shadow: none;
-        }
+background:#fff url('/images/photo_carte.jpg') center/cover no-repeat;
 
-        /* En-tête */
-        .recto-header {
-            border-bottom: 1.5px solid rgba(255, 255, 255, 0.25);
-            padding-bottom: 2mm;
-            margin-bottom: 2mm;
-            text-align: left;
-        }
+box-shadow:0 2px 8px rgba(0,0,0,0.12);
 
-        .recto-title {
-            font-size: 10pt;
-            font-weight: 700;
-            line-height: 1.2;
-            margin: 0 0 1mm 0;
-            letter-spacing: 0.5px;
-            text-shadow: none;
-        }
+}
 
-        .recto-subtitle {
-            font-size: 7pt;
-            color: #dbeafe;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-            opacity: 0.7;
-            text-shadow: none;
-        }
 
-        /* Type de carte */
-        .card-type-badge {
-            text-align: left;
-            font-size: 7pt;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 700;
-            padding: 1.2mm 0 1.2mm 2mm;
-            margin: 1.5mm 0;
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 2mm;
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-        }
+/* OVERLAY */
 
-        /* Section étudiant */
-        .student-section {
-            margin: 2.5mm 0 0 0;
-        }
+.card-wrapper::before{
 
-        .student-layout {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            gap: 2mm;
-            width: 100%;
-        }
+content:"";
+position:absolute;
+inset:0;
+background:rgba(255,255,255,0.82);
 
-        .photo-cell {
-            flex: 0 0 20mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-right: 2mm;
-        }
+}
 
-        .info-cell {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            gap: 1mm;
-        }
 
-        .student-photo {
-            width: 16mm;
-            height: 16mm;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            object-fit: cover;
-            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.12);
-            background: #e0e7ff;
-        }
+/* CONTENU */
 
-        .student-name {
-            font-size: 12pt;
-            font-weight: 700;
-            line-height: 1.2;
-            margin: 0 0 1mm 0;
-            color: #1e293b;
-            letter-spacing: 0.7px;
-            text-shadow: 0 1px 2px #fff;
-        }
+.recto-content{
 
-        .student-detail {
-            font-size: 9pt;
-            line-height: 1.3;
-            margin: 0.5mm 0;
-            color: #2563eb;
-            text-shadow: 0 1px 2px #fff;
-        }
+position:relative;
+height:100%;
+z-index:2;
 
-        .detail-label {
-            color: #f59e00;
-            font-size: 8pt;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            font-weight: 700;
-        }
+}
 
-        /* Footer année */
-        .year-footer {
-            position: absolute;
-            bottom: 4mm;
-            left: 5mm;
-            right: 5mm;
-            text-align: right;
-            border: none;
-            padding-top: 1.5mm;
-        }
 
-        .year-label {
-            font-size: 6.5pt;
-            color: #dbeafe;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            display: block;
-            margin-bottom: 0.7mm;
-        }
+/* LOGO */
 
-        .year-value {
-            font-size: 12pt;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            color: #2563eb;
-            text-shadow: none;
-        }
+.logo-section{
 
-        /* === VERSO PROFESSIONNEL === */
-        .verso {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            background: #fff;
-            position: relative;
-            color: #222;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+position:absolute;
+top:5mm;
+left:6mm;
 
-        /* Bande décorative */
-        .verso-top-band {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3.5mm;
-            display: none;
-        }
+}
 
-        /* Badge sécurité */
-        .security-badge {
-            position: absolute;
-            top: 5mm;
-            right: 5mm;
-            width: 8mm;
-            height: 8mm;
-            background: rgba(59, 130, 246, 0.08);
-            border: 2px solid #2563eb;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 8mm;
-            font-size: 10pt;
-            color: #2563eb;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.10);
-        }
+.school-logo{
 
-        /* Contenu verso */
-        .verso-content {
-            margin-top: 7mm;
-            padding: 0 7mm;
-        }
+width:14mm;
+height:14mm;
 
-        .verso-title {
-            font-size: 9pt;
-            font-weight: 700;
-            text-align: left;
-            margin: 0 0 2.5mm 0;
-            color: #2563eb;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+}
 
-        /* Lignes d'information */
-        .info-grid {
-            margin-bottom: 2.5mm;
-        }
 
-        .info-line {
-            background: transparent;
-            padding: 0.5mm 0;
-            margin-bottom: 0.5mm;
-            border-radius: 0;
-            border-left: none;
-            box-shadow: none;
-            border-bottom: 1px solid #e0e7ff;
-            display: flex;
-            align-items: center;
-        }
+/* NOM ECOLE */
 
-        .info-line-content {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            width: 100%;
-        }
+.school-name{
 
-        .info-label {
-            flex: 0 0 38%;
-            font-weight: 600;
-            font-size: 7pt;
-            color: #2563eb;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            vertical-align: middle;
-            display: flex;
-            align-items: center;
-        }
+position:absolute;
+top:4mm;
+left:0;
+width:100%;
 
-        .info-value {
-            flex: 1;
-            font-size: 8pt;
-            color: #222;
-            font-weight: 500;
-            vertical-align: middle;
-            text-align: left;
-        }
+text-align:center;
 
-        .info-address {
-            margin-top: 0.5mm;
-            padding-top: 0.5mm;
-            border-top: none;
-        }
+font-size:8.5pt;
+font-weight:800;
+color:#1d4ed8;
 
-        /* Signatures */
-        .signatures-section {
-            position: absolute;
-            bottom: 4mm;
-            left: 5mm;
-            right: 5mm;
-            border-top: none;
-            padding-top: 0;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
+letter-spacing:.6px;
 
-        .signatures-layout {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
-        }
+}
 
-        .signature-cell {
-            flex: 1;
-            text-align: center;
-            font-size: 7pt;
-            color: #2563eb;
-        }
 
-        .signature-title {
-            font-weight: 600;
-            color: #2563eb;
-            font-size: 7pt;
-            margin-bottom: 0.7mm;
-        }
+/* PHOTO ETUDIANT — AGRANDIE */
 
-        .signature-line {
-            width: 100%;
-            height: 3mm;
-            border-bottom: 1px solid #e0e7ff;
-            margin: 0.7mm 0;
-        }
-    </style>
+.student-photo{
+
+position:absolute;
+
+top:5mm;
+right:2mm;
+
+width:24mm;
+height:24mm;
+
+border-radius:50%;
+border:2px solid #fff;
+
+object-fit:cover;
+
+box-shadow:0 3px 8px rgba(0,0,0,.22);
+
+}
+
+
+/* BADGE */
+
+.card-badge{
+
+position:absolute;
+
+top:17mm;
+right:3mm;
+width:100%;
+
+text-align:center;
+
+font-size:10pt;
+font-weight:800;
+
+color:#2563eb;
+
+letter-spacing:.5px;
+
+}
+
+
+/* INFOS */
+
+.student-info{
+
+position:absolute;
+
+top:28mm;
+left:3mm;
+right:8mm;
+
+font-size:8.5pt;
+
+line-height:1.25;
+
+color:#1e293b;
+
+}
+
+.student-info div{
+
+margin-bottom:0.6mm;
+
+}
+
+.student-info span{
+
+color:#2563eb;
+font-weight:700;
+
+}
+
+
+/* ANNEE */
+
+.school-year{
+
+position:absolute;
+
+right:7mm;
+bottom:7mm;
+
+text-align:right;
+
+font-size:6.5pt;
+color:#2563eb;
+
+}
+
+.school-year strong{
+
+font-size:9pt;
+
+}
+
+
+/* SIGNATURE */
+
+.signature{
+
+position:absolute;
+
+bottom:4mm;
+left:8mm;
+
+font-size:6.5pt;
+color:#2563eb;
+
+}
+
+.signature-line{
+
+width:28mm;
+margin-top:1mm;
+
+border-bottom:1px solid #2563eb;
+
+}
+
+
+</style>
+
 </head>
 
+
 <body>
-    <div class="page">
-        <div class="cards-container">
 
-            <!-- RECTO -->
-            <div class="card-wrapper">
-                <div class="recto">
-                    <div class="recto-content" style="position:relative; height:100%; font-family:'Poppins', sans-serif;">
 
-                        <!-- Logo -->
-                        <div class="logo-section">
-                            @if ($logoUrl)
-                                <img src="{{ $logoUrl }}" alt="Logo" class="school-logo">
-                            @else
-                                <div class="school-logo"
-                                    style="display:flex; align-items:center; justify-content:center; font-size:3pt; font-weight:bold;">
-                                    LOGO
-                                </div>
-                            @endif
-                        </div>
+<div class="card-wrapper">
 
-                        <!-- Nom du lycée (complet, bien visible et ajusté) -->
-                        <div
-                            style="
-                position:absolute;
-                top:5mm;
-                left:50%;
-                transform:translateX(-50%);
-                width:90%;
-                text-align:center;
-                font-size:8pt;
-                font-weight:800;
-                color:#1d4ed8;
-                text-transform:uppercase;
-                letter-spacing:0.6px;
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;">
-                            Lycée Ahmed Farah Ali
-                        </div>
 
-                        <!-- Photo en haut à droite -->
-                        <div style="position:absolute; top:7mm; right:6mm;">
-                            <img src="{{ $avatar }}" alt="Photo" class="student-photo"
-                                style="width:18mm; height:18mm; border-radius:50%; border:1.5px solid #fff; object-fit:cover; box-shadow:0 2px 6px rgba(30,64,175,0.15); background:#e0e7ff;">
-                        </div>
+<div class="recto-content">
 
-                        <!-- Titre de la carte -->
-                        <div style="position:absolute; top:15mm; left:0; width:100%; text-align:center;">
-                            <span
-                                style="font-size:5pt; font-weight:700; color:#2563eb; background:#fff; padding:1.2px 9px; border-radius:8px; box-shadow:0 1px 3px #e0e7ff; letter-spacing:0.8px;">
-                                CARTE SCOLAIRE
-                            </span>
-                        </div>
 
-                        <!-- Informations à gauche -->
-<div
-    style="position:absolute; top:28mm; left:8mm; right:8mm; width:auto; text-align:left; line-height:1.5;">
-    <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
-        Nom : <span style="color:#2563eb; font-weight:700;">{{ $student->name }}</span>
-    </div>
-    <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
-        Matricule : <span style="color:#2563eb; font-weight:700;">{{ $student->matricule }}</span>
-    </div>
-    <div style="font-size:8pt; font-weight:600; color:#1e293b; margin-bottom:1mm;">
-        Né(e) le : <span style="color:#2563eb; font-weight:700;">{{ $student->date_of_birth->format('d/m/Y') }}</span>
-    </div>
-    <div style="font-size:8pt; font-weight:600; color:#1e293b;">
-        Classe : <span style="color:#2563eb; font-weight:700;">{{ optional($student->classe)->label ?? 'N/A' }}</span>
-    </div>
+<!-- LOGO -->
+
+<div class="logo-section">
+
+@if ($logoUrl)
+<img src="{{ $logoUrl }}" class="school-logo">
+@endif
+
 </div>
 
-                        <!-- Année scolaire -->
-                        <div class="year-footer"
-                            style="position:absolute; right:7mm; bottom:7mm; text-align:right; font-size:7pt; color:#2563eb; font-weight:700;">
-                            <span
-                                style="font-size:5pt; color:#2563eb; text-transform:uppercase; letter-spacing:0.6px; display:block; margin-bottom:0.5mm;">
-                                Année scolaire
-                            </span>
-                            <div style="font-size:7pt; font-weight:700; letter-spacing:0.8px; color:#2563eb;">
-                                {{ $student->classe->schoolYear->year ?? 'N/A' }}
-                            </div>
-                        </div>
-                          <!-- Signature Le Proviseur en bas au centre -->
-            <div style="position:absolute; left:0; right:0; bottom:5mm; text-align:center;">
-                <div style="font-size:7pt; color:#2563eb; font-weight:600;">Le Proviseur</div>
-                <div style="width:32mm; height:2mm; border-bottom:1px solid #e0e7ff; margin:1mm auto 0 auto;"></div>
-            </div>
 
-        </div>
-    </div>
-                    </div>
-                </div>
-            </div>
+
+<!-- NOM ECOLE -->
+
+<div class="school-name">
+
+LYCÉE AHMED FARAH ALI
+
+</div>
 
 
 
+<!-- PHOTO -->
 
-        </div>
-    </div>
+<img src="{{ $avatar }}" class="student-photo">
+
+
+
+<!-- BADGE -->
+
+<div class="card-badge">
+
+CARTE SCOLAIRE
+
+</div>
+
+
+
+<!-- INFOS -->
+
+<div class="student-info">
+
+<div>
+Nom :
+<span>{{ $student->name }}</span>
+</div>
+
+
+<div>
+Matricule :
+<span>{{ $student->matricule }}</span>
+</div>
+
+
+<div>
+Né(e) le :
+<span>{{ $student->date_of_birth->format('d/m/Y') }}</span>
+</div>
+
+
+<div>
+Classe :
+<span>{{ optional($student->classe)->label ?? 'N/A' }}</span>
+</div>
+
+
+</div>
+
+
+
+<!-- ANNEE -->
+
+<div class="school-year">
+
+Année scolaire<br>
+
+<strong>
+
+{{ $student->classe->schoolYear->year ?? 'N/A' }}
+
+</strong>
+
+</div>
+
+
+
+<!-- SIGNATURE -->
+
+<div class="signature">
+
+Le Proviseur
+
+<div class="signature-line"></div>
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
 </body>
 
 </html>

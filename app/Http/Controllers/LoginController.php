@@ -37,9 +37,28 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            $user = Auth::user();
+            // Redirection fiable : utiliser l’URL "intended" seulement si elle est interne et n’est pas la page de connexion
+            $intended = $request->session()->pull('url.intended');
+            $dashboardUrl = route('dashboard');
 
-            return redirect()->intended('/dashboard');
+            if ($intended && $intended !== route('login') && $intended !== url('/login')) {
+                $parsed = parse_url($intended);
+                // URL relative (ex. /dashboard/students) : accepter si ce n’est pas la page de login
+                if (empty($parsed['host'])) {
+                    $path = $parsed['path'] ?? '';
+                    if (str_starts_with($path, '/') && !str_starts_with($path, '/login')) {
+                        return redirect()->to($intended);
+                    }
+                } else {
+                    // URL absolue : accepter seulement si même domaine que l’app
+                    $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+                    if (isset($appHost) && strtolower($parsed['host']) === strtolower($appHost)) {
+                        return redirect()->to($intended);
+                    }
+                }
+            }
+
+            return redirect()->to($dashboardUrl);
         }
 
         return back()->withErrors([

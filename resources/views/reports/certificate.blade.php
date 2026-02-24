@@ -101,7 +101,7 @@
     <div class="signature">
         <p>Le Proviseur</p>
         <p style="font-weight: bold; text-transform: uppercase;">MOHAMED HOUSSEIN DIRIEH</p>
-        <img src="{{ public_path('images/signature.jpg') }}" style="height: 150px;" />
+        <img src="{{ public_path('images/signature.jpg') }}" style="height: 120px;" />
     </div>
 
 </body>

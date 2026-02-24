@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            @include('Students.partials.photo-upload-with-webcam', [
+            @include('students.partials.photo-upload-with-webcam', [
                 'fileInputLabel' => 'Choisir une photo',
                 'previewInitialSrc' => null,
                 'previewAlt' => '',

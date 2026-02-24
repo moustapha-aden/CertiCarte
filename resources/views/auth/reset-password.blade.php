@@ -31,7 +31,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
                 Adresse Email
             </label>
-            <input type="email" name="email" value="{{ old('email') }}" required
+            <input type="email" name="email" value="{{ old('email', request('email')) }}" required
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
             @error('email')
                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>

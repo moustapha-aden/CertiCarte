@@ -63,8 +63,8 @@
             </div>
 
             {{-- Remember Me & Forgot Password --}}
-            {{-- <div class="flex items-center justify-between">
-                <div class="flex items-center">
+            <div class="flex items-center justify-between">
+                <!-- <div class="flex items-center">
                     <input type="checkbox"
                            name="remember"
                            id="remember"
@@ -73,15 +73,15 @@
                     <label for="remember" class="ml-2 block text-sm text-gray-700">
                         Rester connecté
                     </label>
-                </div>
+                </div> -->
 
-                @if (Route::has('password.request'))
+                <!-- @if (Route::has('password.request')) -->
                     <a href="{{ route('password.request') }}"
                        class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
                         Mot de passe oublié?
                     </a>
                 @endif
-            </div> --}}
+            </div>
 
             {{-- Submit Button --}}
             <button type="submit"
