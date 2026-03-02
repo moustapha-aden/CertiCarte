@@ -140,6 +140,15 @@
                     </a>
                 @endcanany
 
+                {{-- Bouton Déconnexion mobile --}}
+                <form method="POST" action="{{ route('logout') }}" class="px-4 py-2">
+                    @csrf
+                    <button type="submit"
+                        class="w-full text-left px-4 py-3 text-base font-semibold text-red-700 hover:bg-red-50 hover:text-red-800 rounded-lg transition-colors">
+                        Déconnexion
+                    </button>
+                </form>
+
                 {{-- Mobile Action Button --}}
                 @hasSection('header-action')
                     <div class="px-3 py-2">

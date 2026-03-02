@@ -267,6 +267,12 @@ Route::middleware('auth')->group(function () {
         ->name('reports.id_card')
         ->middleware('permission:generate_cards');
 
+
+    // add route for attendance list carte
+    Route::get('/classes/{classe}/identity-cards/print',
+        [ClasseController::class, 'generateIdentityCards'])
+        ->name('classes.identity_cards.print')
+        ->middleware('permission:generate_cards');
     /**
      * Attendance list generation route.
      *

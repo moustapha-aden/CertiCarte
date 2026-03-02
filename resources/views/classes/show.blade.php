@@ -40,10 +40,24 @@
                         Générer Liste d'Appel
                     </x-button>
                 @endcan
+
+                 @can('generate_cards')
+                    <x-button 
+                        href="{{ route('classes.identity_cards.print', $classe) }}" 
+                        target="_blank"
+                        variant="outline"
+                        size="lg"
+                        class="bg-white text-indigo-600 hover:bg-gray-100 border-indigo-500 hover:border-indigo-600">
+                        Générer Cartes Scolaires
+                    </x-button>
+                @endcan
+
+
                 <x-button href="{{ route('classes.index') }}" variant="secondary" size="lg"
                     icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>'>
                     Retour
                 </x-button>
+
             </div>
         </div>
     </div>

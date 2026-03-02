@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-
+use Illuminate\Support\Facades\Log;
 class ClasseController extends Controller
 {
     /**
@@ -238,6 +238,54 @@ class ClasseController extends Controller
         } catch (Exception $e) {
             return redirect()->back()
                 ->with('error', 'Une erreur est survenue lors de la génération du PDF. Veuillez réessayer.');
+        }
+    }
+
+
+    //generation d'une liste des carte d'identité des étudiants d'une classe
+    public function generateIdentityCards(Request $request, Classe $classe)
+    {
+        try {
+            $students = $classe->students()->orderBy('name')->get();
+
+            // Logo en base64
+            $logoUrl = null;
+            $logoPath = public_path('images/photo_carte.jpg');
+
+            if (file_exists($logoPath)) {
+                $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+                $data = file_get_contents($logoPath);
+                $logoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
+                if(!$logoUrl) {
+                    Log::info('Logo vide');
+                } else {
+                    Log::info('Logo chargé, longueur: '.strlen($logoUrl));
+                }
+            } else {
+                Log::info('Fichier logo non trouvé: '.$logoPath);
+            }
+
+            // Background carte en base64
+            $backgroundImage = null;
+            $bgPath = public_path('images/photo_carte.jpg');
+
+            if (file_exists($bgPath)) {
+                $type = pathinfo($bgPath, PATHINFO_EXTENSION);
+                $data = file_get_contents($bgPath);
+                $backgroundImage = 'data:image/'.$type.';base64,'.base64_encode($data);
+            }
+
+            $pdf = Pdf::loadView('classes.identity_cards_print', [
+                'classe' => $classe,
+                'students' => $students,
+                'logoUrl' => $logoUrl,
+                'backgroundImage' => $backgroundImage,
+            ]);
+
+            return $pdf->stream('Cartes_'.$classe->label.'.pdf');
+
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erreur génération PDF.');
         }
     }
 
