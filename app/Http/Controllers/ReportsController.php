@@ -132,12 +132,14 @@ class ReportsController extends Controller
 
             // School logo (photo_carte.jpg)
             $logoUrl = null;
+            $backgroundImage = null;
             try {
                 $logoPath = public_path('images/photo_carte.jpg');
                 if (file_exists($logoPath)) {
                     $type = pathinfo($logoPath, PATHINFO_EXTENSION);
                     $data = file_get_contents($logoPath);
                     $logoUrl = 'data:image/'.$type.';base64,'.base64_encode($data);
+                    $backgroundImage = $logoUrl; // même fichier que le multi
                 }
             } catch (Exception $e) {
                 Log::warning('Optional school logo not found: '.$e->getMessage());
@@ -151,7 +153,8 @@ class ReportsController extends Controller
                 'school_year',
                 'currentDate',
                 'lyceePhotoUrl',
-                'logoUrl'
+                'logoUrl',
+                'backgroundImage' 
             ));
 
             // Filename

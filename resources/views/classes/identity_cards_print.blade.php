@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="icon" href="/favicon.png">
     <title>Cartes d'Étudiants - {{ $classe->label }}</title>
 
     <style>
         @page {
-            margin: 10mm;
             size: A4 portrait;
         }
 
@@ -21,11 +21,18 @@
 
         .page {
             width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            gap: 5mm;
-            padding: 10mm;
+        }
+
+        table.cards-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 5mm;
+        }
+
+        table.cards-table td {
+            width: 50%;
+            vertical-align: top;
+            padding: 0;
         }
 
         /* CARTE */
@@ -35,16 +42,9 @@
             border-radius: 8mm;
             overflow: hidden;
             position: relative;
-            background: #fff ;
+            background: #fff;
             box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-            margin-bottom: 5mm;
-            margin-right: 5mm;
             page-break-inside: avoid;
-        }
-
-        /* Pour avoir 2 cartes par ligne, on enlève la marge de droite toutes les 2 cartes */
-        .card-wrapper:nth-child(2n) {
-            margin-right: 0;
         }
 
         /* OVERLAY */
@@ -91,7 +91,7 @@
             z-index: 3;
         }
 
-        /* PHOTO ETUDIANT — AGRANDIE */
+        /* PHOTO ETUDIANT */
         .student-photo {
             position: absolute;
             top: 5mm;
@@ -179,105 +179,111 @@
                 box-shadow: none;
                 border: 1px solid #eee;
             }
+            /* Saut de page après chaque groupe de 8 cartes (4 lignes) */
+            tr.page-break-after {
+                page-break-after: always;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="page">
-        @foreach($students as $student)
-            @php
-                // Charger la photo réelle de l'étudiant ou générer un avatar
-                $avatar = null;
-                
-                // Essayer de charger la photo depuis le storage
-                if ($student->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->photo)) {
-                    try {
-                        $path = \Illuminate\Support\Facades\Storage::disk('public')->path($student->photo);
-                        $type = pathinfo($path, PATHINFO_EXTENSION);
-                        $data = file_get_contents($path);
-                        $avatar = 'data:image/'.$type.';base64,'.base64_encode($data);
-                    } catch (Exception $e) {
-                        $avatar = null;
-                    }
-                }
-                
-                // Si pas de photo, générer un avatar
-                if (!$avatar) {
-                    $colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
-                    $color = $colors[ord(substr($student->name, 0, 1)) % count($colors)];
-                    
-                    $initial = strtoupper(substr($student->name, 0, 1));
-                    
-                    $svg = '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100" height="100" fill="'.$color.'"/>
-                        <text x="50" y="50" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">'.$initial.'</text>
-                    </svg>';
-                    
-                    $avatar = 'data:image/svg+xml;base64,'.base64_encode($svg);
-                }
-            @endphp
+        @php
+            $chunks = $students->chunk(8);
+        @endphp
 
-            <div class="card-wrapper" @if($backgroundImage) style="background: #fff url('{{ $backgroundImage }}') center/cover no-repeat;" @endif>
-                <div class="recto-content">
-                    <!-- LOGO -->
-                    <div class="logo-section">
-                        @if ($logoUrl)
-                            <img src="{{ $logoUrl }}" class="school-logo">
+        @foreach($chunks as $chunkIndex => $chunk)
+            @if($chunkIndex > 0)
+                <div style="page-break-before: always;"></div>
+            @endif
+
+            <table class="cards-table">
+                @foreach($chunk->chunk(2) as $rowIndex => $row)
+                    <tr>
+                        @foreach($row as $student)
+                            @php
+                                $avatar = null;
+
+                                if ($student->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->photo)) {
+                                    try {
+                                        $path = \Illuminate\Support\Facades\Storage::disk('public')->path($student->photo);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($path);
+                                        $avatar = 'data:image/'.$type.';base64,'.base64_encode($data);
+                                    } catch (Exception $e) {
+                                        $avatar = null;
+                                    }
+                                }
+
+                                if (!$avatar) {
+                                    $colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
+                                    $color = $colors[ord(substr($student->name, 0, 1)) % count($colors)];
+                                    $initial = strtoupper(substr($student->name, 0, 1));
+
+                                    $svg = '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="100" height="100" fill="'.$color.'"/>
+                                        <text x="50" y="50" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">'.$initial.'</text>
+                                    </svg>';
+
+                                    $avatar = 'data:image/svg+xml;base64,'.base64_encode($svg);
+                                }
+                            @endphp
+
+                            <td>
+                                <div class="card-wrapper" @if($backgroundImage) style="background: #fff url('{{ $backgroundImage }}') center/cover no-repeat;" @endif>
+                                    <div class="recto-content">
+                                        <!-- LOGO -->
+                                        <div class="logo-section">
+                                            @if ($logoUrl)
+                                                <img src="{{ $logoUrl }}" class="school-logo">
+                                            @endif
+                                        </div>
+
+                                        <!-- NOM ECOLE -->
+                                        <div class="school-name">
+                                            LYCÉE AHMED FARAH ALI
+                                        </div>
+
+                                        <!-- PHOTO -->
+                                        <img src="{{ $avatar }}" class="student-photo">
+
+                                        <!-- BADGE -->
+                                        <div class="card-badge">
+                                            CARTE SCOLAIRE
+                                        </div>
+
+                                        <!-- INFOS -->
+                                        <div class="student-info">
+                                            <div>Nom : <span>{{ $student->name }}</span></div>
+                                            <div>Matricule : <span>{{ $student->matricule }}</span></div>
+                                            <div>Né(e) le : <span>{{ \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') }}</span></div>
+                                            <div>Classe : <span>{{ optional($student->classe)->label ?? $classe->label }}</span></div>
+                                        </div>
+
+                                        <!-- ANNEE -->
+                                        <div class="school-year">
+                                            Année scolaire<br>
+                                            <strong>{{ $student->classe->schoolYear->year ?? $classe->schoolYear->year ?? 'N/A' }}</strong>
+                                        </div>
+
+                                        <!-- SIGNATURE -->
+                                        <div class="signature">
+                                            Le Proviseur
+                                            <div class="signature-line"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        @endforeach
+
+                        {{-- Si la ligne n'a qu'une seule carte, ajouter une cellule vide --}}
+                        @if($row->count() < 2)
+                            <td></td>
                         @endif
-                    </div>
-
-                    <!-- NOM ECOLE -->
-                    <div class="school-name">
-                        LYCÉE AHMED FARAH ALI
-                    </div>
-
-                    <!-- PHOTO -->
-                    <img src="{{ $avatar }}" class="student-photo">
-
-                    <!-- BADGE -->
-                    <div class="card-badge">
-                        CARTE SCOLAIRE
-                    </div>
-
-                    <!-- INFOS -->
-                    <div class="student-info">
-                        <div>
-                            Nom :
-                            <span>{{ $student->name }}</span>
-                        </div>
-
-                        <div>
-                            Matricule :
-                            <span>{{ $student->matricule }}</span>
-                        </div>
-
-                        <div>
-                            Né(e) le :
-                            <span>{{ \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') }}</span>
-                        </div>
-
-                        <div>
-                            Classe :
-                            <span>{{ optional($student->classe)->label ?? $classe->label }}</span>
-                        </div>
-                    </div>
-
-                    <!-- ANNEE -->
-                    <div class="school-year">
-                        Année scolaire<br>
-                        <strong>
-                            {{ $student->classe->schoolYear->year ?? $classe->schoolYear->year ?? 'N/A' }}
-                        </strong>
-                    </div>
-
-                    <!-- SIGNATURE -->
-                    <div class="signature">
-                        Le Proviseur
-                        <div class="signature-line"></div>
-                    </div>
-                </div>
-            </div>
+                    </tr>
+                @endforeach
+            </table>
         @endforeach
     </div>
 </body>

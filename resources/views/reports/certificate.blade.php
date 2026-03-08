@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Certificat de Scolarité - {{ $student->name }}</title>
+    <link rel="icon" href="/favicon.png">
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;

@@ -15,7 +15,7 @@
     @stack('styles')
 
     {{-- Favicon --}}
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.png">
 </head>
 
 <body class="bg-gray-50 min-h-screen">
