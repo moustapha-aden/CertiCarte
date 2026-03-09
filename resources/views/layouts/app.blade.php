@@ -15,7 +15,7 @@
     @stack('styles')
 
     {{-- Favicon --}}
-    <link rel="icon" href="/favicon.png">
+    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 </head>
 
 <body class="bg-gray-50 min-h-screen">
