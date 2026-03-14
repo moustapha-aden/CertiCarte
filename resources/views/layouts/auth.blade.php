@@ -5,8 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Connexion - Lycée Ahmed Farah Ali')</title>
-    <meta name="description" content="@yield('description', 'Système de gestion scolaire du Lycée Ahmed Farah Ali')">
+    <meta name="description" content="@yield('description', 'Portail de gestion scolaire du Lycée Ahmed Farah Ali : classes, étudiants, certificats et rapports. Accès réservé au personnel autorisé.')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Open Graph / SEO --}}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title', 'Connexion - Lycée Ahmed Farah Ali')">
+    <meta property="og:description" content="@yield('description', 'Portail de gestion scolaire du Lycée Ahmed Farah Ali : classes, étudiants, certificats et rapports. Accès réservé au personnel autorisé.')">
+    <meta property="og:locale" content="fr_FR">
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
     {{-- Google Fonts --}}

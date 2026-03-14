@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
 @section('title', 'Mot de passe oublié — Lycée Ahmed Farah Ali')
-@section('description', 'Réinitialisez votre mot de passe')
+@section('description', 'Demandez un lien pour réinitialiser votre mot de passe. Portail de gestion scolaire du Lycée Ahmed Farah Ali.')
 
 @push('styles')
 <style>

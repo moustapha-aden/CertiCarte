@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
 @section('title', 'Connexion — Lycée Ahmed Farah Ali')
-@section('description', 'Accédez à votre espace de gestion administrative')
+@section('description', 'Espace de connexion réservé au personnel du Lycée Ahmed Farah Ali. Gestion des classes, des étudiants, des certificats scolaires et des rapports administratifs.')
 
 @push('styles')
 <style>
