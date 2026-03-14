@@ -41,6 +41,7 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('authentic
  * @return \Illuminate\Http\RedirectResponse
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout.get');
 
 
 Route::get('/forgot-password', [LoginController::class, 'showForgotPasswordForm'])->name('password.request');

@@ -93,7 +93,7 @@
                             </svg>
                             <span>Profil</span>
                         </a>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ url()->route('logout') }}">
                             @csrf
                             <button type="submit"
                                 class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 hover:text-red-800 transition-colors flex items-center space-x-2">
@@ -141,7 +141,7 @@
                 @endcanany
 
                 {{-- Bouton Déconnexion mobile --}}
-                <form method="POST" action="{{ route('logout') }}" class="px-4 py-2">
+                <form method="POST" action="{{ url()->route('logout') }}" class="px-4 py-2" id="mobile-logout-form">
                     @csrf
                     <button type="submit"
                         class="w-full text-left px-4 py-3 text-base font-semibold text-red-700 hover:bg-red-50 hover:text-red-800 rounded-lg transition-colors">
