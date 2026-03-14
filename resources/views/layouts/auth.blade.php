@@ -12,6 +12,8 @@
     <meta property="og:title" content="@yield('title', 'Connexion - Lycée Ahmed Farah Ali')">
     <meta property="og:description" content="@yield('description', 'Portail de gestion scolaire du Lycée Ahmed Farah Ali : classes, étudiants, certificats et rapports. Accès réservé au personnel autorisé.')">
     <meta property="og:locale" content="fr_FR">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <link rel="canonical" href="{{ url()->current() }}">
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
     {{-- Google Fonts --}}
@@ -179,6 +181,8 @@
 </head>
 
 <body>
+    {{-- Résumé pour moteurs de recherche (invisible à l'écran) — évite l'extrait "Connexion. Adresse Email..." --}}
+    <p class="sr-only">@yield('description', 'Portail de gestion scolaire du Lycée Ahmed Farah Ali. Classes, étudiants, certificats et rapports. Accès réservé au personnel autorisé.')</p>
 
     {{-- ── Layered Background ── --}}
     <div class="auth-bg" aria-hidden="true">
