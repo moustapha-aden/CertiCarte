@@ -78,7 +78,7 @@
                         <label for="per_page" class="text-sm font-medium text-gray-700 whitespace-nowrap">Afficher par:</label>
                         <select name="per_page" id="classes_per_page"
                             class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[80px]">
-                            @foreach ($allowedPerPage ?? [5, 10, 20, 50] as $num)
+                            @foreach ($allowedPerPage ?? [5, 10, 20, 50,100] as $num)
                                 <option value="{{ $num }}" {{ ($perPage ?? 10) == $num ? 'selected' : '' }}>{{ $num }}</option>
                             @endforeach
                         </select>

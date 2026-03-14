@@ -73,7 +73,7 @@ class ClasseController extends Controller
 
         // Per-page selection (default 10)
         $perPage = (int) $request->input('per_page', 10);
-        $allowedPerPage = [5, 10, 20, 50];
+        $allowedPerPage = [5, 10, 20, 50,100];
         if (! in_array($perPage, $allowedPerPage)) {
             $perPage = 10;
         }
