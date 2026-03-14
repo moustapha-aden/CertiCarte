@@ -19,7 +19,7 @@
                 <h1 class="text-2xl font-bold text-gray-800">Catalogue du Personnel</h1>
             </div>
 
-            <div class="flex space-x-3">
+            <div class="flex flex-col sm:flex-row gap-3">
                 @can('create_users')
                     <x-button href="{{ route('users.create') }}" variant="primary" size="md"
                         icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'>

@@ -1,11 +1,11 @@
 {{-- Card Component --}}
 <div
-    class="bg-white {{ $shadow ?? 'shadow-xl' }} {{ $padding ?? 'p-8' }} rounded-2xl border border-gray-100 {{ $class ?? '' }} {{ isset($hover) && $hover ? 'hover:shadow-2xl transition-shadow duration-300' : '' }}">
+    class="bg-white {{ $shadow ?? 'shadow-xl' }} {{ $padding ?? 'p-4 sm:p-8' }} rounded-2xl border border-gray-100 {{ $class ?? '' }} {{ isset($hover) && $hover ? 'hover:shadow-2xl transition-shadow duration-300' : '' }}">
     {{-- Card Header (optional) --}}
     @if (isset($title) || isset($subtitle) || isset($actions))
         <div class="mb-6 border-b pb-4">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div class="flex-1 min-w-0">
                     @if (isset($title))
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-3">
                             @if (isset($icon))

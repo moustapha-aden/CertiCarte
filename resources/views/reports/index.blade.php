@@ -5,7 +5,7 @@
 
 @section('content')
     {{-- Page Header --}}
-    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
+    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 sm:p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Header Icon --}}
             <div class="shrink-0">
@@ -32,14 +32,14 @@
     {{-- Reports Form --}}
     <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         {{-- Form Header --}}
-        <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Sélectionner le Type de Rapport</h2>
+        <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Sélectionner le Type de Rapport</h2>
             <p class="text-gray-600">Choisissez le type de document à générer et remplissez les informations requises
             </p>
         </div>
 
         {{-- Form Content --}}
-        <div class="p-8">
+        <div class="p-4 sm:p-8">
             <form id="reportsForm" x-data="reportsForm()" @submit.prevent="generateReport">
                 {{-- Step 1: Report Type Selection --}}
                 <div class="mb-8">

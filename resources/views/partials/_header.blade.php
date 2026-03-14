@@ -13,9 +13,9 @@
                             <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
                         </svg>
                     </div>
-                    <div>
-                        <h1 class="text-xl font-extrabold text-gray-900 tracking-tight">Lycée Ahmed Farah Ali</h1>
-                        <p class="text-xs text-gray-500 font-medium">@yield('page-subtitle', 'Système de Gestion')</p>
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight truncate">Lycée Ahmed Farah Ali</h1>
+                        <p class="text-xs text-gray-500 font-medium truncate">@yield('page-subtitle', 'Système de Gestion')</p>
                     </div>
                 </a>
             </div>

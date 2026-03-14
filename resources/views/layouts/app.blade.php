@@ -23,7 +23,7 @@
     @include('partials._header')
 
     {{-- Main Content Area --}}
-    <main class="max-w-7xl mx-auto p-8 pt-10 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:pt-10">
         {{-- Breadcrumbs (optional) --}}
         @hasSection('breadcrumbs')
             <nav class="mb-6" aria-label="Breadcrumb">

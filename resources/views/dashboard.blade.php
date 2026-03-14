@@ -5,7 +5,7 @@
 
 @section('content')
     {{-- Welcome Section --}}
-    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
+    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 sm:p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Welcome Icon --}}
             <div class="shrink-0">
@@ -21,7 +21,7 @@
 
             {{-- Welcome Text --}}
             <div class="flex-grow text-center sm:text-left">
-                <h1 class="text-4xl font-extrabold mb-2">Bienvenue sur le Tableau de Bord</h1>
+                <h1 class="text-2xl sm:text-4xl font-extrabold mb-2">Bienvenue sur le Tableau de Bord</h1>
                 <p class="text-xl text-indigo-100 mb-4">Lycée Ahmed Farah Ali</p>
                 <p class="text-lg text-indigo-200">
                     Gérez efficacement vos classes et étudiants
@@ -135,7 +135,7 @@
                         <h3 class="text-lg font-semibold text-blue-800">Gestion des Classes</h3>
                     </div>
                     <p class="text-sm text-blue-600 mb-4">Créez et gérez les classes de votre établissement</p>
-                    <div class="flex space-x-2">
+                    <div class="flex flex-wrap gap-2">
                         <x-button href="{{ route('classes.index') }}" variant="primary" size="sm">
                             Voir toutes
                         </x-button>
@@ -160,7 +160,7 @@
                         <h3 class="text-lg font-semibold text-green-800">Gestion des Étudiants</h3>
                     </div>
                     <p class="text-sm text-green-600 mb-4">Inscrivez et suivez vos étudiants</p>
-                    <div class="flex space-x-2">
+                    <div class="flex flex-wrap gap-2">
                         <x-button href="{{ route('students.index') }}" variant="primary" size="sm">
                             Voir tous
                         </x-button>
@@ -185,7 +185,7 @@
                         <h3 class="text-lg font-semibold text-purple-800">Gestion des Personnels</h3>
                     </div>
                     <p class="text-sm text-purple-600 mb-4">Gérez les comptes personnels et leurs permissions</p>
-                    <div class="flex space-x-2">
+                    <div class="flex flex-wrap gap-2">
                         <x-button href="{{ route('users.index') }}" variant="primary" size="sm">
                             Voir tous
                         </x-button>

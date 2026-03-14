@@ -71,13 +71,22 @@ class ClasseController extends Controller
             $query->orderBy($sortBy, $sortOrder);
         }
 
-        $classes = $query->paginate(12)->withQueryString();
+        // Per-page selection (default 10)
+        $perPage = (int) $request->input('per_page', 10);
+        $allowedPerPage = [5, 10, 20, 50];
+        if (! in_array($perPage, $allowedPerPage)) {
+            $perPage = 10;
+        }
+
+        $classes = $query->paginate($perPage)->withQueryString();
 
         $data = [
             'classes' => $classes,
             'schoolYears' => $schoolYears,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
+            'perPage' => $perPage,
+            'allowedPerPage' => $allowedPerPage,
         ];
 
         if ($request->ajax()) {

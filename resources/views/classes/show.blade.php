@@ -7,7 +7,7 @@
     <x-breadcrumb :items="[['label' => 'Classes', 'url' => route('classes.index')], ['label' => $classe->label]]" />
 
     {{-- Hero Section --}}
-    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-8 mb-8 text-white shadow-2xl">
+    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 sm:p-8 mb-8 text-white shadow-2xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
             {{-- Class Icon --}}
             <div class="shrink-0">
@@ -22,7 +22,7 @@
 
             {{-- Main Info --}}
             <div class="flex-grow text-center sm:text-left">
-                <h1 class="text-4xl font-extrabold mb-2">{{ $classe->label }}</h1>
+                <h1 class="text-2xl sm:text-4xl font-extrabold mb-2">{{ $classe->label }}</h1>
                 <p class="text-xl text-indigo-100 mb-4">Année scolaire : {{ $classe->schoolYear->year ?? 'N/A' }}</p>
                 <p class="text-lg text-indigo-200">
                     {{ $students->total() }} étudiant{{ $students->total() > 1 ? 's' : '' }}

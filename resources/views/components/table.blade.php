@@ -5,7 +5,7 @@
     'headers' => null,
 ])
 
-<div class="overflow-hidden rounded-xl border border-gray-200 shadow-lg">
+<div class="overflow-x-auto rounded-xl border border-gray-200 shadow-lg custom-scrollbar" data-table-scroll>
     <table class="min-w-full divide-y divide-gray-200">
         {{-- Table Header --}}
         @if (isset($headers) && !empty($headers))

@@ -82,7 +82,14 @@ class StudentController extends Controller
         // Apply sorting
         $students->orderBy($sortBy, $sortOrder);
 
-        $students = $students->paginate(10)->withQueryString();
+        // Per-page selection (default 10)
+        $perPage = (int) $request->input('per_page', 10);
+        $allowedPerPage = [5, 10, 20, 50];
+        if (! in_array($perPage, $allowedPerPage)) {
+            $perPage = 10;
+        }
+
+        $students = $students->paginate($perPage)->withQueryString();
 
         $data = [
             'students' => $students,
@@ -90,6 +97,8 @@ class StudentController extends Controller
             'allClasses' => $allClasses,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
+            'perPage' => $perPage,
+            'allowedPerPage' => $allowedPerPage,
         ];
 
         if ($request->ajax()) {
