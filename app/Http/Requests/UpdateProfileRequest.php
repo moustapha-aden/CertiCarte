@@ -24,11 +24,24 @@ class UpdateProfileRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email,'.auth()->id()],
-            'old_password' => ['required_with:password', 'string', function ($attribute, $value, $fail) {
-                if ($value && ! password_verify($value, auth()->user()->password)) {
-                    $fail('Le mot de passe actuel est incorrect.');
-                }
-            }],
+            'old_password' => [
+                function ($attribute, $value, $fail) {
+                    // Only validate old password if a new password is actually being set
+                    if (! $this->filled('password')) {
+                        return;
+                    }
+
+                    // When changing password, old password becomes required and must be a non-empty string
+                    if (! is_string($value) || $value === '') {
+                        $fail('Le mot de passe actuel est obligatoire pour changer le mot de passe.');
+                        return;
+                    }
+
+                    if (! password_verify($value, auth()->user()->password)) {
+                        $fail('Le mot de passe actuel est incorrect.');
+                    }
+                },
+            ],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
         ];
     }
@@ -47,11 +60,10 @@ class UpdateProfileRequest extends FormRequest
             'email.required' => 'L\'email est obligatoire.',
             'email.email' => 'L\'email doit être une adresse email valide.',
             'email.unique' => 'L\'email existe déjà.',
-            'old_password.required_with' => 'Le mot de passe actuel est obligatoire pour changer le mot de passe.',
-            'old_password.string' => 'Le mot de passe actuel doit être une chaîne de caractères.',
             'password.string' => 'Le nouveau mot de passe doit être une chaîne de caractères.',
             'password.min' => 'Le nouveau mot de passe doit être au moins 6 caractères.',
             'password.confirmed' => 'Les nouveaux mots de passe ne correspondent pas.',
         ];
     }
+
 }

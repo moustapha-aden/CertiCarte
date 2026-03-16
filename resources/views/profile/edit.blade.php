@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            {{-- Account Information Section --}}
+            {{-- Account Security / Password Section --}}
             <div class="border-b border-gray-200 pb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
                     <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,16 +40,16 @@
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
                         </path>
                     </svg>
-                    <span>Informations du Compte</span>
+                    <span>Sécurité du Compte / Mot de passe</span>
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-input name="old_password" type="password" label="Mot de passe actuel"
-                        placeholder="Entrez votre mot de passe actuel" />
+                        placeholder="Entrez votre mot de passe actuel" autocomplete="current-password" />
                     <x-input name="password" type="password" label="Nouveau mot de passe"
-                        placeholder="Entrez le nouveau mot de passe" />
+                        placeholder="Entrez le nouveau mot de passe" autocomplete="new-password" />
                     <x-input name="password_confirmation" type="password" label="Confirmer le nouveau mot de passe"
-                        placeholder="Répétez le nouveau mot de passe" />
+                        placeholder="Répétez le nouveau mot de passe" autocomplete="new-password" />
                 </div>
             </div>
 
@@ -75,11 +75,9 @@
                             <h4 class="text-sm font-medium text-blue-800 mb-1">Conseils pour la modification</h4>
                             <ul class="text-sm text-blue-700 space-y-1">
                                 <li>• Vous pouvez modifier vos informations personnelles à tout moment</li>
-                                <li>• Pour changer votre mot de passe, vous devez d'abord saisir votre mot de passe actuel
-                                </li>
+                                <li>• Pour changer votre mot de passe, vous devez d'abord saisir votre mot de passe actuel</li>
                                 <li>• Le nouveau mot de passe doit contenir au moins 6 caractères</li>
                                 <li>• Laissez les champs de mot de passe vides pour conserver le mot de passe actuel</li>
-                                <li>• Vos permissions sont gérées par l'administrateur</li>
                             </ul>
                         </div>
                     </div>
