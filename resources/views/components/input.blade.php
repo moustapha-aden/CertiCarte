@@ -4,7 +4,7 @@
     $hasError = $errors->has($name ?? '');
     $type = $type ?? 'text';
     $baseClasses =
-        'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-0 transition duration-200';
+        'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-0 transition duration-200 placeholder:text-gray-400';
     $errorClasses = $hasError
         ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500';
