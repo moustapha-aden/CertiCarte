@@ -1,236 +1,88 @@
 # CertiCarte
 
-A comprehensive school management system built with Laravel for educational institutions.
-
-## Overview
+CertiCarte est une application web de gestion scolaire (élèves, classes, années scolaires, utilisateurs et documents PDF) construite avec **Laravel 12**.
 
-CertiCarte is a modern web application designed to streamline school administration and student management. The system provides administrators with tools to manage students, classes, school years, and users efficiently. Built with Laravel 12 and featuring a responsive design with Tailwind CSS, CertiCarte offers an intuitive interface for educational institutions to maintain accurate student records and academic data.
+## Fonctionnalités
 
-## Features
+- **Gestion des élèves**: CRUD, fiche détaillée, photo, avatar de secours, recherche/filtrage, tri, pagination.
+- **Import élèves (Excel/CSV)**: import en masse, **historique des imports**, page de résultat, **export des erreurs** vers Excel, suppression en masse d’erreurs.
+- **Import photos en masse**: upload multi-fichiers, association par **matricule (nom de fichier)**, remplacement si photo existante, **rapport d’import** (succès/erreurs/non trouvés).
+- **Gestion des classes**: CRUD, association à une année scolaire, statistiques (compte élèves), recherche/tri/pagination, protection contre suppression si des élèves existent.
+- **Années scolaires**: organisation/filtrage par année (via les classes).
+- **Utilisateurs & permissions (RBAC)**: rôles `admin` et `secretary`, permissions granulaires par module/action.
+- **Documents PDF**:
+    - Certificat de scolarité (élève)
+    - Carte d’identité (élève)
+    - Liste d’appel (classe)
+    - **Impression des cartes d’identité d’une classe**
+- **Authentification**: connexion/déconnexion + **mot de passe oublié / réinitialisation** (email).
 
-### 🎓 **Student Management**
+## Stack technique
 
--   Complete CRUD operations for student records
--   Personal information management (name, matricule, date of birth, place of birth, gender, situation)
--   Student photo upload and automatic avatar generation (with consistent colors based on name)
--   Class assignment and academic year tracking
--   Bulk import from Excel/CSV files with support for:
--   French and English column names
--   Automatic school year and class creation
--   Excel date format conversion
--   Comprehensive error handling and logging
--   Advanced filtering and search capabilities
+- **Backend**: Laravel 12 (PHP 8.2+)
+- **Frontend**: Tailwind CSS + Alpine.js
+- **Build**: Vite
+- **Base de données**: MySQL ou SQLite
+- **PDF**: DomPDF
+- **Permissions**: Spatie Laravel Permission
+- **Import Excel/CSV**: Maatwebsite Excel
+- **Qualité**: PHPUnit, Laravel Pint
 
-### 🏫 **Class Management**
+## Scripts utiles
 
--   Create and manage classes within school years
--   Class statistics and student count tracking
--   School year association and filtering
--   Class-based student organization
+- `composer setup`: installation + `.env` + clé + migrations + build assets
+- `composer dev`: lance **serveur + queue + Vite** (concurrently)
+- `composer test`: tests
+- `composer lint` / `composer test:lint`: formatage Pint
+- `npm run dev` / `npm run build`: assets
 
-### 📅 **School Year Management**
+## Installation (rapide)
 
--   Track academic periods and organize classes by school years
--   Year-based filtering and organization
--   Academic period management
+### Prérequis
 
-### 👥 **User Management**
+- PHP 8.2+, Composer
+- Node.js + npm
+- MySQL (ou SQLite)
 
--   Admin and secretary user system with authentication
--   Role-based access control (RBAC) with granular permissions
--   User account creation, modification, and deletion
--   Permission management for individual users
--   Primary admin protection (ID 1 cannot be modified)
--   Two roles: Admin (full access) and Secretary (custom permissions)
+### Démarrage
 
-### 📊 **Dashboard Analytics**
+```bash
+composer setup
+php artisan db:seed
+php artisan storage:link
+composer dev
+```
 
--   Comprehensive overview of key metrics
--   Student counts, class statistics, and user metrics
--   Recent activity tracking (daily, weekly, monthly)
--   Current school year information
--   Quick access to all system modules
+L’application sera disponible sur `http://localhost:8000`.
 
-### 📄 **Report Generation**
+## Premiers pas
 
--   **Student Certificates**: Professional PDF certificates with school branding
--   **Student ID Cards**: High-quality ID cards with photos and school information
--   **Attendance Lists**: Single-day and multi-day attendance tracking sheets
--   Consolidated reports interface with dynamic form handling
--   Unified route structure: `/reports/{type}/{id}`
+- Se connecter, puis:
+    - créer une année/classe (ou importer des élèves, ce qui peut créer automatiquement les entités selon le fichier),
+    - gérer les élèves (photos individuelles ou import photos en masse),
+    - générer les documents PDF depuis l’interface Rapports.
 
-### 🎨 **Modern UI/UX**
+## Identifiants par défaut
 
--   Responsive design built with Tailwind CSS
--   Alpine.js for interactive components
--   Modern card-based layout
--   Dynamic forms with AJAX-powered interactions
--   Loading states and user feedback
--   Mobile-friendly interface
+Après `php artisan db:seed` :
 
-### 🔒 **Security & Permissions**
+- **Admin**: `admin@example.com` / `password`
+- **Secrétaire**: `secretary@example.com` / `password`
 
--   Laravel's built-in authentication system
--   Role-based access control (RBAC)
--   Permission-based feature access
--   CSRF protection
--   Secure file uploads
--   Session management
+À changer dès la première connexion.
 
-## Tech Stack
+## Configuration (essentiels)
 
--   **Backend**: Laravel 12 (PHP 8.2+)
--   **Frontend**: Tailwind CSS, Alpine.js
--   **Database**: MySQL/SQLite (configurable)
--   **PDF Generation**: DomPDF
--   **Authentication**: Laravel's built-in authentication system
--   **Authorization**: Spatie Laravel Permission
--   **Testing**: PHPUnit
--   **Code Quality**: Laravel Pint
--   **Asset Building**: Vite
--   **Excel Import**: Maatwebsite Excel
+Copier le fichier et générer la clé:
 
-## Installation
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-### Prerequisites
-
--   PHP 8.2 or higher
--   Composer
--   Node.js and npm
--   MySQL or SQLite
--   Web server (Apache/Nginx) or Laravel development server
-
-### Setup Instructions
-
-1. **Clone the repository**
-
-    ```bash
-    git clone [repository-url]
-    cd CertiCarte
-    ```
-
-2. **Install PHP dependencies**
-
-    ```bash
-    composer install
-    ```
-
-3. **Install Node.js dependencies**
-
-    ```bash
-    npm install
-    ```
-
-4. **Environment configuration**
-
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
-
-5. **Database setup**
-
-    ```bash
-    # Configure your database in .env file
-    php artisan migrate
-    php artisan db:seed
-    ```
-
-6. **Storage setup**
-
-    ```bash
-    php artisan storage:link
-    ```
-
-7. **Build assets**
-
-    ```bash
-    npm run build
-    # or for development
-    npm run dev
-    ```
-
-8. **Start the development server**
-    ```bash
-    php artisan serve
-    ```
-
-## Usage
-
-### Accessing the Application
-
-1. Navigate to `http://localhost:8000` in your browser
-2. Login with your admin credentials
-3. Access the dashboard to view system overview and statistics
-
-### Key Functionalities
-
-#### **Dashboard**
-
--   View system statistics and recent activity
--   Quick access to all modules
--   Overview of students, classes, and users
--   Recent activity tracking
-
-#### **Student Management**
-
--   **Add Students**: Create new student records with personal information
--   **Edit Students**: Modify existing student data and class assignments
--   **View Students**: Detailed student profiles with photos and academic information
--   **Delete Students**: Remove student records (with confirmation)
--   **Import Students**: Bulk import from Excel/CSV files
--   **Search & Filter**: Find students by name, matricule, class, or gender
-
-#### **Class Management**
-
--   **Create Classes**: Add new classes within school years
--   **Edit Classes**: Modify class information and school year associations
--   **View Classes**: Class details with student lists and statistics
--   **Delete Classes**: Remove classes (with confirmation)
--   **Filter by Year**: View classes by academic year
-
-#### **User Management**
-
--   **Create Users**: Add new admin accounts
--   **Edit Users**: Modify user information and permissions
--   **View Users**: User profiles and permission details
--   **Delete Users**: Remove user accounts
--   **Permission Management**: Assign specific permissions to users
--   **Profile Management**: View and edit your own profile
-
-#### **Report Generation**
-
--   **Student Certificates**: Generate professional PDF certificates
--   **Student ID Cards**: Create high-quality student ID cards
--   **Attendance Lists**: Generate single-day or multi-day attendance sheets
--   **Unified Interface**: Step-based report generation with dynamic forms
-
-### Default Credentials
-
-After running the database seeder, you can use these default credentials:
-
-**Admin User:**
-
--   **Email**: `admin@example.com`
--   **Password**: `password`
-
-**Secretary User:**
-
--   **Email**: `secretary@example.com`
--   **Password**: `password`
-
-**⚠️ Important**: Change these credentials immediately after first login for security purposes.
-
-## Configuration
-
-### Environment Variables
-
-Key configuration options in `.env`:
+Variables clés à ajuster dans `.env` (voir aussi `.env.example`) :
 
 ```env
-APP_NAME="CertiCarte"
-APP_ENV=local
-APP_DEBUG=true
 APP_URL=http://localhost:8000
 
 DB_CONNECTION=mysql
@@ -241,38 +93,22 @@ DB_USERNAME=root
 DB_PASSWORD=
 
 MAIL_MAILER=smtp
-MAIL_HOST=mailpit
-MAIL_PORT=1025
-MAIL_USERNAME=null
-MAIL_PASSWORD=null
-MAIL_ENCRYPTION=null
+MAIL_HOST=...
+MAIL_PORT=...
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+MAIL_ENCRYPTION=tls
 
-# File Storage
+SESSION_DRIVER=database
+QUEUE_CONNECTION=database
 FILESYSTEM_DISK=local
 ```
 
-### File Storage
+## Permissions disponibles
 
--   Student photos are stored in `storage/app/public/photos`
--   Report PDFs are generated on-demand
--   Ensure proper permissions are set for the storage directory
--   Run `php artisan storage:link` to create symbolic links
+Le système utilise des permissions granulaires, notamment:
 
-### Database Configuration
-
-The application supports both MySQL and SQLite databases. Configure your preferred database in the `.env` file and run migrations accordingly.
-
-### Permissions System
-
-The system uses Spatie Laravel Permission for role-based access control:
-
--   **Admin Role**: Full system access
--   **Secretary Role**: Limited access to specific modules
--   **Custom Permissions**: Granular control over individual features
-
-Available permissions:
-
--   `view_students`, `create_students`, `edit_students`, `delete_students`, `import_students`
--   `view_classes`, `create_classes`, `edit_classes`, `delete_classes`
--   `view_users`, `create_users`, `edit_users`, `delete_users`
--   `generate_certificates`, `generate_cards`, `generate_attendance_lists`
+- `view_students`, `create_students`, `edit_students`, `delete_students`, `import_students`
+- `view_classes`, `create_classes`, `edit_classes`, `delete_classes`
+- `view_users`, `create_users`, `edit_users`, `delete_users`
+- `generate_certificates`, `generate_cards`, `generate_attendance_lists`
